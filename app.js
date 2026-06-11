@@ -1,37 +1,23 @@
+const socket = io({
+  transports: ['websocket', 'polling'],
+});
+
 const dom = {
   status: document.getElementById('status'),
   lastUpdated: document.getElementById('lastUpdated'),
   futureBox: document.getElementById('futureBox'),
   spotBox: document.getElementById('spotBox'),
-  productBox: document.getElementById('productBox'),
-  summaryScroller: document.getElementById('summaryScroller'),
+  goldProductsBox: document.getElementById('goldProductsBox'),
+  silverProductsBox: document.getElementById('silverProductsBox'),
   summaryTabs: Array.from(document.querySelectorAll('.summary-tab')),
-  gold: {
-    value: document.getElementById('goldValue'),
-    sub: document.getElementById('goldSub'),
-    buy: document.getElementById('goldBuy'),
-    sell: document.getElementById('goldSell'),
-    high: document.getElementById('goldHigh'),
-    low: document.getElementById('goldLow'),
-  },
-  silver: {
-    value: document.getElementById('silverValue'),
-    sub: document.getElementById('silverSub'),
-    buy: document.getElementById('silverBuy'),
-    sell: document.getElementById('silverSell'),
-    high: document.getElementById('silverHigh'),
-    low: document.getElementById('silverLow'),
-  },
 };
 
 const previousState = {
-  summary: {
-    gold: null,
-    silver: null,
-  },
+  summary: { gold: null, silver: null },
   future: {},
   spot: {},
-  products: {},
+  goldProducts: {},
+  silverProducts: {},
 };
 
 function toNum(val) {
@@ -66,18 +52,6 @@ function escapeHtml(text) {
     .replaceAll("'", '&#39;');
 }
 
-function symbolLabel(symbol, fallbackName) {
-  const sym = String(symbol || '').toLowerCase();
-  if (sym === 'gold') return 'Gold';
-  if (sym === 'silver') return 'Silver';
-  if (sym === 'goldnext') return 'Gold Next';
-  if (sym === 'silvernext') return 'Silver Next';
-  if (sym === 'xauusd') return 'XAU/USD';
-  if (sym === 'xagusd') return 'XAG/USD';
-  if (sym === 'inrspot') return 'INR Spot';
-  return fallbackName || String(symbol || '').toUpperCase();
-}
-
 function itemKey(row) {
   return String(row?.symbol || row?.name || '').toLowerCase();
 }
@@ -90,43 +64,63 @@ function rowToPlain(row) {
     ask: toNum(row?.ask),
     high: toNum(row?.high),
     low: toNum(row?.low),
-    open: toNum(row?.open),
-    close: toNum(row?.close),
-    diff: toNum(row?.diff),
     time: row?.time || '',
   };
 }
 
-function renderSummaryCard(card, current, previous, title) {
-  const item = current ? rowToPlain(current) : null;
-  const prev = previous ? rowToPlain(previous) : null;
-
-  const mainValue = item ? (item.ask ?? item.bid ?? item.ltp ?? item.close) : null;
-  const mainPrev = prev ? (prev.ask ?? prev.bid ?? prev.ltp ?? prev.close) : null;
-
-  card.value.innerHTML = `<span class="price ${changeClass(mainValue, mainPrev)}">${formatInr(mainValue)}</span>`;
-  card.sub.textContent = item
-    ? `${title} live rate`
-    : `Waiting for live ${title.toLowerCase()} data…`;
-
-  card.buy.innerHTML = `<span class="mini-value ${changeClass(item?.bid, prev?.bid)}">${formatInr(item?.bid)}</span>`;
-  card.sell.innerHTML = `<span class="mini-value ${changeClass(item?.ask, prev?.ask)}">${formatInr(item?.ask)}</span>`;
-  card.high.innerHTML = `<span class="mini-value ${changeClass(item?.high, prev?.high)}">${formatInr(item?.high)}</span>`;
-  card.low.innerHTML = `<span class="mini-value ${changeClass(item?.low, prev?.low)}">${formatInr(item?.low)}</span>`;
+function symbolLabel(symbol, fallbackName) {
+  const sym = String(symbol || '').toLowerCase();
+  if (sym === 'gold') return 'Gold';
+  if (sym === 'silver') return 'Silver';
+  if (sym === 'goldnext') return 'Gold Next';
+  if (sym === 'silvernext') return 'Silver Next';
+  if (sym === 'xauusd') return 'XAU/USD';
+  if (sym === 'xagusd') return 'XAG/USD';
+  if (sym === 'inrspot') return 'INR Spot';
+  return fallbackName || String(symbol || '').toUpperCase();
 }
 
-function buildTable(rows, previousMap, emptyMessage, showSymbol = true) {
+function setStatus(text) {
+  dom.status.textContent = text;
+}
+
+function updateTime(updatedAt) {
+  const stamp = updatedAt ? new Date(updatedAt) : null;
+  dom.lastUpdated.textContent = `Last updated: ${stamp ? stamp.toLocaleString() : '—'}`;
+}
+
+function renderSummaryCard(current, previous, title) {
+  const item = current ? rowToPlain(current) : null;
+  const prev = previous ? rowToPlain(previous) : null;
+  const value = item ? (item.ask ?? item.bid) : null;
+
+  return {
+    value: value,
+    buy: item?.bid ?? null,
+    sell: item?.ask ?? null,
+    high: item?.high ?? null,
+    low: item?.low ?? null,
+    title,
+    diffClass: changeClass(value, prev ? (prev.ask ?? prev.bid) : null),
+    buyClass: changeClass(item?.bid, prev?.bid),
+    sellClass: changeClass(item?.ask, prev?.ask),
+    highClass: changeClass(item?.high, prev?.high),
+    lowClass: changeClass(item?.low, prev?.low),
+  };
+}
+
+function renderMiniTable(rows, previousMap, emptyMessage) {
   if (!rows || !rows.length) {
     return `<p class="empty">${emptyMessage}</p>`;
   }
 
-  const htmlRows = rows.map((row) => {
+  const body = rows.map((row) => {
     const current = rowToPlain(row);
     const prev = previousMap[itemKey(current)] || {};
 
     return `
       <tr>
-        ${showSymbol ? `<td class="rowhead">${escapeHtml(symbolLabel(current.symbol, current.name))}</td>` : ''}
+        <td class="rowhead">${escapeHtml(symbolLabel(current.symbol, current.name))}</td>
         <td><span class="rate-chip ${changeClass(current.bid, prev.bid)}">${formatInr(current.bid)}</span></td>
         <td><span class="rate-chip ${changeClass(current.ask, prev.ask)}">${formatInr(current.ask)}</span></td>
         <td><span class="rate-chip ${changeClass(current.high, prev.high)}">${formatInr(current.high)}</span></td>
@@ -139,68 +133,95 @@ function buildTable(rows, previousMap, emptyMessage, showSymbol = true) {
     <table>
       <thead>
         <tr>
-          ${showSymbol ? '<th>Symbol</th>' : ''}
+          <th>Product</th>
           <th>Buy</th>
           <th>Sell</th>
           <th>High</th>
           <th>Low</th>
         </tr>
       </thead>
-      <tbody>
-        ${htmlRows}
-      </tbody>
+      <tbody>${body}</tbody>
     </table>
   `;
 }
 
-function updateTime(updatedAt) {
-  const stamp = updatedAt ? new Date(updatedAt) : null;
-  dom.lastUpdated.textContent = `Last updated: ${stamp ? stamp.toLocaleString() : '—'}`;
-}
+function renderRateTable(rows, previousMap, emptyMessage) {
+  if (!rows || !rows.length) {
+    return `<p class="empty">${emptyMessage}</p>`;
+  }
 
-function setStatus(text) {
-  dom.status.textContent = text;
+  const body = rows.map((row) => {
+    const current = rowToPlain(row);
+    const prev = previousMap[itemKey(current)] || {};
+
+    return `
+      <tr>
+        <td class="rowhead">${escapeHtml(symbolLabel(current.symbol, current.name))}</td>
+        <td><span class="rate-chip ${changeClass(current.bid, prev.bid)}">${formatInr(current.bid)}</span></td>
+        <td><span class="rate-chip ${changeClass(current.ask, prev.ask)}">${formatInr(current.ask)}</span></td>
+        <td><span class="rate-chip ${changeClass(current.high, prev.high)}">${formatInr(current.high)}</span></td>
+        <td><span class="rate-chip ${changeClass(current.low, prev.low)}">${formatInr(current.low)}</span></td>
+      </tr>
+    `;
+  }).join('');
+
+  return `
+    <table>
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Buy</th>
+          <th>Sell</th>
+          <th>High</th>
+          <th>Low</th>
+        </tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>
+  `;
 }
 
 function renderAll(data) {
-  const summaryGold = data?.summary?.gold || null;
-  const summarySilver = data?.summary?.silver || null;
+  const gold = data?.summary?.gold || null;
+  const silver = data?.summary?.silver || null;
 
-  renderSummaryCard(dom.gold, summaryGold, previousState.summary.gold, 'Gold');
-  renderSummaryCard(dom.silver, summarySilver, previousState.summary.silver, 'Silver');
+  const goldView = renderSummaryCard(gold, previousState.summary.gold, 'Gold');
+  const silverView = renderSummaryCard(silver, previousState.summary.silver, 'Silver');
 
-  dom.futureBox.innerHTML = buildTable(
+  document.getElementById('goldCard').querySelector('.summary-value').innerHTML =
+    `<span class="price ${goldView.diffClass}">${formatInr(goldView.value)}</span>`;
+  document.getElementById('goldCard').querySelector('.summary-sub').textContent =
+    gold ? 'Gold product table' : 'Waiting for gold data…';
+
+  document.getElementById('goldCard').querySelector('.mini-table-wrap').innerHTML =
+    renderMiniTable(data?.goldProducts || [], previousState.goldProducts, 'No gold products yet.');
+
+  document.getElementById('silverCard').querySelector('.summary-value').innerHTML =
+    `<span class="price ${silverView.diffClass}">${formatInr(silverView.value)}</span>`;
+  document.getElementById('silverCard').querySelector('.summary-sub').textContent =
+    silver ? 'Silver product table' : 'Waiting for silver data…';
+
+  document.getElementById('silverCard').querySelector('.mini-table-wrap').innerHTML =
+    renderMiniTable(data?.silverProducts || [], previousState.silverProducts, 'No silver products yet.');
+
+  dom.futureBox.innerHTML = renderRateTable(
     data?.futureRows || [],
     previousState.future,
-    'No live future data yet.'
+    'No future data yet.'
   );
 
-  dom.spotBox.innerHTML = buildTable(
+  dom.spotBox.innerHTML = renderRateTable(
     data?.spotRows || [],
     previousState.spot,
-    'No live spot data yet.'
+    'No spot data yet.'
   );
 
-  dom.productBox.innerHTML = buildTable(
-    data?.productRows || [],
-    previousState.products,
-    'No live product data yet.'
-  );
-
-  previousState.summary.gold = summaryGold ? { ...summaryGold } : null;
-  previousState.summary.silver = summarySilver ? { ...summarySilver } : null;
-
-  previousState.future = Object.fromEntries(
-    (data?.futureRows || []).map(row => [itemKey(row), rowToPlain(row)])
-  );
-
-  previousState.spot = Object.fromEntries(
-    (data?.spotRows || []).map(row => [itemKey(row), rowToPlain(row)])
-  );
-
-  previousState.products = Object.fromEntries(
-    (data?.productRows || []).map(row => [itemKey(row), rowToPlain(row)])
-  );
+  previousState.summary.gold = gold ? { ...gold } : null;
+  previousState.summary.silver = silver ? { ...silver } : null;
+  previousState.future = Object.fromEntries((data?.futureRows || []).map((row) => [itemKey(row), rowToPlain(row)]));
+  previousState.spot = Object.fromEntries((data?.spotRows || []).map((row) => [itemKey(row), rowToPlain(row)]));
+  previousState.goldProducts = Object.fromEntries((data?.goldProducts || []).map((row) => [itemKey(row), rowToPlain(row)]));
+  previousState.silverProducts = Object.fromEntries((data?.silverProducts || []).map((row) => [itemKey(row), rowToPlain(row)]));
 
   updateTime(data?.updatedAt);
   setStatus(
@@ -210,18 +231,17 @@ function renderAll(data) {
   );
 }
 
-async function loadRates() {
-  try {
-    const res = await fetch('/api/rates', { cache: 'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+socket.on('connect', () => {
+  setStatus('Connected');
+});
 
-    const data = await res.json();
-    renderAll(data);
-  } catch (err) {
-    console.error(err);
-    setStatus('Live data unavailable');
-  }
-}
+socket.on('rates:update', (data) => {
+  renderAll(data);
+});
+
+socket.on('disconnect', () => {
+  setStatus('Disconnected');
+});
 
 dom.summaryTabs.forEach((btn) => {
   btn.addEventListener('click', () => {
@@ -230,9 +250,6 @@ dom.summaryTabs.forEach((btn) => {
     if (!card) return;
 
     dom.summaryTabs.forEach((b) => b.classList.toggle('active', b === btn));
-    card.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    card.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
   });
 });
-
-loadRates();
-setInterval(loadRates, 3000);
