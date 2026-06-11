@@ -325,6 +325,13 @@ function ingestFeed(sourceKey, data) {
 
 function attachFeed(sourceKey) {
   const feed = SOURCES[sourceKey];
+
+  if (typeof window.io !== 'function') {
+    dom.status.textContent = 'Socket.IO library not loaded. Make sure socket.io.min.js is present.';
+    console.error('Socket.IO client library missing.');
+    return null;
+  }
+
   const socket = io(feed.url, {
     transports: ['websocket', 'polling'],
     reconnection: true,
