@@ -1,7 +1,15 @@
 const express = require('express');
-const { io: socketClient } = require('socket.io-client');
+const http = require('http');
+const path = require('path');
+const { Server } = require('socket.io');
+const { io: createClient } = require('socket.io-client');
 
 const app = express();
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+  cors: { origin: '*' },
+});
+
 const PORT = process.env.PORT || 3000;
 
 const FEEDS = {
@@ -52,7 +60,7 @@ function symbolOf(item) {
     .toLowerCase();
 }
 
-function titleOf(symbol, item) {
+function labelOf(symbol, item) {
   const sym = String(symbol || '').toLowerCase();
   if (sym === 'gold') return 'Gold';
   if (sym === 'silver') return 'Silver';
@@ -80,7 +88,7 @@ function standardizeItem(item, sourceKey) {
   const symbol = symbolOf(item);
   return {
     symbol,
-    name: item.Name || item.Symbol_Name || item.Symbol || titleOf(symbol, item),
+    name: item.Name || item.Symbol_Name || item.Symbol || labelOf(symbol, item),
     bid: toNum(item.Bid ?? item.Buy),
     ask: toNum(item.Ask ?? item.Sell),
     high: toNum(item.High),
@@ -94,10 +102,11 @@ function standardizeItem(item, sourceKey) {
   };
 }
 
-function visibleProducts(rows) {
+function visibleProducts(rows, sourceKey) {
   return rows
-    .filter(row => String(row?.IsDisplay).toLowerCase() === 'true')
-    .map(row => standardizeItem(row, 'gopnath'));
+    .filter((row) => String(row?.IsDisplay).toLowerCase() === 'true')
+    .map((row) => standardizeItem(row, sourceKey))
+    .filter(Boolean);
 }
 
 function handleFeed(sourceKey, data) {
@@ -110,8 +119,10 @@ function handleFeed(sourceKey, data) {
     state[sourceKey].lastSeen = new Date().toISOString();
 
     if (data && Array.isArray(data.Rate)) {
-      state[sourceKey].products = visibleProducts(data.Rate);
+      state[sourceKey].products = visibleProducts(data.Rate, sourceKey);
     }
+
+    publish();
   } catch (err) {
     console.log(`[${sourceKey}] parse error:`, err.message);
   }
@@ -119,7 +130,7 @@ function handleFeed(sourceKey, data) {
 
 function connectFeed(sourceKey) {
   const feed = FEEDS[sourceKey];
-  const socket = socketClient(feed.url, {
+  const socket = createClient(feed.url, {
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionAttempts: Infinity,
@@ -131,15 +142,18 @@ function connectFeed(sourceKey) {
     state[sourceKey].connected = true;
     socket.emit('room', feed.room);
     socket.emit('Client', feed.room);
+    publish();
   });
 
   socket.on('disconnect', () => {
     state[sourceKey].connected = false;
+    publish();
   });
 
   socket.on('connect_error', (err) => {
     state[sourceKey].connected = false;
     console.log(`[${sourceKey}] connect_error:`, err.message);
+    publish();
   });
 
   socket.on('ClientData', (data) => {
@@ -171,44 +185,42 @@ function chooseRaw(symbol) {
   return state.swayam.map[sym] || state.gopnath.map[sym] || null;
 }
 
+function sourceFor(symbol) {
+  const sym = String(symbol || '').toLowerCase();
+  if (sym === 'silver' || sym === 'silvernext') return 'swayam';
+  return state.gopnath.map[sym] ? 'gopnath' : 'swayam';
+}
+
 function buildRows(symbols) {
   return symbols
     .map((sym) => {
       const raw = chooseRaw(sym);
       if (!raw) return null;
-
-      const sourceKey = state.swayam.map[sym] ? 'swayam' : 'gopnath';
-      return standardizeItem(raw, sourceKey);
+      return standardizeItem(raw, sourceFor(sym));
     })
     .filter(Boolean);
 }
 
 function buildPayload() {
-  const futureRows = buildRows(['gold', 'silver', 'goldnext', 'silvernext']);
-  const spotRows = buildRows(['xauusd', 'xagusd', 'inrspot']);
-
-  const productRows = state.swayam.products.length
-    ? state.swayam.products
-    : state.gopnath.products;
-
-  const updatedAt = state.swayam.lastSeen || state.gopnath.lastSeen || null;
-
-  const summary = {
-    gold: standardizeItem(chooseRaw('gold'), 'gopnath'),
-    silver: standardizeItem(chooseRaw('silver'), 'swayam'),
-  };
-
   return {
-    updatedAt,
+    updatedAt: state.swayam.lastSeen || state.gopnath.lastSeen || null,
     connected: {
       gopnath: state.gopnath.connected,
       swayam: state.swayam.connected,
     },
-    summary,
-    futureRows,
-    spotRows,
-    productRows,
+    summary: {
+      gold: standardizeItem(chooseRaw('gold'), 'gopnath'),
+      silver: standardizeItem(chooseRaw('silver'), 'swayam'),
+    },
+    goldProducts: state.gopnath.products,
+    silverProducts: state.swayam.products,
+    futureRows: buildRows(['gold', 'silver', 'goldnext', 'silvernext']),
+    spotRows: buildRows(['xauusd', 'xagusd', 'inrspot']),
   };
+}
+
+function publish() {
+  io.emit('rates:update', buildPayload());
 }
 
 connectFeed('gopnath');
@@ -220,6 +232,10 @@ app.get('/api/rates', (req, res) => {
   res.json(buildPayload());
 });
 
-app.listen(PORT, () => {
+io.on('connection', (socket) => {
+  socket.emit('rates:update', buildPayload());
+});
+
+httpServer.listen(PORT, () => {
   console.log(`Dharamraj Silver Arts running on http://localhost:${PORT}`);
 });
