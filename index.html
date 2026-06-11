@@ -10,68 +10,48 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="wrap">
-    <header class="hero">
-      <p class="eyebrow">Live bullion rates</p>
-      <h1>Dharamraj Silver Arts</h1>
-      <p class="subtitle">Live market rates, updated instantly.</p>
-
-      <div class="hero-meta">
-        <div id="status" class="status">Connecting…</div>
-        <div id="lastUpdated" class="last-updated">Last updated: —</div>
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Live bullion dashboard</p>
+        <h1>Dharamraj Silver Arts</h1>
+        <p class="subtitle">Gold and silver rates pulled from external sources through a tiny proxy server and shown in a clean dashboard.</p>
       </div>
-    </header>
-
-    <section class="summary-panel">
-      <div class="section-head">
-        <div>
-          <h2>Products</h2>
-          <p>Live silver and gold product rates.</p>
-        </div>
+      <div class="hero-card">
+        <span class="label">Status</span>
+        <strong id="statusText">Connecting…</strong>
+        <small id="lastUpdated">Last updated: —</small>
       </div>
+    </section>
 
-      <article class="summary-card silver-card" id="silverCard">
-  <div class="summary-top">
-    <span class="chip chip-silver">Silver Products</span>
-  </div>
-
-  <div class="summary-value"></div>
-  <div class="summary-sub"></div>
-
-  <div class="mini-table-wrap" id="silverProductsBox"></div>
-</article>
-
-        <article class="summary-card gold-card" id="goldCard">
-  <div class="summary-top">
-    <span class="chip chip-gold">Gold Products</span>
-  </div>
-
-  <div class="summary-value"></div>
-  <div class="summary-sub"></div>
-
-  <div class="mini-table-wrap" id="goldProductsBox"></div>
-</article>
-
-    <section class="grid">
-      <article class="card">
-        <div class="card-head">
-          <h2>Future Rates</h2>
-          <span class="muted">Live future feed</span>
+    <section class="rates-grid">
+      <article class="rate-card gold">
+        <div class="card-top">
+          <span class="chip">Gold</span>
+          <span class="source" id="goldSource">Source: —</span>
         </div>
-        <div id="futureBox" class="live-box"></div>
+        <div class="rate-value" id="goldRate">—</div>
+        <p class="rate-note" id="goldNote">Waiting for live data…</p>
       </article>
 
-      <article class="card">
-        <div class="card-head">
-          <h2>Spot Rates</h2>
-          <span class="muted">Live spot feed</span>
+      <article class="rate-card silver">
+        <div class="card-top">
+          <span class="chip">Silver</span>
+          <span class="source" id="silverSource">Source: —</span>
         </div>
-        <div id="spotBox" class="live-box"></div>
+        <div class="rate-value" id="silverRate">—</div>
+        <p class="rate-note" id="silverNote">Waiting for live data…</p>
       </article>
+    </section>
+
+    <section class="footer-panel">
+      <button id="refreshBtn">Refresh now</button>
+      <p>
+        Rates are indicative and depend on the source pages you connect in the server file.
+      </p>
     </section>
   </main>
 
-  <script src="/socket.io/socket.io.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
