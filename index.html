@@ -4,32 +4,94 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dharamraj Silver Arts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
-  <script src="/socket.io.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 </head>
 <body>
   <main class="wrap">
     <header class="hero">
       <p class="eyebrow">Live bullion rates</p>
       <h1>Dharamraj Silver Arts</h1>
-      <p class="subtitle">Live gold and silver rates from the connected socket feed.</p>
-      <div id="status" class="status">Connecting…</div>
+      <p class="subtitle">Gold from Gopnath and silver from Swayam. All market tabs stay live.</p>
+
+      <div class="hero-meta">
+        <div id="status" class="status">Connecting…</div>
+        <div id="lastUpdated" class="last-updated">Last updated: —</div>
+      </div>
     </header>
+
+    <section class="summary-panel">
+      <div class="section-head">
+        <div>
+          <h2>Gold & Silver</h2>
+          <p>Swipe on mobile to move between gold and silver cards.</p>
+        </div>
+
+        <div class="summary-tabs" role="tablist" aria-label="Gold and silver cards">
+          <button class="summary-tab active" data-target="goldCard" type="button">Gold</button>
+          <button class="summary-tab" data-target="silverCard" type="button">Silver</button>
+        </div>
+      </div>
+
+      <div class="summary-scroller" id="summaryScroller">
+        <article class="summary-card" id="goldCard">
+          <div class="summary-top">
+            <span class="chip chip-gold">Gold</span>
+            <span class="source-pill" id="goldSource">Source: —</span>
+          </div>
+          <div class="summary-value" id="goldValue">—</div>
+          <div class="summary-sub" id="goldSub">Waiting for live data…</div>
+          <div class="mini-grid">
+            <div><span>Buy</span><strong id="goldBuy">—</strong></div>
+            <div><span>Sell</span><strong id="goldSell">—</strong></div>
+            <div><span>High</span><strong id="goldHigh">—</strong></div>
+            <div><span>Low</span><strong id="goldLow">—</strong></div>
+          </div>
+        </article>
+
+        <article class="summary-card" id="silverCard">
+          <div class="summary-top">
+            <span class="chip chip-silver">Silver</span>
+            <span class="source-pill" id="silverSource">Source: —</span>
+          </div>
+          <div class="summary-value" id="silverValue">—</div>
+          <div class="summary-sub" id="silverSub">Waiting for live data…</div>
+          <div class="mini-grid">
+            <div><span>Buy</span><strong id="silverBuy">—</strong></div>
+            <div><span>Sell</span><strong id="silverSell">—</strong></div>
+            <div><span>High</span><strong id="silverHigh">—</strong></div>
+            <div><span>Low</span><strong id="silverLow">—</strong></div>
+          </div>
+        </article>
+      </div>
+    </section>
 
     <section class="grid">
       <article class="card">
-        <h2>Future Rates</h2>
+        <div class="card-head">
+          <h2>Future Rates</h2>
+          <span class="muted">Gold from Gopnath · Silver from Swayam</span>
+        </div>
         <div id="futureBox" class="live-box"></div>
       </article>
 
       <article class="card">
-        <h2>Spot Rates</h2>
+        <div class="card-head">
+          <h2>Spot Rates</h2>
+          <span class="muted">Live market spot feed</span>
+        </div>
         <div id="spotBox" class="live-box"></div>
       </article>
     </section>
 
     <section class="card full">
-      <h2>Products</h2>
+      <div class="card-head">
+        <h2>Products</h2>
+        <span class="muted">Dealer products from the live feed</span>
+      </div>
       <div id="productBox" class="live-box"></div>
     </section>
   </main>
