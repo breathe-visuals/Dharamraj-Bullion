@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dharamraj Silver Arts</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="/socket.io.min.js"></script>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Live bullion rates</p>
+      <h1>Dharamraj Silver Arts</h1>
+      <p class="subtitle">Live gold and silver rates from the connected socket feed.</p>
+      <div id="status" class="status">Connecting…</div>
+    </header>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Future Rates</h2>
+        <div id="futureBox" class="live-box"></div>
+      </article>
+
+      <article class="card">
+        <h2>Spot Rates</h2>
+        <div id="spotBox" class="live-box"></div>
+      </article>
+    </section>
+
+    <section class="card full">
+      <h2>Products</h2>
+      <div id="productBox" class="live-box"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
