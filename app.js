@@ -1,68 +1,49 @@
-const socket = io({
-  transports: ['websocket', 'polling'],
-});
+/* ================================================================
+   Dharamraj Silver Arts — app.js
+   Socket.IO client. All live logic preserved.
+   ================================================================ */
 
+const socket = io({ transports: ['websocket', 'polling'] });
+
+/* DOM refs */
 const dom = {
-  status: document.getElementById('status'),
-  lastUpdated: document.getElementById('lastUpdated'),
-  futureBox: document.getElementById('futureBox'),
-  spotBox: document.getElementById('spotBox'),
-  goldProductsBox: document.getElementById('goldProductsBox'),
-  silverProductsBox: document.getElementById('silverProductsBox'),
-  summaryTabs: Array.from(document.querySelectorAll('.summary-tab')),
+  status:           document.getElementById('status'),
+  lastUpdated:      document.getElementById('lastUpdated'),
+  futureBox:        document.getElementById('futureBox'),
+  spotBox:          document.getElementById('spotBox'),
+  goldProductsBox:  document.getElementById('goldProductsBox'),
+  silverProductsBox:document.getElementById('silverProductsBox'),
+  slider:           document.getElementById('productSlider'),
+  dots:             Array.from(document.querySelectorAll('.dot')),
 };
 
-const previousState = {
-  summary: { gold: null, silver: null },
-  future: {},
-  spot: {},
-  goldProducts: {},
+/* Previous state for change detection */
+const prev = {
+  future:         {},
+  spot:           {},
+  goldProducts:   {},
   silverProducts: {},
 };
 
+/* Highlight duration store: key → { dir, expiresAt } */
+const highlights = {};
+
+/* ── Utilities ─────────────────────────────────────── */
 function toNum(val) {
-  if (val === undefined || val === null) return null;
-  const cleaned = String(val).replace(/,/g, '').trim();
-  if (cleaned === '' || cleaned === '--') return null;
-  const n = Number(cleaned);
+  if (val == null) return null;
+  const n = Number(String(val).replace(/,/g, '').trim());
   return Number.isFinite(n) ? n : null;
 }
 
-function formatInr(val) {
+function fmt(val) {
   const n = toNum(val);
-  if (n === null) return '—';
-  return `₹${n.toLocaleString('en-IN')}`;
+  return n === null ? '—' : `₹${n.toLocaleString('en-IN')}`;
 }
 
-const highlightDurations = {};
-
-function changeClass(current, previous, key) {
-  const cur = toNum(current);
-  const prev = toNum(previous);
-  const now = Date.now();
-  
-  if (cur !== null && prev !== null) {
-    if (cur > prev) {
-      highlightDurations[key] = { dir: 'up', expiresAt: now + 3000 };
-    } else if (cur < prev) {
-      highlightDurations[key] = { dir: 'down', expiresAt: now + 3000 };
-    }
-  }
-  
-  const active = highlightDurations[key];
-  if (active && now < active.expiresAt) {
-    return active.dir;
-  }
-  return 'same';
-}
-
-function escapeHtml(text) {
-  return String(text)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
+function escape(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function itemKey(row) {
@@ -72,190 +53,151 @@ function itemKey(row) {
 function rowToPlain(row) {
   return {
     symbol: String(row?.symbol || '').toLowerCase(),
-    name: row?.name || '',
-    bid: toNum(row?.bid),
-    ask: toNum(row?.ask),
-    high: toNum(row?.high),
-    low: toNum(row?.low),
-    time: row?.time || '',
+    name:   row?.name || '',
+    bid:    toNum(row?.bid),
+    ask:    toNum(row?.ask),
+    high:   toNum(row?.high),
+    low:    toNum(row?.low),
   };
 }
 
-function symbolLabel(symbol, fallbackName) {
-  const sym = String(symbol || '').toLowerCase();
-  if (sym === 'gold') return 'Gold';
-  if (sym === 'silver') return 'Silver';
-  if (sym === 'goldnext') return 'Gold Next';
-  if (sym === 'silvernext') return 'Silver Next';
-  if (sym === 'xauusd') return 'XAU/USD';
-  if (sym === 'xagusd') return 'XAG/USD';
-  if (sym === 'inrspot') return 'INR Spot';
-  return fallbackName || String(symbol || '').toUpperCase();
-}
-
-function setStatus(text) {
-  dom.status.textContent = text;
-}
-
-function updateTime(updatedAt) {
-  const stamp = updatedAt ? new Date(updatedAt) : null;
-  dom.lastUpdated.textContent = `Last updated: ${stamp ? stamp.toLocaleString() : '—'}`;
-}
-
-function renderSummaryCard(current, previous, title) {
-  const item = current ? rowToPlain(current) : null;
-  const prev = previous ? rowToPlain(previous) : null;
-  const value = item ? (item.ask ?? item.bid) : null;
-  const keyPrefix = title.toLowerCase();
-
-  return {
-    value: value,
-    buy: item?.bid ?? null,
-    sell: item?.ask ?? null,
-    high: item?.high ?? null,
-    low: item?.low ?? null,
-    title,
-    diffClass: changeClass(value, prev ? (prev.ask ?? prev.bid) : null, keyPrefix + '-diff'),
-    buyClass: changeClass(item?.bid, prev?.bid, keyPrefix + '-buy'),
-    sellClass: changeClass(item?.ask, prev?.ask, keyPrefix + '-sell'),
-    highClass: changeClass(item?.high, prev?.high, keyPrefix + '-high'),
-    lowClass: changeClass(item?.low, prev?.low, keyPrefix + '-low'),
+function symbolLabel(sym, fallback) {
+  const s = String(sym || '').toLowerCase();
+  const map = {
+    gold: 'Gold', silver: 'Silver',
+    goldnext: 'Gold Next', silvernext: 'Silver Next',
+    xauusd: 'XAU/USD', xagusd: 'XAG/USD', inrspot: 'INR Spot',
   };
+  return map[s] || fallback || s.toUpperCase();
 }
 
-function renderMiniTable(rows, previousMap, emptyMessage) {
-  if (!rows || !rows.length) {
-    return `<p class="empty">${emptyMessage}</p>`;
+/* ── Change-class with 3-second linger ─────────────── */
+function dirClass(cur, prv, key) {
+  const c = toNum(cur), p = toNum(prv);
+  const now = Date.now();
+
+  if (c !== null && p !== null) {
+    if (c > p) highlights[key] = { dir: 'up',   expiresAt: now + 3000 };
+    else if (c < p) highlights[key] = { dir: 'down', expiresAt: now + 3000 };
   }
 
-  const body = rows.map((row) => {
-    const current = rowToPlain(row);
-    const prev = previousMap[itemKey(current)] || {};
-    const k = itemKey(current);
+  const h = highlights[key];
+  return (h && now < h.expiresAt) ? h.dir : 'same';
+}
+
+/* ── Table builders ────────────────────────────────── */
+function buildRows(rows, prevMap, type) {
+  if (!rows || !rows.length) return '<p class="empty-msg">No data yet.</p>';
+
+  const colLabel = type === 'mini' ? 'Product' : 'Symbol';
+
+  const trs = rows.map(row => {
+    const cur = rowToPlain(row);
+    const prv = prevMap[itemKey(cur)] || {};
+    const k   = itemKey(cur);
+
+    const bidCls  = dirClass(cur.bid,  prv.bid,  k + '-bid');
+    const askCls  = dirClass(cur.ask,  prv.ask,  k + '-ask');
 
     return `
       <tr>
-        <td class="rowhead">${escapeHtml(symbolLabel(current.symbol, current.name))}</td>
-        <td><span class="rate-chip ${changeClass(current.bid, prev.bid, k+'-bid')}">${formatInr(current.bid)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.ask, prev.ask, k+'-ask')}">${formatInr(current.ask)}</span></td>
-        <td><span class="rate-chip text-green">${formatInr(current.high)}</span></td>
-        <td><span class="rate-chip text-red">${formatInr(current.low)}</span></td>
-      </tr>
-    `;
+        <td class="rowhead">${escape(symbolLabel(cur.symbol, cur.name))}</td>
+        <td><span class="chip-val ${bidCls}">${fmt(cur.bid)}</span></td>
+        <td><span class="chip-val ${askCls}">${fmt(cur.ask)}</span></td>
+        <td><span class="chip-val always-green">${fmt(cur.high)}</span></td>
+        <td><span class="chip-val always-red">${fmt(cur.low)}</span></td>
+      </tr>`;
   }).join('');
 
   return `
     <table>
       <thead>
         <tr>
-          <th>Product</th>
-          <th>Buy</th>
-          <th>Sell</th>
-          <th>High</th>
-          <th>Low</th>
+          <th>${escape(colLabel)}</th>
+          <th>Buy</th><th>Sell</th>
+          <th>High</th><th>Low</th>
         </tr>
       </thead>
-      <tbody>${body}</tbody>
-    </table>
-  `;
+      <tbody>${trs}</tbody>
+    </table>`;
 }
 
-function renderRateTable(rows, previousMap, emptyMessage) {
-  if (!rows || !rows.length) {
-    return `<p class="empty">${emptyMessage}</p>`;
-  }
-
-  const body = rows.map((row) => {
-    const current = rowToPlain(row);
-    const prev = previousMap[itemKey(current)] || {};
-    const k = itemKey(current);
-
-    return `
-      <tr>
-        <td class="rowhead">${escapeHtml(symbolLabel(current.symbol, current.name))}</td>
-        <td><span class="rate-chip ${changeClass(current.bid, prev.bid, k+'-bid')}">${formatInr(current.bid)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.ask, prev.ask, k+'-ask')}">${formatInr(current.ask)}</span></td>
-        <td><span class="rate-chip text-green">${formatInr(current.high)}</span></td>
-        <td><span class="rate-chip text-red">${formatInr(current.low)}</span></td>
-      </tr>
-    `;
-  }).join('');
-
-  return `
-    <table>
-      <thead>
-        <tr>
-          <th>Symbol</th>
-          <th>Buy</th>
-          <th>Sell</th>
-          <th>High</th>
-          <th>Low</th>
-        </tr>
-      </thead>
-      <tbody>${body}</tbody>
-    </table>
-  `;
+function updatePrevMap(rows) {
+  const map = {};
+  (rows || []).forEach(r => { const k = itemKey(r); if (k) map[k] = rowToPlain(r); });
+  return map;
 }
 
+/* ── Render all sections ───────────────────────────── */
 function renderAll(data) {
-  const gold = data?.summary?.gold || null;
-  const silver = data?.summary?.silver || null;
+  /* Gold / silver product tables */
+  dom.goldProductsBox.innerHTML  = buildRows(data?.goldProducts   || [], prev.goldProducts,   'mini');
+  dom.silverProductsBox.innerHTML= buildRows(data?.silverProducts || [], prev.silverProducts,  'mini');
 
-  const goldView = renderSummaryCard(gold, previousState.summary.gold, 'Gold');
-  const silverView = renderSummaryCard(silver, previousState.summary.silver, 'Silver');
+  /* Future & spot rate tables */
+  dom.futureBox.innerHTML = buildRows(data?.futureRows || [], prev.future, 'rate');
+  dom.spotBox.innerHTML   = buildRows(data?.spotRows   || [], prev.spot,   'rate');
 
-  document.getElementById('goldCard').querySelector('.mini-table-wrap').innerHTML =
-    renderMiniTable(data?.goldProducts || [], previousState.goldProducts, 'No gold products yet.');
+  /* Advance previous-state */
+  prev.goldProducts   = updatePrevMap(data?.goldProducts);
+  prev.silverProducts = updatePrevMap(data?.silverProducts);
+  prev.future         = updatePrevMap(data?.futureRows);
+  prev.spot           = updatePrevMap(data?.spotRows);
 
-  document.getElementById('silverCard').querySelector('.mini-table-wrap').innerHTML =
-    renderMiniTable(data?.silverProducts || [], previousState.silverProducts, 'No silver products yet.');
+  /* Timestamp */
+  const ts = data?.updatedAt ? new Date(data.updatedAt) : null;
+  dom.lastUpdated.textContent = ts
+    ? ts.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    : '—';
 
-  dom.futureBox.innerHTML = renderRateTable(
-    data?.futureRows || [],
-    previousState.future,
-    'No future data yet.'
-  );
-
-  dom.spotBox.innerHTML = renderRateTable(
-    data?.spotRows || [],
-    previousState.spot,
-    'No spot data yet.'
-  );
-
-  previousState.summary.gold = gold ? { ...gold } : null;
-  previousState.summary.silver = silver ? { ...silver } : null;
-  previousState.future = Object.fromEntries((data?.futureRows || []).map((row) => [itemKey(row), rowToPlain(row)]));
-  previousState.spot = Object.fromEntries((data?.spotRows || []).map((row) => [itemKey(row), rowToPlain(row)]));
-  previousState.goldProducts = Object.fromEntries((data?.goldProducts || []).map((row) => [itemKey(row), rowToPlain(row)]));
-  previousState.silverProducts = Object.fromEntries((data?.silverProducts || []).map((row) => [itemKey(row), rowToPlain(row)]));
-
-  updateTime(data?.updatedAt);
-  setStatus(
-    data?.connected?.gopnath || data?.connected?.swayam
-      ? 'Live'
-      : 'Connecting…'
-  );
+  /* Connection status */
+  const live = data?.connected?.gopnath || data?.connected?.swayam;
+  setStatus(live ? 'live' : 'connecting');
 }
 
-socket.on('connect', () => {
-  setStatus('Connected');
-});
+/* ── Status indicator ──────────────────────────────── */
+function setStatus(state) {
+  dom.status.className = 'status-dot ' + state;
+  dom.status.title     = state === 'live' ? 'Connected – live' : 'Connecting…';
+}
 
-socket.on('rates:update', (data) => {
-  renderAll(data);
-});
+/* ── Socket events ─────────────────────────────────── */
+socket.on('connect',       () => setStatus('live'));
+socket.on('disconnect',    () => setStatus('disconnected'));
+socket.on('connect_error', () => setStatus('disconnected'));
+socket.on('rates:update',  renderAll);
 
-socket.on('disconnect', () => {
-  setStatus('Disconnected');
-});
+/* ── Slider swipe / dot sync ───────────────────────── */
+(function initSlider() {
+  const track = dom.slider;
+  if (!track) return;
 
-dom.summaryTabs.forEach((btn) => {
-  btn.addEventListener('click', () => {
-    const targetId = btn.dataset.target;
-    const card = document.getElementById(targetId);
-    if (!card) return;
+  function updateDots(index) {
+    dom.dots.forEach((d, i) => d.classList.toggle('active', i === index));
+  }
 
-    dom.summaryTabs.forEach((b) => b.classList.toggle('active', b === btn));
-    card.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+  /* Dot click → scroll to card */
+  dom.dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      const cards = track.querySelectorAll('.slider-card');
+      if (cards[i]) cards[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    });
   });
-});
+
+  /* Scroll → update dots */
+  let scrollTimer;
+  track.addEventListener('scroll', () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => {
+      const cards = Array.from(track.querySelectorAll('.slider-card'));
+      const scrollLeft = track.scrollLeft;
+      let closest = 0;
+      let minDist = Infinity;
+      cards.forEach((card, i) => {
+        const dist = Math.abs(card.offsetLeft - scrollLeft);
+        if (dist < minDist) { minDist = dist; closest = i; }
+      });
+      updateDots(closest);
+    }, 50);
+  }, { passive: true });
+})();

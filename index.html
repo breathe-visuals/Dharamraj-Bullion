@@ -2,76 +2,128 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dharamraj Silver Arts</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="apple-touch-icon" sizes="180x180" href="Media/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="Media/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="Media/favicon-16x16.png">
-  <link rel="manifest" href="Media/site.webmanifest">
-  <link rel="shortcut icon" href="Media/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#003336" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Dharamraj" />
+  <meta name="description" content="Dharamraj Silver Arts – Live gold and silver bullion rates, updated instantly." />
+
+  <title>Dharamraj Silver Arts – Live Rates</title>
+
+  <!-- Icons & Manifest -->
+  <link rel="icon" href="Media/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="Media/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="Media/favicon-16x16.png" />
+  <link rel="apple-touch-icon" href="Media/apple-touch-icon.png" />
+  <link rel="manifest" href="Media/site.webmanifest" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main class="wrap">
-    <header class="hero">
-      <div style="text-align: center;">
-        <img src="Media/Dharamraj_Logo-1000x1000.png" alt="Dharamraj Logo" style="width: 160px; height: auto; margin-bottom: 8px;" />
-        <p class="subtitle" style="margin-top: 0;">Live market rates, updated instantly.</p>
-      </div>
 
-      <div class="hero-meta" style="justify-content: center;">
-        <div id="status" class="status">Connecting…</div>
-        <div id="lastUpdated" class="last-updated">Last updated: —</div>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+      <img src="Media/Dharamraj_Logo-1000x1000.png" alt="Dharamraj Silver Arts" class="header-logo" />
+      <div class="header-right">
+        <span id="status" class="status-dot" title="Connection status"></span>
+        <div id="lastUpdated" class="last-updated">—</div>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <section class="summary-panel">
-      <div class="section-head">
-        <div>
-          <h2>Products</h2>
-          <p>Live silver and gold product rates.</p>
+  <main class="page">
+
+    <!-- PRODUCT SLIDER SECTION -->
+    <section class="section" aria-label="Product Rates">
+      <div class="section-label">
+        <span class="section-title">Product Rates</span>
+        <div class="slider-dots" aria-hidden="true">
+          <span class="dot active" data-index="0"></span>
+          <span class="dot" data-index="1"></span>
         </div>
       </div>
 
-      <div class="grid">
-        <article class="summary-card silver-card" id="silverCard">
-          <div class="summary-top">
-            <span class="chip chip-silver">Silver Products</span>
+      <div class="slider-track" id="productSlider">
+        <!-- Silver Card -->
+        <article class="slider-card" id="silverCard">
+          <div class="card-header">
+            <span class="metal-badge silver-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              Silver Products
+            </span>
           </div>
-          <div class="mini-table-wrap" id="silverProductsBox"></div>
+          <div class="table-wrap" id="silverProductsBox">
+            <p class="empty-msg">Connecting to live feed…</p>
+          </div>
         </article>
 
-        <article class="summary-card gold-card" id="goldCard">
-          <div class="summary-top">
-            <span class="chip chip-gold">Gold Products</span>
+        <!-- Gold Card -->
+        <article class="slider-card" id="goldCard">
+          <div class="card-header">
+            <span class="metal-badge gold-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              Gold Products
+            </span>
           </div>
-          <div class="mini-table-wrap" id="goldProductsBox"></div>
+          <div class="table-wrap" id="goldProductsBox">
+            <p class="empty-msg">Connecting to live feed…</p>
+          </div>
         </article>
       </div>
-
-    <section class="grid">
-      <article class="card">
-        <div class="card-head">
-          <h2>Future Rates</h2>
-          <span class="muted">Live future feed</span>
-        </div>
-        <div id="futureBox" class="live-box"></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head">
-          <h2>Spot Rates</h2>
-          <span class="muted">Live spot feed</span>
-        </div>
-        <div id="spotBox" class="live-box"></div>
-      </article>
     </section>
+
+    <!-- RATES GRID -->
+    <div class="rates-grid">
+      <!-- Future Rates -->
+      <section class="rate-card" aria-label="Future Rates">
+        <div class="card-header">
+          <h2 class="card-title">Future Rates</h2>
+          <span class="live-pill">
+            <span class="live-dot"></span>Live
+          </span>
+        </div>
+        <div class="table-wrap" id="futureBox">
+          <p class="empty-msg">Connecting…</p>
+        </div>
+      </section>
+
+      <!-- Spot Rates -->
+      <section class="rate-card" aria-label="Spot Rates">
+        <div class="card-header">
+          <h2 class="card-title">Spot Rates</h2>
+          <span class="live-pill">
+            <span class="live-dot"></span>Live
+          </span>
+        </div>
+        <div class="table-wrap" id="spotBox">
+          <p class="empty-msg">Connecting…</p>
+        </div>
+      </section>
+    </div>
+
   </main>
+
+  <footer class="site-footer">
+    <p>© 2025 Dharamraj Silver Arts. All rates are indicative.</p>
+  </footer>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="app.js"></script>
+  <script>
+    // Service Worker registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
 </body>
 </html>
