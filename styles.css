@@ -299,11 +299,33 @@ th {
 }
 
 @media (max-width: 560px) {
-  .summary-tabs {
-    width: 100%;
+  .wrap {
+    width: calc(100% - 16px);
   }
 
-  .summary-tab {
-    flex: 1;
+  .card, .summary-card {
+    padding: 12px;
+  }
+
+  td, th {
+    padding: 6px 2px;
+    white-space: normal;
+  }
+
+  .rate-chip {
+    min-width: 0;
+    padding: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    letter-spacing: -0.5px;
+  }
+
+  th {
+    font-size: 0.7rem;
+  }
+
+  .rowhead {
+    font-size: 0.75rem;
+    word-break: break-word;
   }
 }

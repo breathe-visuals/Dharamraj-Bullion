@@ -34,12 +34,25 @@ function formatInr(val) {
   return `₹${n.toLocaleString('en-IN')}`;
 }
 
-function changeClass(current, previous) {
+const highlightDurations = {};
+
+function changeClass(current, previous, key) {
   const cur = toNum(current);
   const prev = toNum(previous);
-  if (cur === null || prev === null) return 'same';
-  if (cur > prev) return 'up';
-  if (cur < prev) return 'down';
+  const now = Date.now();
+  
+  if (cur !== null && prev !== null) {
+    if (cur > prev) {
+      highlightDurations[key] = { dir: 'up', expiresAt: now + 3000 };
+    } else if (cur < prev) {
+      highlightDurations[key] = { dir: 'down', expiresAt: now + 3000 };
+    }
+  }
+  
+  const active = highlightDurations[key];
+  if (active && now < active.expiresAt) {
+    return active.dir;
+  }
   return 'same';
 }
 
@@ -93,6 +106,7 @@ function renderSummaryCard(current, previous, title) {
   const item = current ? rowToPlain(current) : null;
   const prev = previous ? rowToPlain(previous) : null;
   const value = item ? (item.ask ?? item.bid) : null;
+  const keyPrefix = title.toLowerCase();
 
   return {
     value: value,
@@ -101,11 +115,11 @@ function renderSummaryCard(current, previous, title) {
     high: item?.high ?? null,
     low: item?.low ?? null,
     title,
-    diffClass: changeClass(value, prev ? (prev.ask ?? prev.bid) : null),
-    buyClass: changeClass(item?.bid, prev?.bid),
-    sellClass: changeClass(item?.ask, prev?.ask),
-    highClass: changeClass(item?.high, prev?.high),
-    lowClass: changeClass(item?.low, prev?.low),
+    diffClass: changeClass(value, prev ? (prev.ask ?? prev.bid) : null, keyPrefix + '-diff'),
+    buyClass: changeClass(item?.bid, prev?.bid, keyPrefix + '-buy'),
+    sellClass: changeClass(item?.ask, prev?.ask, keyPrefix + '-sell'),
+    highClass: changeClass(item?.high, prev?.high, keyPrefix + '-high'),
+    lowClass: changeClass(item?.low, prev?.low, keyPrefix + '-low'),
   };
 }
 
@@ -117,14 +131,15 @@ function renderMiniTable(rows, previousMap, emptyMessage) {
   const body = rows.map((row) => {
     const current = rowToPlain(row);
     const prev = previousMap[itemKey(current)] || {};
+    const k = itemKey(current);
 
     return `
       <tr>
         <td class="rowhead">${escapeHtml(symbolLabel(current.symbol, current.name))}</td>
-        <td><span class="rate-chip ${changeClass(current.bid, prev.bid)}">${formatInr(current.bid)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.ask, prev.ask)}">${formatInr(current.ask)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.high, prev.high)}">${formatInr(current.high)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.low, prev.low)}">${formatInr(current.low)}</span></td>
+        <td><span class="rate-chip ${changeClass(current.bid, prev.bid, k+'-bid')}">${formatInr(current.bid)}</span></td>
+        <td><span class="rate-chip ${changeClass(current.ask, prev.ask, k+'-ask')}">${formatInr(current.ask)}</span></td>
+        <td><span class="rate-chip ${changeClass(current.high, prev.high, k+'-high')}">${formatInr(current.high)}</span></td>
+        <td><span class="rate-chip ${changeClass(current.low, prev.low, k+'-low')}">${formatInr(current.low)}</span></td>
       </tr>
     `;
   }).join('');
@@ -153,14 +168,15 @@ function renderRateTable(rows, previousMap, emptyMessage) {
   const body = rows.map((row) => {
     const current = rowToPlain(row);
     const prev = previousMap[itemKey(current)] || {};
+    const k = itemKey(current);
 
     return `
       <tr>
         <td class="rowhead">${escapeHtml(symbolLabel(current.symbol, current.name))}</td>
-        <td><span class="rate-chip ${changeClass(current.bid, prev.bid)}">${formatInr(current.bid)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.ask, prev.ask)}">${formatInr(current.ask)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.high, prev.high)}">${formatInr(current.high)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.low, prev.low)}">${formatInr(current.low)}</span></td>
+        <td><span class="rate-chip ${changeClass(current.bid, prev.bid, k+'-bid')}">${formatInr(current.bid)}</span></td>
+        <td><span class="rate-chip ${changeClass(current.ask, prev.ask, k+'-ask')}">${formatInr(current.ask)}</span></td>
+        <td><span class="rate-chip ${changeClass(current.high, prev.high, k+'-high')}">${formatInr(current.high)}</span></td>
+        <td><span class="rate-chip ${changeClass(current.low, prev.low, k+'-low')}">${formatInr(current.low)}</span></td>
       </tr>
     `;
   }).join('');
