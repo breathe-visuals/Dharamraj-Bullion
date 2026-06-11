@@ -1,6 +1,6 @@
 {
   "name": "dharamraj-silver-arts",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Dharamraj Silver Arts live bullion dashboard",
   "main": "server.js",
   "scripts": {
@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "express": "^4.21.2",
+    "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3"
   }
 }
