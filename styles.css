@@ -6,9 +6,14 @@
   --muted: #aab3c2;
   --line: rgba(255,255,255,.08);
   --accent: #7aa2ff;
-  --accent2: #39d98a;
   --gold: #d9b25f;
   --silver: #b7c0cb;
+  --up-bg: rgba(57, 217, 138, 0.16);
+  --up-fg: #51f08d;
+  --down-bg: rgba(255, 67, 67, 0.16);
+  --down-fg: #ff6b6b;
+  --same-bg: rgba(255,255,255,0.04);
+  --same-fg: var(--text);
   --shadow: 0 20px 60px rgba(0,0,0,.35);
 }
 
@@ -153,8 +158,7 @@ h1 {
   margin-bottom: 18px;
 }
 
-.chip,
-.source-pill {
+.chip {
   display: inline-flex;
   align-items: center;
   padding: 8px 12px;
@@ -173,17 +177,40 @@ h1 {
   color: var(--silver);
 }
 
-.source-pill {
-  color: var(--muted);
-  background: rgba(255,255,255,.03);
-  border: 1px solid var(--line);
-}
-
 .summary-value {
   font-size: clamp(2rem, 5vw, 3.4rem);
   font-weight: 800;
   letter-spacing: -0.05em;
   line-height: 1;
+}
+
+.price {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 16px;
+  background: var(--same-bg);
+}
+
+.price.up,
+.mini-value.up,
+.rate-chip.up {
+  background: var(--up-bg);
+  color: var(--up-fg);
+}
+
+.price.down,
+.mini-value.down,
+.rate-chip.down {
+  background: var(--down-bg);
+  color: var(--down-fg);
+}
+
+.price.same,
+.mini-value.same,
+.rate-chip.same {
+  background: var(--same-bg);
+  color: var(--same-fg);
 }
 
 .summary-sub {
@@ -258,32 +285,20 @@ th {
   font-weight: 700;
 }
 
-.bad {
-  color: #ff7f7f;
-}
-
-.good {
-  color: #8dff9f;
-}
-
 .rate-chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-width: 86px;
   padding: 6px 10px;
   border-radius: 999px;
-  font-size: .78rem;
+  font-size: .82rem;
   font-weight: 700;
-  color: var(--text);
-  background: rgba(255,255,255,.05);
-  border: 1px solid var(--line);
 }
 
-.rate-chip.gopnath {
-  background: rgba(122,162,255,.12);
-}
-
-.rate-chip.swayam {
-  background: rgba(57,217,138,.12);
+.empty {
+  color: var(--muted);
+  margin: 8px 0 0;
 }
 
 @media (max-width: 860px) {
@@ -305,10 +320,6 @@ th {
     scroll-snap-align: start;
   }
 
-  .summary-tabs {
-    display: inline-flex;
-  }
-
   .section-head,
   .card-head {
     flex-direction: column;
@@ -318,7 +329,6 @@ th {
 @media (max-width: 560px) {
   .summary-tabs {
     width: 100%;
-    justify-content: stretch;
   }
 
   .summary-tab {
