@@ -14,7 +14,7 @@
     <header class="hero">
       <p class="eyebrow">Live bullion rates</p>
       <h1>Dharamraj Silver Arts</h1>
-      <p class="subtitle">Live market rates, cleaned up for your customers.</p>
+      <p class="subtitle">Live market rates, updated instantly.</p>
 
       <div class="hero-meta">
         <div id="status" class="status">Connecting…</div>
@@ -25,43 +25,29 @@
     <section class="summary-panel">
       <div class="section-head">
         <div>
-          <h2>Gold & Silver</h2>
-          <p>Swipe on mobile to switch between gold and silver.</p>
+          <h2>Product Slider</h2>
+          <p>Swipe on mobile to switch between silver and gold product tables.</p>
         </div>
 
-        <div class="summary-tabs" role="tablist" aria-label="Gold and silver cards">
-          <button class="summary-tab active" data-target="goldCard" type="button">Gold</button>
-          <button class="summary-tab" data-target="silverCard" type="button">Silver</button>
+        <div class="summary-tabs" role="tablist" aria-label="Product slider">
+          <button class="summary-tab active" data-target="silverCard" type="button">Silver</button>
+          <button class="summary-tab" data-target="goldCard" type="button">Gold</button>
         </div>
       </div>
 
       <div class="summary-scroller" id="summaryScroller">
-        <article class="summary-card" id="goldCard">
+        <article class="summary-card silver-card" id="silverCard">
           <div class="summary-top">
-            <span class="chip chip-gold">Gold</span>
+            <span class="chip chip-silver">Silver Products</span>
           </div>
-          <div class="summary-value" id="goldValue">—</div>
-          <div class="summary-sub" id="goldSub">Waiting for live data…</div>
-          <div class="mini-grid">
-            <div><span>Buy</span><strong id="goldBuy">—</strong></div>
-            <div><span>Sell</span><strong id="goldSell">—</strong></div>
-            <div><span>High</span><strong id="goldHigh">—</strong></div>
-            <div><span>Low</span><strong id="goldLow">—</strong></div>
-          </div>
+          <div class="mini-table-wrap" id="silverProductsBox"></div>
         </article>
 
-        <article class="summary-card" id="silverCard">
+        <article class="summary-card gold-card" id="goldCard">
           <div class="summary-top">
-            <span class="chip chip-silver">Silver</span>
+            <span class="chip chip-gold">Gold Products</span>
           </div>
-          <div class="summary-value" id="silverValue">—</div>
-          <div class="summary-sub" id="silverSub">Waiting for live data…</div>
-          <div class="mini-grid">
-            <div><span>Buy</span><strong id="silverBuy">—</strong></div>
-            <div><span>Sell</span><strong id="silverSell">—</strong></div>
-            <div><span>High</span><strong id="silverHigh">—</strong></div>
-            <div><span>Low</span><strong id="silverLow">—</strong></div>
-          </div>
+          <div class="mini-table-wrap" id="goldProductsBox"></div>
         </article>
       </div>
     </section>
@@ -70,7 +56,7 @@
       <article class="card">
         <div class="card-head">
           <h2>Future Rates</h2>
-          <span class="muted">Live market feed</span>
+          <span class="muted">Live future feed</span>
         </div>
         <div id="futureBox" class="live-box"></div>
       </article>
@@ -78,21 +64,14 @@
       <article class="card">
         <div class="card-head">
           <h2>Spot Rates</h2>
-          <span class="muted">Live market spot feed</span>
+          <span class="muted">Live spot feed</span>
         </div>
         <div id="spotBox" class="live-box"></div>
       </article>
     </section>
-
-    <section class="card full">
-      <div class="card-head">
-        <h2>Products</h2>
-        <span class="muted">Live dealer products</span>
-      </div>
-      <div id="productBox" class="live-box"></div>
-    </section>
   </main>
 
+  <script src="/socket.io/socket.io.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
