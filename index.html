@@ -8,14 +8,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
-  <script src="./socket.io.min.js"></script>
 </head>
 <body>
   <main class="wrap">
     <header class="hero">
       <p class="eyebrow">Live bullion rates</p>
       <h1>Dharamraj Silver Arts</h1>
-      <p class="subtitle">Gold from Gopnath and silver from Swayam. All market tabs stay live.</p>
+      <p class="subtitle">Live market rates, cleaned up for your customers.</p>
 
       <div class="hero-meta">
         <div id="status" class="status">Connecting…</div>
@@ -27,7 +26,7 @@
       <div class="section-head">
         <div>
           <h2>Gold & Silver</h2>
-          <p>Swipe on mobile to move between gold and silver cards.</p>
+          <p>Swipe on mobile to switch between gold and silver.</p>
         </div>
 
         <div class="summary-tabs" role="tablist" aria-label="Gold and silver cards">
@@ -40,7 +39,6 @@
         <article class="summary-card" id="goldCard">
           <div class="summary-top">
             <span class="chip chip-gold">Gold</span>
-            <span class="source-pill" id="goldSource">Source: —</span>
           </div>
           <div class="summary-value" id="goldValue">—</div>
           <div class="summary-sub" id="goldSub">Waiting for live data…</div>
@@ -55,7 +53,6 @@
         <article class="summary-card" id="silverCard">
           <div class="summary-top">
             <span class="chip chip-silver">Silver</span>
-            <span class="source-pill" id="silverSource">Source: —</span>
           </div>
           <div class="summary-value" id="silverValue">—</div>
           <div class="summary-sub" id="silverSub">Waiting for live data…</div>
@@ -73,7 +70,7 @@
       <article class="card">
         <div class="card-head">
           <h2>Future Rates</h2>
-          <span class="muted">Gold from Gopnath · Silver from Swayam</span>
+          <span class="muted">Live market feed</span>
         </div>
         <div id="futureBox" class="live-box"></div>
       </article>
@@ -90,7 +87,7 @@
     <section class="card full">
       <div class="card-head">
         <h2>Products</h2>
-        <span class="muted">Dealer products from the live feed</span>
+        <span class="muted">Live dealer products</span>
       </div>
       <div id="productBox" class="live-box"></div>
     </section>
