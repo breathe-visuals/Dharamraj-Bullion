@@ -147,7 +147,7 @@ h1 {
 
 .summary-card {
   padding: 20px;
-  min-height: 240px;
+  min-height: 260px;
 }
 
 .summary-top {
@@ -193,21 +193,18 @@ h1 {
 }
 
 .price.up,
-.mini-value.up,
 .rate-chip.up {
   background: var(--up-bg);
   color: var(--up-fg);
 }
 
 .price.down,
-.mini-value.down,
 .rate-chip.down {
   background: var(--down-bg);
   color: var(--down-fg);
 }
 
 .price.same,
-.mini-value.same,
 .rate-chip.same {
   background: var(--same-bg);
   color: var(--same-fg);
@@ -219,29 +216,9 @@ h1 {
   min-height: 2.4em;
 }
 
-.mini-grid {
-  margin-top: 18px;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.mini-grid div {
-  background: rgba(255,255,255,.03);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 12px;
-}
-
-.mini-grid span {
-  display: block;
-  color: var(--muted);
-  font-size: .78rem;
-  margin-bottom: 6px;
-}
-
-.mini-grid strong {
-  font-size: 1rem;
+.mini-table-wrap {
+  margin-top: 14px;
+  overflow-x: auto;
 }
 
 .grid {
@@ -253,10 +230,6 @@ h1 {
 .card {
   padding: 20px;
   min-height: 220px;
-}
-
-.card.full {
-  margin-top: 16px;
 }
 
 .live-box {
@@ -302,8 +275,7 @@ th {
 }
 
 @media (max-width: 860px) {
-  .grid,
-  .mini-grid {
+  .grid {
     grid-template-columns: 1fr;
   }
 
