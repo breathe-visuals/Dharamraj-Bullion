@@ -2,8 +2,9 @@
   --bg: #ffffff;
   --panel: #ffffff;
   --panel2: #f4f7fb;
-  --text: #003336;
-  --muted: rgba(0, 51, 54, 0.6);
+  --brand: #003336;
+  --text: #1f2937;
+  --muted: rgba(31, 41, 55, 0.6);
   --line: #d9b25f;
   --accent: #003336;
   --gold: #d9b25f;
@@ -56,7 +57,7 @@ body {
   margin: 0 0 8px;
   text-transform: uppercase;
   letter-spacing: .18em;
-  color: var(--accent);
+  color: var(--brand);
   font-size: .78rem;
   font-weight: 700;
 }
@@ -105,8 +106,8 @@ h1 {
 .section-head h2,
 .card-head h2 {
   margin: 0;
-  font-size: 1.15rem;
-  color: var(--text);
+  font-size: 1.25rem;
+  color: var(--brand);
 }
 
 .section-head p {
@@ -146,7 +147,8 @@ h1 {
 }
 
 .summary-card {
-  padding: 20px;
+  padding: 24px;
+  height: 100%;
 }
 
 .summary-top {
@@ -200,8 +202,11 @@ h1 {
 .price.same,
 .rate-chip.same {
   background: var(--same-bg);
-  color: var(--same-fg);
+  color: var(--text);
 }
+
+.text-green { color: var(--up-fg); font-weight: 700; }
+.text-red { color: var(--down-fg); font-weight: 700; }
 
 
 
@@ -217,8 +222,8 @@ h1 {
 }
 
 .card {
-  padding: 20px;
-  min-height: 220px;
+  padding: 24px;
+  height: 100%;
 }
 
 .live-box {
@@ -231,16 +236,17 @@ table {
 }
 
 td, th {
-  padding: 10px 8px;
+  padding: 12px 10px;
   border-bottom: 1px solid rgba(217, 178, 95, 0.2);
   white-space: nowrap;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
+  font-size: 1.05rem;
 }
 
 th {
-  color: var(--text);
-  font-size: .88rem;
+  color: var(--brand);
+  font-size: 1rem;
 }
 
 .rowhead {
@@ -251,10 +257,10 @@ th {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 86px;
-  padding: 6px 10px;
+  min-width: 90px;
+  padding: 8px 12px;
   border-radius: 999px;
-  font-size: .82rem;
+  font-size: .95rem;
   font-weight: 700;
 }
 

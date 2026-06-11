@@ -138,8 +138,8 @@ function renderMiniTable(rows, previousMap, emptyMessage) {
         <td class="rowhead">${escapeHtml(symbolLabel(current.symbol, current.name))}</td>
         <td><span class="rate-chip ${changeClass(current.bid, prev.bid, k+'-bid')}">${formatInr(current.bid)}</span></td>
         <td><span class="rate-chip ${changeClass(current.ask, prev.ask, k+'-ask')}">${formatInr(current.ask)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.high, prev.high, k+'-high')}">${formatInr(current.high)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.low, prev.low, k+'-low')}">${formatInr(current.low)}</span></td>
+        <td><span class="rate-chip text-green">${formatInr(current.high)}</span></td>
+        <td><span class="rate-chip text-red">${formatInr(current.low)}</span></td>
       </tr>
     `;
   }).join('');
@@ -175,8 +175,8 @@ function renderRateTable(rows, previousMap, emptyMessage) {
         <td class="rowhead">${escapeHtml(symbolLabel(current.symbol, current.name))}</td>
         <td><span class="rate-chip ${changeClass(current.bid, prev.bid, k+'-bid')}">${formatInr(current.bid)}</span></td>
         <td><span class="rate-chip ${changeClass(current.ask, prev.ask, k+'-ask')}">${formatInr(current.ask)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.high, prev.high, k+'-high')}">${formatInr(current.high)}</span></td>
-        <td><span class="rate-chip ${changeClass(current.low, prev.low, k+'-low')}">${formatInr(current.low)}</span></td>
+        <td><span class="rate-chip text-green">${formatInr(current.high)}</span></td>
+        <td><span class="rate-chip text-red">${formatInr(current.low)}</span></td>
       </tr>
     `;
   }).join('');
