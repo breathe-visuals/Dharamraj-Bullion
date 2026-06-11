@@ -188,18 +188,8 @@ function renderAll(data) {
   const goldView = renderSummaryCard(gold, previousState.summary.gold, 'Gold');
   const silverView = renderSummaryCard(silver, previousState.summary.silver, 'Silver');
 
-  document.getElementById('goldCard').querySelector('.summary-value').innerHTML =
-    `<span class="price ${goldView.diffClass}">${formatInr(goldView.value)}</span>`;
-  document.getElementById('goldCard').querySelector('.summary-sub').textContent =
-    gold ? 'Gold product table' : 'Waiting for gold data…';
-
   document.getElementById('goldCard').querySelector('.mini-table-wrap').innerHTML =
     renderMiniTable(data?.goldProducts || [], previousState.goldProducts, 'No gold products yet.');
-
-  document.getElementById('silverCard').querySelector('.summary-value').innerHTML =
-    `<span class="price ${silverView.diffClass}">${formatInr(silverView.value)}</span>`;
-  document.getElementById('silverCard').querySelector('.summary-sub').textContent =
-    silver ? 'Silver product table' : 'Waiting for silver data…';
 
   document.getElementById('silverCard').querySelector('.mini-table-wrap').innerHTML =
     renderMiniTable(data?.silverProducts || [], previousState.silverProducts, 'No silver products yet.');
