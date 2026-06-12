@@ -37,7 +37,7 @@
   --shadow-md:  0 8px 32px rgba(0,51,54,0.10);
   --shadow-lg:  0 16px 48px rgba(0,51,54,0.13);
 
-  --header-h:   100px;
+  --header-h:   120px;
 }
 
 /* ---------- RESET ---------- */
@@ -62,7 +62,7 @@ body {
   padding: env(safe-area-inset-top) 0 0;
 }
 .header-inner {
-  max-width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
   height: var(--header-h);
   padding: 10px 40px;
@@ -72,14 +72,14 @@ body {
   position: relative;
 }
 .header-logo {
-  height: 140px;
+  height: 110px;
   width: auto;
   object-fit: contain;
   display: block;
 }
 .header-right {
   position: absolute;
-  right: 20px;
+  right: 40px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -119,19 +119,19 @@ body {
 
 /* ---------- PAGE LAYOUT ---------- */
 .page {
-  max-width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px 40px 30px;
   padding-bottom: calc(20px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .vertical-stack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 20px;
 }
 
 /* ---------- SECTION LABEL ---------- */
@@ -261,18 +261,25 @@ body {
 }
 
 /* ---------- TABLES ---------- */
-.table-wrap { width: 100%; }
+.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 table {
   width: 100%;
+  min-width: 600px; /* Prevent squishing on small screens */
   border-collapse: collapse;
   font-size: 1.05rem;
   table-layout: fixed;
   font-variant-numeric: tabular-nums;
 }
 
+th:nth-child(1), td:nth-child(1) { width: 28%; }
+th:nth-child(2), td:nth-child(2) { width: 18%; }
+th:nth-child(3), td:nth-child(3) { width: 18%; }
+th:nth-child(4), td:nth-child(4) { width: 18%; }
+th:nth-child(5), td:nth-child(5) { width: 18%; }
+
 thead th {
-  padding: 12px 14px;
+  padding: 14px 12px;
   text-align: left;
   font-size: 0.95rem;
   font-weight: 700;
@@ -285,21 +292,22 @@ thead th {
 }
 
 tbody td {
-  padding: 11px 10px;
+  padding: 12px 10px;
   border-bottom: 1px solid rgba(217,178,95,0.15);
   vertical-align: middle;
   white-space: nowrap;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
 }
 tbody tr:last-child td { border-bottom: none; }
-tbody tr:hover { background: rgba(0,51,54,0.025); }
+tbody tr:hover { background: rgba(0,51,54,0.035); }
 
 .rowhead {
   font-weight: 800;
   color: var(--text);
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-family: 'Oswald', sans-serif;
+  letter-spacing: 0.02em;
 }
 
 /* ---------- PRICE CHIPS ---------- */
@@ -307,12 +315,12 @@ tbody tr:hover { background: rgba(0,51,54,0.025); }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 999px;
   font-size: 1.25rem;
   font-family: 'Oswald', sans-serif;
   font-weight: 700;
-  min-width: 60px;
+  min-width: 70px;
   font-variant-numeric: tabular-nums;
   transition: background 0.3s, color 0.3s;
 }
@@ -353,37 +361,32 @@ tbody tr:hover { background: rgba(0,51,54,0.025); }
   }
   .slider-dots { display: none; }
   
-  .page { gap: 20px; width: 75%; max-width: none; }
-  .slider-card { padding: 20px; min-height: auto; }
-  .rate-card   { padding: 20px; }
+  .page { gap: 24px; }
+  .slider-card { padding: 24px; min-height: auto; }
+  .rate-card   { padding: 24px; }
   table { font-size: 1.35rem; }
-  .chip-val { padding: 6px 16px; font-size: 1.65rem; min-width: 90px; }
-  .rowhead { font-size: 1.4rem; }
-  thead th { font-size: 1.25rem; padding: 10px 14px; }
-  tbody td { padding: 8px 10px; }
+  .chip-val { padding: 8px 16px; font-size: 1.5rem; min-width: 90px; }
+  .rowhead { font-size: 1.45rem; }
+  thead th { font-size: 1.15rem; padding: 14px 14px; }
+  tbody td { padding: 12px 10px; }
   .section-title { font-size: 1.5rem; }
   .card-title { font-size: 1.6rem; }
 }
 
 /* Tablets */
 @media (max-width: 990px) {
-  :root { --header-h: 120px; }
-  .header-logo { height: 80px; }
+  :root { --header-h: 110px; }
+  .header-logo { height: 90px; }
   .page { padding: 24px 20px; }
   .rates-grid {
     grid-template-columns: 1fr;
-  }
-  .chip-val {
-    min-width: 0;
-    padding: 6px 10px;
-    font-size: 1.05rem;
   }
 }
 
 /* Mobile */
 @media (max-width: 699px) {
   :root { --header-h: 90px; }
-  .header-logo { height: 60px; }
+  .header-logo { height: 70px; }
   .header-inner { padding: 0 16px; justify-content: flex-start; }
   .header-right { right: 16px; }
   .page { padding: 16px 12px; }
@@ -391,23 +394,22 @@ tbody tr:hover { background: rgba(0,51,54,0.025); }
   .rates-grid {
     grid-template-columns: 1fr;
   }
-  .table-wrap { overflow-x: hidden; }
   
   .chip-val {
     min-width: 0;
-    padding: 3px 4px;
-    font-size: 0.85rem;
+    padding: 6px 10px;
+    font-size: 1.1rem;
     letter-spacing: -0.3px;
   }
-  thead th { font-size: 0.65rem; padding: 6px 4px; letter-spacing: 0; }
-  tbody td { padding: 8px 4px; font-size: 0.85rem; }
-  .rowhead  { font-size: 0.75rem; white-space: normal; }
+  thead th { font-size: 0.8rem; padding: 10px 8px; letter-spacing: 0; }
+  tbody td { padding: 10px 8px; font-size: 1.0rem; }
+  .rowhead  { font-size: 0.95rem; white-space: normal; }
 }
 
 /* Very small screens */
 @media (max-width: 380px) {
-  .chip-val { padding: 3px 3px; font-size: 0.75rem; letter-spacing: -0.5px; }
-  thead th  { font-size: 0.55rem; padding: 4px 2px; }
-  tbody td  { font-size: 0.75rem; padding: 6px 2px; }
-  .rowhead  { font-size: 0.7rem; }
+  .chip-val { padding: 4px 6px; font-size: 0.95rem; letter-spacing: -0.5px; }
+  thead th  { font-size: 0.75rem; padding: 8px 4px; }
+  tbody td  { font-size: 0.9rem; padding: 8px 4px; }
+  .rowhead  { font-size: 0.85rem; }
 }

@@ -86,11 +86,24 @@ function dirClass(cur, prv, key) {
 }
 
 /* ── Table builders ────────────────────────────────── */
-function buildRows(rows, prevMap, type) {
-  if (!rows || !rows.length) return '<p class="empty-msg">No data yet.</p>';
+function updateCell(el, current, previous, key, defaultClass = '') {
+  if (!el) return;
+  const chip = el.querySelector('.chip-val');
+  if (!chip) return;
 
-  const colLabel = type === 'mini' ? 'Product' : 'Symbol';
+  const currentFmt = fmt(current);
+  if (chip.textContent !== currentFmt) {
+    chip.textContent = currentFmt;
+  }
 
+  if (defaultClass) {
+    chip.className = `chip-val ${defaultClass}`;
+  } else {
+    chip.className = `chip-val ${dirClass(current, previous, key)}`;
+  }
+}
+
+function buildTableHTML(rows, prevMap, colLabel) {
   const trs = rows.map(row => {
     const cur = rowToPlain(row);
     const prv = prevMap[itemKey(cur)] || {};
@@ -100,12 +113,12 @@ function buildRows(rows, prevMap, type) {
     const askCls  = dirClass(cur.ask,  prv.ask,  k + '-ask');
 
     return `
-      <tr>
+      <tr data-key="${escape(k)}">
         <td class="rowhead">${escape(symbolLabel(cur.symbol, cur.name))}</td>
-        <td><span class="chip-val ${bidCls}">${fmt(cur.bid)}</span></td>
-        <td><span class="chip-val ${askCls}">${fmt(cur.ask)}</span></td>
-        <td><span class="chip-val always-green">${fmt(cur.high)}</span></td>
-        <td><span class="chip-val always-red">${fmt(cur.low)}</span></td>
+        <td class="cell-bid"><span class="chip-val ${bidCls}">${fmt(cur.bid)}</span></td>
+        <td class="cell-ask"><span class="chip-val ${askCls}">${fmt(cur.ask)}</span></td>
+        <td class="cell-high"><span class="chip-val always-green">${fmt(cur.high)}</span></td>
+        <td class="cell-low"><span class="chip-val always-red">${fmt(cur.low)}</span></td>
       </tr>`;
   }).join('');
 
@@ -122,6 +135,48 @@ function buildRows(rows, prevMap, type) {
     </table>`;
 }
 
+function renderTable(container, rows, prevMap, type) {
+  if (!rows || !rows.length) {
+    container.innerHTML = '<p class="empty-msg">No data yet.</p>';
+    return;
+  }
+
+  const colLabel = type === 'mini' ? 'Product' : 'Symbol';
+  
+  let table = container.querySelector('table');
+  let tbody = table ? table.querySelector('tbody') : null;
+  let trs = tbody ? tbody.querySelectorAll('tr') : null;
+
+  let rebuild = false;
+  if (!table || !trs || trs.length !== rows.length) {
+    rebuild = true;
+  } else {
+    for (let i = 0; i < rows.length; i++) {
+      const cur = rowToPlain(rows[i]);
+      if (trs[i].getAttribute('data-key') !== escape(itemKey(cur))) {
+        rebuild = true;
+        break;
+      }
+    }
+  }
+
+  if (rebuild) {
+    container.innerHTML = buildTableHTML(rows, prevMap, colLabel);
+  } else {
+    rows.forEach((row, i) => {
+      const cur = rowToPlain(row);
+      const prv = prevMap[itemKey(cur)] || {};
+      const k = itemKey(cur);
+      const tr = trs[i];
+      
+      updateCell(tr.querySelector('.cell-bid'), cur.bid, prv.bid, k + '-bid');
+      updateCell(tr.querySelector('.cell-ask'), cur.ask, prv.ask, k + '-ask');
+      updateCell(tr.querySelector('.cell-high'), cur.high, null, null, 'always-green');
+      updateCell(tr.querySelector('.cell-low'), cur.low, null, null, 'always-red');
+    });
+  }
+}
+
 function updatePrevMap(rows) {
   const map = {};
   (rows || []).forEach(r => { const k = itemKey(r); if (k) map[k] = rowToPlain(r); });
@@ -131,12 +186,12 @@ function updatePrevMap(rows) {
 /* ── Render all sections ───────────────────────────── */
 function renderAll(data) {
   /* Gold / silver product tables */
-  dom.goldProductsBox.innerHTML  = buildRows(data?.goldProducts   || [], prev.goldProducts,   'mini');
-  dom.silverProductsBox.innerHTML= buildRows(data?.silverProducts || [], prev.silverProducts,  'mini');
+  renderTable(dom.goldProductsBox, data?.goldProducts, prev.goldProducts, 'mini');
+  renderTable(dom.silverProductsBox, data?.silverProducts, prev.silverProducts, 'mini');
 
   /* Future & spot rate tables */
-  dom.futureBox.innerHTML = buildRows(data?.futureRows || [], prev.future, 'rate');
-  dom.spotBox.innerHTML   = buildRows(data?.spotRows   || [], prev.spot,   'rate');
+  renderTable(dom.futureBox, data?.futureRows, prev.future, 'rate');
+  renderTable(dom.spotBox, data?.spotRows, prev.spot, 'rate');
 
   /* Advance previous-state */
   prev.goldProducts   = updatePrevMap(data?.goldProducts);
