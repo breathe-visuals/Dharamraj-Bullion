@@ -72,7 +72,7 @@ body {
   position: relative;
 }
 .header-logo {
-  height: 100%;
+  height: 140px;
   width: auto;
   object-fit: contain;
   display: block;
@@ -96,10 +96,10 @@ body {
 .status-dot.live   { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.25); }
 .status-dot.disconnected { background: #ef4444; }
 .last-updated {
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.85);
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.9);
   font-weight: 600;
-  max-width: 150px;
+  max-width: 250px;
   text-align: right;
   line-height: 1.3;
 }
@@ -143,8 +143,8 @@ body {
   padding: 0 4px;
 }
 .section-title {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--brand);
@@ -209,8 +209,8 @@ body {
   gap: 10px;
 }
 .card-title {
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: 1.4rem;
+  font-weight: 800;
   color: var(--brand);
   letter-spacing: -0.01em;
 }
@@ -299,6 +299,7 @@ tbody tr:hover { background: rgba(0,51,54,0.025); }
   font-weight: 800;
   color: var(--text);
   font-size: 1.05rem;
+  font-family: 'Oswald', sans-serif;
 }
 
 /* ---------- PRICE CHIPS ---------- */
@@ -309,7 +310,8 @@ tbody tr:hover { background: rgba(0,51,54,0.025); }
   padding: 6px 12px;
   border-radius: 999px;
   font-size: 1.25rem;
-  font-weight: 800;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
   min-width: 60px;
   font-variant-numeric: tabular-nums;
   transition: background 0.3s, color 0.3s;
@@ -355,10 +357,12 @@ tbody tr:hover { background: rgba(0,51,54,0.025); }
   .slider-card { padding: 20px; min-height: auto; }
   .rate-card   { padding: 20px; }
   table { font-size: 1.35rem; }
-  .chip-val { padding: 6px 16px; font-size: 1.4rem; min-width: 90px; }
-  .rowhead { font-size: 1.2rem; }
-  thead th { font-size: 1.15rem; padding: 10px 14px; }
+  .chip-val { padding: 6px 16px; font-size: 1.65rem; min-width: 90px; }
+  .rowhead { font-size: 1.4rem; }
+  thead th { font-size: 1.25rem; padding: 10px 14px; }
   tbody td { padding: 8px 10px; }
+  .section-title { font-size: 1.5rem; }
+  .card-title { font-size: 1.6rem; }
 }
 
 /* Tablets */
