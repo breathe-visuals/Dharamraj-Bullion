@@ -4,7 +4,7 @@
    Live socket data is never cached.
    ================================================================ */
 
-const CACHE_NAME = 'dharamraj-v1';
+const CACHE_NAME = 'dharamraj-v2';
 
 const SHELL_ASSETS = [
   '/',
