@@ -68,21 +68,22 @@ body {
   padding: 0 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: center;
+  position: relative;
 }
 .header-logo {
-  height: 70px;
+  height: 85px;
   width: auto;
   object-fit: contain;
   display: block;
   filter: brightness(0) invert(1);
 }
 .header-right {
+  position: absolute;
+  right: 20px;
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-shrink: 0;
 }
 .status-dot {
   width: 10px;
@@ -329,8 +330,8 @@ tbody tr:hover { background: rgba(0,51,54,0.025); }
    RESPONSIVE
    ============================================================ */
 
-/* Tablet & up: slider shows 2 cards side by side */
-@media (min-width: 700px) {
+/* Desktop (Wide): slider shows 2 cards side by side */
+@media (min-width: 1100px) {
   .slider-card {
     flex: 0 0 calc(50% - 8px);
   }
@@ -346,7 +347,19 @@ tbody tr:hover { background: rgba(0,51,54,0.025); }
   .chip-val { padding: 7px 14px; font-size: 1.15rem; min-width: 80px; }
 }
 
-/* Mobile: single-column rates grid */
+/* Tablets */
+@media (max-width: 1099px) {
+  .rates-grid {
+    grid-template-columns: 1fr;
+  }
+  .chip-val {
+    min-width: 0;
+    padding: 6px 10px;
+    font-size: 1rem;
+  }
+}
+
+/* Mobile */
 @media (max-width: 699px) {
   .rates-grid {
     grid-template-columns: 1fr;
