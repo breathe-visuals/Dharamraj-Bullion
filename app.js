@@ -112,7 +112,7 @@ function buildTableHTML(rows, prevMap, colLabel) {
     const askCls  = dirClass(cur.ask,  prv.ask,  k + '-ask');
 
     return `
-      <tr data-key="${escape(k)}">
+      <tr data-key="${k}">
         <td class="rowhead">${escape(symbolLabel(cur.symbol, cur.name))}</td>
         <td class="cell-bid"><span class="chip-val ${bidCls}">${fmt(cur.bid)}</span></td>
         <td class="cell-ask"><span class="chip-val ${askCls}">${fmt(cur.ask)}</span></td>

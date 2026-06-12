@@ -116,6 +116,14 @@ body {
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
   margin-bottom: 8px;
+  overflow: hidden;          /* prevent content bleed */
+  will-change: contents;     /* GPU hint for smooth scroll */
+}
+.marquee-bar marquee {
+  /* Use CSS animation fallback on mobile for smoother scroll */
+  display: block;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* ---------- PAGE LAYOUT ---------- */
@@ -144,7 +152,7 @@ body {
   padding: 0 4px;
 }
 .section-title {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -184,7 +192,7 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
   padding: 20px;
-  min-height: 200px;
+  /* NO min-height — let content dictate height to prevent layout shifts */
 }
 
 /* ---------- RATES GRID ---------- */
@@ -210,7 +218,7 @@ body {
   gap: 10px;
 }
 .card-title {
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: var(--brand);
   letter-spacing: -0.01em;
@@ -221,9 +229,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
+  padding: 8px 18px;
   border-radius: 999px;
-  font-size: 0.82rem;
+  font-size: 1.05rem;
   font-weight: 700;
 }
 .silver-badge {
@@ -315,12 +323,12 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
+  padding: 3px 8px;
   border-radius: 999px;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-family: 'Oswald', sans-serif;
   font-weight: 700;
-  min-width: 60px;
+  min-width: 50px;
   font-variant-numeric: tabular-nums;
   transition: background 0.3s, color 0.3s;
 }
@@ -360,13 +368,13 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   .slider-card, .rate-card { padding: 28px; }
   .slider-card { flex: 0 0 calc(50% - 14px); }
   .slider-dots { display: none; }
-  table { font-size: 1.45rem; }
-  .chip-val { padding: 8px 16px; font-size: 1.4rem; min-width: 80px; }
+  table { font-size: 1.4rem; }
+  .chip-val { padding: 5px 12px; font-size: 1.25rem; min-width: 65px; }
   .rowhead { font-size: 1.4rem; }
-  thead th { font-size: 1.25rem; padding: 16px 14px; }
-  tbody td { padding: 14px 10px; }
-  .section-title { font-size: 1.6rem; }
-  .card-title { font-size: 1.7rem; }
+  thead th { font-size: 1.2rem; padding: 14px 14px; }
+  tbody td { padding: 12px 10px; }
+  .section-title { font-size: 1.7rem; }
+  .card-title { font-size: 1.8rem; }
   .marquee-bar { font-size: 1.4rem; padding: 16px 28px; }
 }
 
@@ -376,13 +384,13 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   .slider-card { flex: 0 0 calc(50% - 12px); }
   .slider-dots { display: none; }
   .slider-card, .rate-card { padding: 24px; }
-  table { font-size: 1.35rem; }
-  .chip-val { padding: 6px 14px; font-size: 1.3rem; min-width: 70px; }
+  table { font-size: 1.3rem; }
+  .chip-val { padding: 4px 11px; font-size: 1.15rem; min-width: 60px; }
   .rowhead { font-size: 1.3rem; }
-  thead th { font-size: 1.15rem; padding: 14px 14px; }
-  tbody td { padding: 12px 10px; }
-  .section-title { font-size: 1.5rem; }
-  .card-title { font-size: 1.6rem; }
+  thead th { font-size: 1.1rem; padding: 12px 12px; }
+  tbody td { padding: 10px 8px; }
+  .section-title { font-size: 1.6rem; }
+  .card-title { font-size: 1.7rem; }
 }
 
 /* Small Desktop / Landscape Tablet */
@@ -391,40 +399,40 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   .slider-card { flex: 0 0 calc(50% - 10px); }
   .slider-dots { display: none; }
   .slider-card, .rate-card { padding: 20px; }
-  table { font-size: 1.25rem; }
-  .chip-val { padding: 6px 12px; font-size: 1.2rem; min-width: 65px; }
+  table { font-size: 1.2rem; }
+  .chip-val { padding: 3px 10px; font-size: 1.05rem; min-width: 55px; }
   .rowhead { font-size: 1.2rem; }
-  thead th { font-size: 1.05rem; padding: 12px 12px; }
-  tbody td { padding: 10px 8px; }
+  thead th { font-size: 1rem; padding: 10px 10px; }
+  tbody td { padding: 9px 8px; }
 }
 
 /* Portrait Tablets */
 @media (min-width: 768px) and (max-width: 991px) {
   .page { width: 95%; padding: 24px 20px; gap: 20px; }
   .rates-grid { grid-template-columns: 1fr; }
-  .slider-card { flex: 0 0 100%; } /* One card per view in slider */
-  .chip-val { min-width: 0; padding: 6px 10px; font-size: 1.15rem; }
-  table { font-size: 1.15rem; }
-  thead th { font-size: 1rem; }
-  .rowhead { font-size: 1.1rem; }
+  .slider-card { flex: 0 0 100%; }
+  .chip-val { min-width: 0; padding: 3px 8px; font-size: 1rem; }
+  table { font-size: 1.05rem; }
+  thead th { font-size: 0.95rem; }
+  .rowhead { font-size: 1rem; }
 }
 
 /* Large Mobile / Phablets */
 @media (min-width: 481px) and (max-width: 767px) {
   .page { width: 100%; padding: 16px 16px; gap: 16px; }
   .rates-grid { grid-template-columns: 1fr; }
-  .slider-card { flex: 0 0 100%; padding: 16px; }
-  .rate-card { padding: 16px; }
+  .slider-card { flex: 0 0 100%; padding: 14px; }
+  .rate-card { padding: 14px; }
   
   .chip-val {
     min-width: 0;
-    padding: 4px 8px;
-    font-size: 1rem;
+    padding: 2px 6px;
+    font-size: 0.9rem;
     letter-spacing: -0.3px;
   }
-  thead th { font-size: 0.85rem; padding: 10px 8px; letter-spacing: 0; }
-  tbody td { padding: 10px 8px; font-size: 1.05rem; }
-  .rowhead  { font-size: 0.95rem; white-space: normal; }
+  thead th { font-size: 0.8rem; padding: 8px 6px; letter-spacing: 0; }
+  tbody td { padding: 8px 6px; font-size: 0.95rem; }
+  .rowhead  { font-size: 0.9rem; white-space: normal; }
 }
 
 /* Mobile */
@@ -432,19 +440,23 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   .header-inner { padding: 0 16px; justify-content: flex-start; }
   .header-right { right: 16px; }
   .page { width: 100%; padding: 12px; gap: 16px; }
-  .slider-card { flex: 0 0 100%; padding: 16px; }
+  .slider-card { flex: 0 0 100%; padding: 14px; }
   .rate-card { padding: 12px; }
   .rates-grid { grid-template-columns: 1fr; }
+  .marquee-bar { font-size: 1rem; padding: 10px 14px; }
   
   .chip-val {
     min-width: 0;
-    padding: 3px 6px;
-    font-size: 0.9rem;
+    padding: 2px 5px;
+    font-size: 0.82rem;
     letter-spacing: -0.3px;
   }
-  thead th { font-size: 0.75rem; padding: 8px 6px; letter-spacing: 0; }
-  tbody td { padding: 8px 6px; font-size: 0.95rem; }
-  .rowhead  { font-size: 0.85rem; white-space: normal; }
+  thead th { font-size: 0.7rem; padding: 8px 5px; letter-spacing: 0; }
+  tbody td { padding: 8px 5px; font-size: 0.88rem; }
+  .rowhead  { font-size: 0.82rem; white-space: normal; }
+  .section-title { font-size: 1.2rem; }
+  .card-title { font-size: 1.3rem; }
+  .metal-badge { font-size: 0.9rem; padding: 6px 12px; }
 }
 
 /* Very small screens */
