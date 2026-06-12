@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a192f" />
+  <meta name="theme-color" content="#003336" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Dharamraj" />
-  <meta name="description" content="Live gold and silver bullion rates, updated instantly." />
+  <meta name="description" content="Dharamraj Silver Arts – Live gold and silver bullion rates, updated instantly." />
 
-  <title>Live Rates</title>
+  <title>Dharamraj Silver Arts – Live Rates</title>
 
   <!-- Icons & Manifest -->
   <link rel="icon" href="Media/favicon.ico" sizes="any" />
@@ -31,7 +31,7 @@
   <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
-      <img src="Media/Dharamraj_Logo-1000x1000.png" alt="Logo" class="header-logo" />
+      <img src="Media/Dharamraj_Logo-1000x1000.png" alt="Dharamraj Silver Arts" class="header-logo" />
       <div class="header-right">
         <span id="status" class="status-dot" title="Connection status"></span>
         <div id="lastUpdated" class="last-updated">—</div>
@@ -41,83 +41,90 @@
 
   <main class="page">
 
-    <!-- PRODUCT SLIDER SECTION -->
+    <!-- PRODUCT RATES SECTION (No slider, 2 rows) -->
     <section class="section" aria-label="Product Rates">
       <div class="section-label">
         <span class="section-title">Product Rates</span>
-        <div class="slider-dots" aria-hidden="true" id="productDots">
-          <span class="dot active"></span>
-          <span class="dot"></span>
-        </div>
       </div>
 
-      <div class="slider-track" id="productSlider">
+      <div class="vertical-stack">
         <!-- Silver Card -->
-        <article class="slider-card" id="silverCard">
+        <article class="rate-card" id="silverCard">
           <div class="card-header">
-            <h2 class="card-title">Silver Products</h2>
+            <span class="metal-badge silver-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              Silver Products
+            </span>
           </div>
-          <div class="table-wrap no-scroll" id="silverProductsBox">
+          <div class="table-wrap" id="silverProductsBox">
             <p class="empty-msg">Connecting to live feed…</p>
           </div>
         </article>
 
         <!-- Gold Card -->
-        <article class="slider-card" id="goldCard">
+        <article class="rate-card" id="goldCard">
           <div class="card-header">
-            <h2 class="card-title">Gold Products</h2>
+            <span class="metal-badge gold-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              Gold Products
+            </span>
           </div>
-          <div class="table-wrap no-scroll" id="goldProductsBox">
+          <div class="table-wrap" id="goldProductsBox">
             <p class="empty-msg">Connecting to live feed…</p>
           </div>
         </article>
       </div>
     </section>
 
-    <!-- RATES SLIDER SECTION -->
-    <section class="section" aria-label="Live Rates">
+    <!-- MARKET RATES SLIDER -->
+    <section class="section" aria-label="Market Rates">
       <div class="section-label">
-        <span class="section-title">Live Rates</span>
-        <div class="slider-dots" aria-hidden="true" id="ratesDots">
-          <span class="dot active"></span>
-          <span class="dot"></span>
+        <span class="section-title">Market Rates</span>
+        <div class="slider-dots" aria-hidden="true">
+          <span class="dot active" data-index="0"></span>
+          <span class="dot" data-index="1"></span>
         </div>
       </div>
 
-      <div class="slider-track rates-slider-track" id="ratesSlider">
+      <div class="slider-track" id="rateSlider">
         <!-- Future Rates -->
-        <article class="slider-card rate-card">
+        <section class="slider-card" aria-label="Future Rates">
           <div class="card-header">
             <h2 class="card-title">Future Rates</h2>
-            <span class="live-pill"><span class="live-dot"></span>Live</span>
+            <span class="live-pill">
+              <span class="live-dot"></span>Live
+            </span>
           </div>
           <div class="table-wrap" id="futureBox">
             <p class="empty-msg">Connecting…</p>
           </div>
-        </article>
+        </section>
 
         <!-- Spot Rates -->
-        <article class="slider-card rate-card">
+        <section class="slider-card" aria-label="Spot Rates">
           <div class="card-header">
             <h2 class="card-title">Spot Rates</h2>
-            <span class="live-pill"><span class="live-dot"></span>Live</span>
+            <span class="live-pill">
+              <span class="live-dot"></span>Live
+            </span>
           </div>
           <div class="table-wrap" id="spotBox">
             <p class="empty-msg">Connecting…</p>
           </div>
-        </article>
+        </section>
       </div>
     </section>
 
   </main>
 
   <footer class="site-footer">
-    <p>© 2025 Live Bullion. All rates are indicative.</p>
+    <p>© 2025 Dharamraj Silver Arts. All rates are indicative.</p>
   </footer>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="app.js"></script>
   <script>
+    // Service Worker registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').catch(() => {});

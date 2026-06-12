@@ -13,10 +13,8 @@ const dom = {
   spotBox:          document.getElementById('spotBox'),
   goldProductsBox:  document.getElementById('goldProductsBox'),
   silverProductsBox:document.getElementById('silverProductsBox'),
-  productSlider:    document.getElementById('productSlider'),
-  ratesSlider:      document.getElementById('ratesSlider'),
-  productDots:      Array.from(document.querySelectorAll('#productDots .dot')),
-  ratesDots:        Array.from(document.querySelectorAll('#ratesDots .dot')),
+  slider:           document.getElementById('rateSlider'),
+  dots:             Array.from(document.querySelectorAll('.dot')),
 };
 
 /* Previous state for change detection */
@@ -170,20 +168,23 @@ socket.on('connect_error', () => setStatus('disconnected'));
 socket.on('rates:update',  renderAll);
 
 /* ── Slider swipe / dot sync ───────────────────────── */
-function initSlider(track, dots) {
-  if (!track || !dots.length) return;
+(function initSlider() {
+  const track = dom.slider;
+  if (!track) return;
 
   function updateDots(index) {
-    dots.forEach((d, i) => d.classList.toggle('active', i === index));
+    dom.dots.forEach((d, i) => d.classList.toggle('active', i === index));
   }
 
-  dots.forEach((dot, i) => {
+  /* Dot click → scroll to card */
+  dom.dots.forEach((dot, i) => {
     dot.addEventListener('click', () => {
       const cards = track.querySelectorAll('.slider-card');
       if (cards[i]) cards[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
     });
   });
 
+  /* Scroll → update dots */
   let scrollTimer;
   track.addEventListener('scroll', () => {
     clearTimeout(scrollTimer);
@@ -199,7 +200,4 @@ function initSlider(track, dots) {
       updateDots(closest);
     }, 50);
   }, { passive: true });
-}
-
-initSlider(dom.productSlider, dom.productDots);
-initSlider(dom.ratesSlider, dom.ratesDots);
+})();
