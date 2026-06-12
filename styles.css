@@ -37,7 +37,7 @@
   --shadow-md:  0 8px 32px rgba(0,51,54,0.10);
   --shadow-lg:  0 16px 48px rgba(0,51,54,0.13);
 
-  --header-h:   120px;
+  --header-h:   15vh;
 }
 
 /* ---------- RESET ---------- */
@@ -72,7 +72,8 @@ body {
   position: relative;
 }
 .header-logo {
-  height: 110px;
+  height: 80%;
+  max-height: 120px;
   width: auto;
   object-fit: contain;
   display: block;
@@ -351,19 +352,31 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
 }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE (Breakpoints)
    ============================================================ */
 
-/* Desktop (Wide): slider shows 2 cards side by side */
-@media (min-width: 991px) {
-  .slider-card {
-    flex: 0 0 calc(50% - 8px);
-  }
+/* Extra Large Desktop */
+@media (min-width: 1400px) {
+  .page { width: 75%; max-width: none; gap: 28px; }
+  .slider-card, .rate-card { padding: 28px; }
+  .slider-card { flex: 0 0 calc(50% - 14px); }
   .slider-dots { display: none; }
-  
-  .page { gap: 24px; }
-  .slider-card { padding: 24px; min-height: auto; }
-  .rate-card   { padding: 24px; }
+  table { font-size: 1.45rem; }
+  .chip-val { padding: 10px 20px; font-size: 1.6rem; min-width: 100px; }
+  .rowhead { font-size: 1.55rem; }
+  thead th { font-size: 1.25rem; padding: 16px 14px; }
+  tbody td { padding: 14px 10px; }
+  .section-title { font-size: 1.6rem; }
+  .card-title { font-size: 1.7rem; }
+  .marquee-bar { font-size: 1.4rem; padding: 16px 28px; }
+}
+
+/* Large Desktop */
+@media (min-width: 1200px) and (max-width: 1399px) {
+  .page { width: 75%; max-width: none; gap: 24px; }
+  .slider-card { flex: 0 0 calc(50% - 12px); }
+  .slider-dots { display: none; }
+  .slider-card, .rate-card { padding: 24px; }
   table { font-size: 1.35rem; }
   .chip-val { padding: 8px 16px; font-size: 1.5rem; min-width: 90px; }
   .rowhead { font-size: 1.45rem; }
@@ -373,27 +386,36 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   .card-title { font-size: 1.6rem; }
 }
 
-/* Tablets */
-@media (max-width: 990px) {
-  :root { --header-h: 110px; }
-  .header-logo { height: 90px; }
-  .page { padding: 24px 20px; }
-  .rates-grid {
-    grid-template-columns: 1fr;
-  }
+/* Small Desktop / Landscape Tablet */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .page { width: 85%; max-width: none; gap: 20px; }
+  .slider-card { flex: 0 0 calc(50% - 10px); }
+  .slider-dots { display: none; }
+  .slider-card, .rate-card { padding: 20px; }
+  table { font-size: 1.25rem; }
+  .chip-val { padding: 8px 14px; font-size: 1.4rem; min-width: 85px; }
+  .rowhead { font-size: 1.35rem; }
+  thead th { font-size: 1.05rem; padding: 12px 12px; }
+  tbody td { padding: 10px 8px; }
 }
 
-/* Mobile */
-@media (max-width: 699px) {
-  :root { --header-h: 90px; }
-  .header-logo { height: 70px; }
-  .header-inner { padding: 0 16px; justify-content: flex-start; }
-  .header-right { right: 16px; }
-  .page { padding: 16px 12px; }
-  
-  .rates-grid {
-    grid-template-columns: 1fr;
-  }
+/* Portrait Tablets */
+@media (min-width: 768px) and (max-width: 991px) {
+  .page { width: 95%; padding: 24px 20px; gap: 20px; }
+  .rates-grid { grid-template-columns: 1fr; }
+  .slider-card { flex: 0 0 100%; } /* One card per view in slider */
+  .chip-val { min-width: 0; padding: 8px 12px; font-size: 1.2rem; }
+  table { font-size: 1.15rem; }
+  thead th { font-size: 1rem; }
+  .rowhead { font-size: 1.2rem; }
+}
+
+/* Large Mobile / Phablets */
+@media (min-width: 481px) and (max-width: 767px) {
+  .page { width: 100%; padding: 16px 16px; gap: 16px; }
+  .rates-grid { grid-template-columns: 1fr; }
+  .slider-card { flex: 0 0 100%; padding: 16px; }
+  .rate-card { padding: 16px; }
   
   .chip-val {
     min-width: 0;
@@ -401,15 +423,35 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
     font-size: 1.1rem;
     letter-spacing: -0.3px;
   }
-  thead th { font-size: 0.8rem; padding: 10px 8px; letter-spacing: 0; }
-  tbody td { padding: 10px 8px; font-size: 1.0rem; }
-  .rowhead  { font-size: 0.95rem; white-space: normal; }
+  thead th { font-size: 0.85rem; padding: 10px 8px; letter-spacing: 0; }
+  tbody td { padding: 10px 8px; font-size: 1.05rem; }
+  .rowhead  { font-size: 1.05rem; white-space: normal; }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .header-inner { padding: 0 16px; justify-content: flex-start; }
+  .header-right { right: 16px; }
+  .page { width: 100%; padding: 12px; gap: 16px; }
+  .slider-card { flex: 0 0 100%; padding: 16px; }
+  .rate-card { padding: 12px; }
+  .rates-grid { grid-template-columns: 1fr; }
+  
+  .chip-val {
+    min-width: 0;
+    padding: 5px 8px;
+    font-size: 1rem;
+    letter-spacing: -0.3px;
+  }
+  thead th { font-size: 0.75rem; padding: 8px 6px; letter-spacing: 0; }
+  tbody td { padding: 8px 6px; font-size: 0.95rem; }
+  .rowhead  { font-size: 0.9rem; white-space: normal; }
 }
 
 /* Very small screens */
-@media (max-width: 380px) {
-  .chip-val { padding: 4px 6px; font-size: 0.95rem; letter-spacing: -0.5px; }
-  thead th  { font-size: 0.75rem; padding: 8px 4px; }
-  tbody td  { font-size: 0.9rem; padding: 8px 4px; }
-  .rowhead  { font-size: 0.85rem; }
+@media (max-width: 359px) {
+  .chip-val { padding: 4px 6px; font-size: 0.85rem; letter-spacing: -0.5px; }
+  thead th  { font-size: 0.65rem; padding: 8px 4px; }
+  tbody td  { font-size: 0.85rem; padding: 8px 4px; }
+  .rowhead  { font-size: 0.8rem; }
 }
