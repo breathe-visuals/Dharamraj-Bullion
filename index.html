@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -21,10 +22,13 @@
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap"
+    rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css?v=6" />
 </head>
+
 <body>
 
   <!-- HEADER -->
@@ -41,7 +45,8 @@
   <main class="page">
 
     <div class="marquee-bar">
-      <marquee behavior="scroll" direction="left" scrollamount="8">THIS RATES ARE ONLY FOR REFERENCE , TO BOOK YOUR ORDER CALL AT OFFICE NUMBER.</marquee>
+      <marquee behavior="scroll" direction="left" scrollamount="8">THIS RATES ARE ONLY FOR REFERENCE , TO BOOK YOUR
+        ORDER CALL AT OFFICE NUMBER.</marquee>
     </div>
 
     <!-- PRODUCT RATES SECTION (No slider, 2 rows) -->
@@ -55,7 +60,9 @@
         <article class="rate-card" id="silverCard">
           <div class="card-header">
             <span class="metal-badge silver-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="10" />
+              </svg>
               Silver Products
             </span>
           </div>
@@ -68,7 +75,9 @@
         <article class="rate-card" id="goldCard">
           <div class="card-header">
             <span class="metal-badge gold-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="10" />
+              </svg>
               Gold Products
             </span>
           </div>
@@ -122,7 +131,8 @@
 
   <footer class="site-footer">
     <p>© 2025 Dharamraj Silver Arts. All rates are indicative.</p>
-    <p style="margin-top: 8px; font-weight: 700; font-size: 1rem; color: var(--brand);">Contact Details: <a href="tel:+919427338264" style="color: inherit; text-decoration: none;">+91 94273 38264</a></p>
+    <p style="margin-top: 8px; font-weight: 700; font-size: 1rem; color: var(--brand);">Contact Details: <a
+        href="tel:+919427338264" style="color: inherit; text-decoration: none;">+91 99131 37069</a></p>
   </footer>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -131,9 +141,10 @@
     // Service Worker registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(() => {});
+        navigator.serviceWorker.register('/sw.js').catch(() => { });
       });
     }
   </script>
 </body>
+
 </html>
