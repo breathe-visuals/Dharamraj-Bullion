@@ -437,8 +437,24 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
 
 /* Mobile */
 @media (max-width: 480px) {
-  .header-inner { padding: 0 16px; justify-content: flex-start; }
-  .header-right { right: 16px; }
+  .header-inner {
+    padding: 10px 16px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+  }
+  .header-logo {
+    height: auto;
+    max-height: 55px;
+  }
+  .header-right {
+    position: static;
+  }
+  .last-updated {
+    text-align: center;
+    font-size: 0.95rem;
+  }
   .page { width: 100%; padding: 12px; gap: 16px; }
   .slider-card { flex: 0 0 100%; padding: 14px; }
   .rate-card { padding: 12px; }

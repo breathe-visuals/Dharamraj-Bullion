@@ -18,6 +18,7 @@ const SHELL_ASSETS = [
   '/Media/favicon.ico',
   '/Media/favicon-32x32.png',
   '/Media/favicon-16x16.png',
+  '/Media/site.webmanifest',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap',
 ];
 
@@ -25,7 +26,7 @@ const SHELL_ASSETS = [
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL_ASSETS)).catch(() => {})
+    caches.open(CACHE_NAME).then(cache => cache.addAll(SHELL_ASSETS)).catch(() => { })
   );
 });
 
