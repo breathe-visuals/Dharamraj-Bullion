@@ -64,16 +64,17 @@ body {
 .header-inner {
   max-width: 100%;
   margin: 0 auto;
-  height: var(--header-h);
-  padding: 0 40px;
+  min-height: var(--header-h);
+  padding: 20px 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
 }
 .header-logo {
-  height: 150px;
-  width: auto;
+  width: 500px;
+  max-width: 90vw;
+  height: auto;
   object-fit: contain;
   display: block;
 }
@@ -108,11 +109,13 @@ body {
 .marquee-bar {
   background: var(--brand-mid);
   color: #ffffff;
-  padding: 10px 0;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  border-bottom: 2px solid var(--gold);
+  padding: 14px 24px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 8px;
 }
 
 /* ---------- PAGE LAYOUT ---------- */
@@ -342,26 +345,23 @@ tbody tr:hover { background: rgba(0,51,54,0.025); }
    ============================================================ */
 
 /* Desktop (Wide): slider shows 2 cards side by side */
-@media (min-width: 1100px) {
+@media (min-width: 991px) {
   .slider-card {
     flex: 0 0 calc(50% - 8px);
   }
   .slider-dots { display: none; }
-}
-
-/* Desktop */
-@media (min-width: 1024px) {
-  .page { gap: 32px; }
-  .slider-card { padding: 32px; }
-  .rate-card   { padding: 32px; }
-  table { font-size: 1.3rem; }
-  .chip-val { padding: 10px 18px; font-size: 1.4rem; min-width: 90px; }
-  .rowhead { font-size: 1.2rem; }
-  thead th { font-size: 1.1rem; }
+  
+  .page { gap: 36px; }
+  .slider-card { padding: 36px; }
+  .rate-card   { padding: 36px; }
+  table { font-size: 1.5rem; }
+  .chip-val { padding: 12px 24px; font-size: 1.6rem; min-width: 100px; }
+  .rowhead { font-size: 1.4rem; }
+  thead th { font-size: 1.25rem; }
 }
 
 /* Tablets */
-@media (max-width: 1099px) {
+@media (max-width: 990px) {
   :root { --header-h: 120px; }
   .header-logo { height: 80px; }
   .page { padding: 24px 20px; }
