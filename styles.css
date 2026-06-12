@@ -262,11 +262,10 @@ body {
 }
 
 /* ---------- TABLES ---------- */
-.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-wrap { width: 100%; overflow: hidden; }
 
 table {
   width: 100%;
-  min-width: 600px; /* Prevent squishing on small screens */
   border-collapse: collapse;
   font-size: 1.05rem;
   table-layout: fixed;
@@ -316,12 +315,12 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 14px;
+  padding: 6px 12px;
   border-radius: 999px;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-family: 'Oswald', sans-serif;
   font-weight: 700;
-  min-width: 70px;
+  min-width: 60px;
   font-variant-numeric: tabular-nums;
   transition: background 0.3s, color 0.3s;
 }
@@ -362,8 +361,8 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   .slider-card { flex: 0 0 calc(50% - 14px); }
   .slider-dots { display: none; }
   table { font-size: 1.45rem; }
-  .chip-val { padding: 10px 20px; font-size: 1.6rem; min-width: 100px; }
-  .rowhead { font-size: 1.55rem; }
+  .chip-val { padding: 8px 16px; font-size: 1.4rem; min-width: 80px; }
+  .rowhead { font-size: 1.4rem; }
   thead th { font-size: 1.25rem; padding: 16px 14px; }
   tbody td { padding: 14px 10px; }
   .section-title { font-size: 1.6rem; }
@@ -378,8 +377,8 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   .slider-dots { display: none; }
   .slider-card, .rate-card { padding: 24px; }
   table { font-size: 1.35rem; }
-  .chip-val { padding: 8px 16px; font-size: 1.5rem; min-width: 90px; }
-  .rowhead { font-size: 1.45rem; }
+  .chip-val { padding: 6px 14px; font-size: 1.3rem; min-width: 70px; }
+  .rowhead { font-size: 1.3rem; }
   thead th { font-size: 1.15rem; padding: 14px 14px; }
   tbody td { padding: 12px 10px; }
   .section-title { font-size: 1.5rem; }
@@ -393,8 +392,8 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   .slider-dots { display: none; }
   .slider-card, .rate-card { padding: 20px; }
   table { font-size: 1.25rem; }
-  .chip-val { padding: 8px 14px; font-size: 1.4rem; min-width: 85px; }
-  .rowhead { font-size: 1.35rem; }
+  .chip-val { padding: 6px 12px; font-size: 1.2rem; min-width: 65px; }
+  .rowhead { font-size: 1.2rem; }
   thead th { font-size: 1.05rem; padding: 12px 12px; }
   tbody td { padding: 10px 8px; }
 }
@@ -404,10 +403,10 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   .page { width: 95%; padding: 24px 20px; gap: 20px; }
   .rates-grid { grid-template-columns: 1fr; }
   .slider-card { flex: 0 0 100%; } /* One card per view in slider */
-  .chip-val { min-width: 0; padding: 8px 12px; font-size: 1.2rem; }
+  .chip-val { min-width: 0; padding: 6px 10px; font-size: 1.15rem; }
   table { font-size: 1.15rem; }
   thead th { font-size: 1rem; }
-  .rowhead { font-size: 1.2rem; }
+  .rowhead { font-size: 1.1rem; }
 }
 
 /* Large Mobile / Phablets */
@@ -419,13 +418,13 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   
   .chip-val {
     min-width: 0;
-    padding: 6px 10px;
-    font-size: 1.1rem;
+    padding: 4px 8px;
+    font-size: 1rem;
     letter-spacing: -0.3px;
   }
   thead th { font-size: 0.85rem; padding: 10px 8px; letter-spacing: 0; }
   tbody td { padding: 10px 8px; font-size: 1.05rem; }
-  .rowhead  { font-size: 1.05rem; white-space: normal; }
+  .rowhead  { font-size: 0.95rem; white-space: normal; }
 }
 
 /* Mobile */
@@ -439,19 +438,19 @@ tbody tr:hover { background: rgba(0,51,54,0.035); }
   
   .chip-val {
     min-width: 0;
-    padding: 5px 8px;
-    font-size: 1rem;
+    padding: 3px 6px;
+    font-size: 0.9rem;
     letter-spacing: -0.3px;
   }
   thead th { font-size: 0.75rem; padding: 8px 6px; letter-spacing: 0; }
   tbody td { padding: 8px 6px; font-size: 0.95rem; }
-  .rowhead  { font-size: 0.9rem; white-space: normal; }
+  .rowhead  { font-size: 0.85rem; white-space: normal; }
 }
 
 /* Very small screens */
 @media (max-width: 359px) {
-  .chip-val { padding: 4px 6px; font-size: 0.85rem; letter-spacing: -0.5px; }
+  .chip-val { padding: 2px 4px; font-size: 0.8rem; letter-spacing: -0.5px; }
   thead th  { font-size: 0.65rem; padding: 8px 4px; }
   tbody td  { font-size: 0.85rem; padding: 8px 4px; }
-  .rowhead  { font-size: 0.8rem; }
+  .rowhead  { font-size: 0.75rem; }
 }

@@ -96,10 +96,9 @@ function updateCell(el, current, previous, key, defaultClass = '') {
     chip.textContent = currentFmt;
   }
 
-  if (defaultClass) {
-    chip.className = `chip-val ${defaultClass}`;
-  } else {
-    chip.className = `chip-val ${dirClass(current, previous, key)}`;
+  const newClass = defaultClass ? `chip-val ${defaultClass}` : `chip-val ${dirClass(current, previous, key)}`;
+  if (chip.className !== newClass) {
+    chip.className = newClass;
   }
 }
 
@@ -153,7 +152,7 @@ function renderTable(container, rows, prevMap, type) {
   } else {
     for (let i = 0; i < rows.length; i++) {
       const cur = rowToPlain(rows[i]);
-      if (trs[i].getAttribute('data-key') !== escape(itemKey(cur))) {
+      if (trs[i].getAttribute('data-key') !== itemKey(cur)) {
         rebuild = true;
         break;
       }
