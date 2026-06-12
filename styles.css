@@ -86,12 +86,15 @@ body {
 .timer-box {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   background: var(--brand-mid);
   padding: 0 20px;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255,255,255,0.1);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 .status-dot {
   width: 10px;
@@ -112,6 +115,8 @@ body {
 }
 .marquee-bar {
   flex: 1;
+  display: flex;
+  align-items: center;
   background: var(--brand-mid);
   color: #ffffff;
   padding: 14px 24px;
@@ -120,8 +125,10 @@ body {
   letter-spacing: 0.08em;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255,255,255,0.1);
   overflow: hidden;          /* prevent content bleed */
   will-change: contents;     /* GPU hint for smooth scroll */
+  min-width: 0;
 }
 .marquee-bar marquee {
   /* Use CSS animation fallback on mobile for smoother scroll */
