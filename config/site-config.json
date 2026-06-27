@@ -1,0 +1,37 @@
+{
+  "business": {
+    "name": "Dharamraj Silver Arts",
+    "tagline": "Live Bullion Rates",
+    "phone": "+91 99131 37069",
+    "phone2": "",
+    "whatsapp": "+91 99131 37069",
+    "email": "",
+    "address": "",
+    "logo": "/Media/Dharamraj_Logo-1000x1000.png",
+    "favicon": "/Media/favicon.ico"
+  },
+  "theme": {
+    "primaryColor": "#003336",
+    "accentColor": "#d9b25f"
+  },
+  "marquee": {
+    "enabled": true,
+    "text": "THESE RATES ARE ONLY FOR REFERENCE. TO BOOK YOUR ORDER CALL AT OFFICE NUMBER."
+  },
+  "socials": {
+    "instagram": "",
+    "facebook": "",
+    "website": ""
+  },
+  "footer": {
+    "showPhone": true,
+    "showWhatsapp": true,
+    "showAddress": false,
+    "showEmail": false,
+    "copyright": "© 2025 Dharamraj Silver Arts. All rates are indicative.",
+    "developer": {
+      "text": "A Digital Product by Breathe Visuals",
+      "link": "https://www.instagram.com/breathe.visuals/"
+    }
+  }
+}

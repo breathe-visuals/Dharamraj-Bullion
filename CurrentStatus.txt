@@ -1,0 +1,375 @@
+# Dharamraj Silver Arts - Live Bullion Rate Web Application
+
+## Project Overview
+
+Build and maintain a professional live bullion rate website called **Dharamraj Silver Arts**.
+
+The website displays live Gold and Silver rates by consuming live market feeds from two different bullion providers.
+
+Current deployment stack:
+
+* Frontend: HTML, CSS, JavaScript
+* Backend: Node.js + Express
+* Real-time updates: Socket.IO
+* Hosting: Render
+* Source Control: GitHub
+
+---
+
+## Data Sources
+
+### Gold Data Source
+
+Provider:
+
+* Gopnath Refinery
+
+Socket Server:
+
+https://starlinesupport.in:10001
+
+Project Name:
+
+gopnathrefinery
+
+Use:
+
+* Gold Product Rates
+* Gold Future Rates
+* Gold Spot Rates
+
+---
+
+### Silver Data Source
+
+Provider:
+
+* Swayam Trading
+
+Socket Server:
+
+https://starlinesolutions.in:10001
+
+Project Name:
+
+swayamtrading
+
+Use:
+
+* Silver Product Rates
+* Silver Future Rates
+* Silver Spot Rates
+
+---
+
+## Important Technical Discovery
+
+Originally the website connected directly from browser to provider sockets.
+
+This caused deployment problems on Render because browser-side Socket.IO loading and CORS issues were inconsistent.
+
+Current architecture:
+
+Browser
+↓
+Own Node.js Server
+↓
+Provider Socket Feeds
+
+The server receives live feed updates and pushes them to connected website users through Socket.IO.
+
+This architecture must be preserved.
+
+Do NOT switch back to browser-direct connections.
+
+---
+
+## Live Update Requirement
+
+Extremely important:
+
+Rates must update instantly.
+
+Requirements:
+
+* No frontend polling
+* No setInterval API polling
+* No refresh buttons
+* No manual reloads
+* Use real-time push updates
+
+Flow:
+
+Provider Feed
+↓
+Node Server
+↓
+Socket.IO Push
+↓
+Browser
+
+Updates should appear immediately when source data changes.
+
+---
+
+## Current Layout Requirements
+
+### Hero Section
+
+Top section:
+
+* Dharamraj Silver Arts
+* Live connection status
+* Last updated timestamp
+
+---
+
+### Product Slider (Top Priority Section)
+
+At the top of the page.
+
+Slider contains:
+
+Card 1:
+Silver Products
+
+Card 2:
+Gold Products
+
+Mobile:
+
+* Swipe left/right
+
+Desktop:
+
+* Tabs or side-by-side cards
+
+---
+
+### Silver Product Table
+
+Source:
+
+Swayam Trading
+
+Display all available silver products.
+
+Examples:
+
+* 98.S REF+GST
+* 98.S RTGS
+* SILVER 999+GST
+* SILVER PETI RTGS
+
+Columns:
+
+* Product Name
+* Buy
+* Sell
+* High
+* Low
+
+---
+
+### Gold Product Table
+
+Source:
+
+Gopnath Refinery
+
+Display all available gold products.
+
+Examples:
+
+* 999 IMP RTGS
+* REFF ONLY L
+* REFF ONLY IMP
+
+Columns:
+
+* Product Name
+* Buy
+* Sell
+* High
+* Low
+
+---
+
+### Future Rates Section
+
+Below product slider.
+
+Display:
+
+* Gold Future
+* Silver Future
+
+Columns:
+
+* Buy
+* Sell
+* High
+* Low
+
+Can use either provider feed because both display similar future data.
+
+---
+
+### Spot Rates Section
+
+Below future section.
+
+Display:
+
+* Gold Spot
+* Silver Spot
+* INR Spot
+
+Columns:
+
+* Buy
+* Sell
+* High
+* Low
+
+Can use either provider feed because both display similar spot data.
+
+---
+
+## Price Movement Indicators
+
+When a rate changes:
+
+Increase:
+
+* Green highlight
+
+Decrease:
+
+* Red highlight
+
+No change:
+
+* Neutral color
+
+Comparison should be against previous received value.
+
+Must work for:
+
+* Product rates
+* Future rates
+* Spot rates
+
+---
+
+## Branding Requirements
+
+Visible branding:
+
+* Dharamraj Silver Arts only
+
+Do NOT display:
+
+* Gopnath Refinery
+* Swayam Trading
+* Starline
+* starlinesupport.in
+* starlinesolutions.in
+
+Data sources must remain hidden from users.
+
+---
+
+## Design Requirements
+
+Theme:
+
+* Premium bullion/jewellery style
+* Modern
+* Mobile-first
+* Fast loading
+
+Colors:
+
+* Gold accents
+* Silver accents
+* Dark professional background
+
+Requirements:
+
+* Responsive
+* Mobile swipe support
+* Smooth transitions
+* Professional appearance
+
+---
+
+## Current Backend Features
+
+Implemented:
+
+* Express server
+* Socket.IO server
+* Connection to both live providers
+* Real-time data forwarding
+* Render deployment compatibility
+
+Do not remove these features.
+
+---
+
+## Future Improvements Wanted
+
+Potential future roadmap:
+
+1. WhatsApp inquiry button
+2. Custom domain
+3. PWA (installable app)
+4. Android Play Store wrapper
+5. Historical charts
+6. Rate alerts
+7. Admin panel
+8. Product visibility controls
+9. Theme customization
+10. Multi-language support
+11. Client logo upload
+12. Market news section
+13. TradingView-style charts
+14. Daily high/low analytics
+15. Push notifications
+
+---
+
+## Deployment
+
+Platform:
+
+Render
+
+Repository:
+
+GitHub connected to Render
+
+Requirements:
+
+* Automatic deployment from GitHub
+* No Replit dependency
+* Production ready
+* Stable socket reconnection handling
+
+---
+
+## Current Status
+
+Working:
+
+* Live feed connection established
+* Gold source connected
+* Silver source connected
+* Render deployment working
+* Socket.IO server running
+* Frontend receiving updates
+
+Next goal:
+
+Refine UI and add advanced features without breaking live rate functionality.

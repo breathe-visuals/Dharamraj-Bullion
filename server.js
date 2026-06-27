@@ -1,45 +1,104 @@
-const express = require('express');
-const http = require('http');
-const path = require('path');
-const { Server } = require('socket.io');
+const express  = require('express');
+const http     = require('http');
+const path     = require('path');
+const fs       = require('fs');
+const { Server }    = require('socket.io');
 const { io: createClient } = require('socket.io-client');
 
-const app = express();
+const app        = express();
 const httpServer = http.createServer(app);
-const io = new Server(httpServer, {
-  cors: { origin: '*' },
-});
+const io         = new Server(httpServer, { cors: { origin: '*' } });
 
 const PORT = process.env.PORT || 3000;
 
+/* ══════════════════════════════════════════════════════════════
+   CONFIG — loaded once at startup from /config/*.json
+   ══════════════════════════════════════════════════════════════ */
+function loadConfig(filename) {
+  const p = path.join(__dirname, 'config', filename);
+  try {
+    return JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch (err) {
+    console.error(`[config] Cannot load ${filename}: ${err.message}`);
+    process.exit(1);
+  }
+}
+
+const siteConfig  = loadConfig('site-config.json');
+const adminConfig = loadConfig('admin-config.json');
+
+/* Config-driven APX source rows & GST % */
+const APX_GOLD_SOURCE_ROW   = adminConfig?.goldRates?.apxSourceRow   || '999 IMP RTGS';
+const APX_GOLD_GST_PCT      = adminConfig?.goldRates?.apxGstPercent  ?? 3;
+const APX_SILVER_SOURCE_ROW = adminConfig?.silverRates?.apxSourceRow || 'SILVER PETI RTGS';
+const APX_SILVER_GST_PCT    = adminConfig?.silverRates?.apxGstPercent ?? 3;
+const SILVER_COIN_ROW       = adminConfig?.silverCoins?.baseRow      || 'SILVER PETI RTGS';
+const GOLD_COIN_ROW         = adminConfig?.goldCoins?.baseRow        || '999 IMP RTGS';
+
+/* ══════════════════════════════════════════════════════════════
+   PRODUCT ADJUSTMENTS
+   Reads adminConfig.productAdjustments — keyed by exact product Name.
+   Formula applied to every numeric field (bid/ask/high/low):
+     adjusted = round( raw * (1 + addPercent/100) + addAmount + addPerGram * unitGrams )
+   This runs for DISPLAY (product tables) AND for base-rate lookups
+   (coins, APX), so any adjustment automatically cascades.
+   ══════════════════════════════════════════════════════════════ */
+const PRODUCT_ADJ = adminConfig?.productAdjustments || {};
+
+/* Look up adjustment config by product name (case-insensitive) */
+function adjFor(name) {
+  if (!name) return null;
+  const key = String(name).trim().toLowerCase();
+  const entry = Object.entries(PRODUCT_ADJ).find(
+    ([k]) => String(k).trim().toLowerCase() === key
+  );
+  return entry ? entry[1] : null;
+}
+
+/* Apply adjustment to a single numeric rate value */
+function applyAdj(name, value) {
+  if (value === null || value === undefined) return value;
+  const adj = adjFor(name);
+  if (!adj) return value;
+  const unitGrams = Number(adj.unitGrams) || 1;
+  const result = Number(value) * (1 + (Number(adj.addPercent) || 0) / 100)
+               + (Number(adj.addAmount)  || 0)
+               + (Number(adj.addPerGram) || 0) * unitGrams;
+  return Math.round(result);
+}
+
+/* Apply adjustment to all numeric fields of a standardized item */
+function applyAdjToItem(item) {
+  if (!item) return item;
+  const name = item.name || item.symbol || '';
+  return {
+    ...item,
+    bid:  applyAdj(name, item.bid),
+    ask:  applyAdj(name, item.ask),
+    high: applyAdj(name, item.high),
+    low:  applyAdj(name, item.low),
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FEED CONFIGURATION
+   ══════════════════════════════════════════════════════════════ */
 const FEEDS = {
-  gopnath: {
-    url: 'https://starlinesupport.in:10001',
-    room: 'gopnathrefinery',
-  },
-  swayam: {
-    url: 'https://starlinesolutions.in:10001',
-    room: 'swayamtrading',
-  },
+  gopnath: { url: 'https://starlinesupport.in:10001',  room: 'gopnathrefinery' },
+  swayam:  { url: 'https://starlinesolutions.in:10001', room: 'swayamtrading'   },
 };
 
+/* ══════════════════════════════════════════════════════════════
+   SERVER STATE
+   ══════════════════════════════════════════════════════════════ */
 const state = {
-  gopnath: {
-    connected: false,
-    lastSeen: null,
-    live: [],
-    map: {},
-    products: [],
-  },
-  swayam: {
-    connected: false,
-    lastSeen: null,
-    live: [],
-    map: {},
-    products: [],
-  },
+  gopnath: { connected: false, lastSeen: null, live: [], rawRate: [], map: {}, products: [] },
+  swayam:  { connected: false, lastSeen: null, live: [], rawRate: [], map: {}, products: [] },
 };
 
+/* ══════════════════════════════════════════════════════════════
+   UTILITY FUNCTIONS
+   ══════════════════════════════════════════════════════════════ */
 function toNum(val) {
   if (val === undefined || val === null) return null;
   const cleaned = String(val).replace(/,/g, '').trim();
@@ -49,27 +108,25 @@ function toNum(val) {
 }
 
 function normalizeFeed(data) {
-  if (Array.isArray(data)) return data;
+  if (Array.isArray(data))              return data;
   if (data && Array.isArray(data.Rate)) return data.Rate;
   return [];
 }
 
 function symbolOf(item) {
-  return String(item?.symbol ?? item?.Symbol ?? item?.Source ?? '')
-    .trim()
-    .toLowerCase();
+  return String(item?.symbol ?? item?.Symbol ?? item?.Source ?? '').trim().toLowerCase();
 }
 
 function labelOf(symbol, item) {
-  const sym = String(symbol || '').toLowerCase();
-  if (sym === 'gold') return 'Gold';
-  if (sym === 'silver') return 'Silver';
-  if (sym === 'goldnext') return 'Gold Next';
-  if (sym === 'silvernext') return 'Silver Next';
-  if (sym === 'xauusd') return 'XAU/USD';
-  if (sym === 'xagusd') return 'XAG/USD';
-  if (sym === 'inrspot') return 'INR Spot';
-  if (item?.Name) return String(item.Name).toUpperCase();
+  const s = String(symbol || '').toLowerCase();
+  if (s === 'gold')       return 'Gold';
+  if (s === 'silver')     return 'Silver';
+  if (s === 'goldnext')   return 'Gold Next';
+  if (s === 'silvernext') return 'Silver Next';
+  if (s === 'xauusd')     return 'XAU/USD';
+  if (s === 'xagusd')     return 'XAG/USD';
+  if (s === 'inrspot')    return 'INR Spot';
+  if (item?.Name)         return String(item.Name).toUpperCase();
   return String(symbol || '').toUpperCase();
 }
 
@@ -77,8 +134,8 @@ function indexBySymbol(items) {
   const map = {};
   for (const item of items) {
     const sym = symbolOf(item);
-    if (!sym) continue;
-    if (!map[sym]) map[sym] = item;
+    if (!sym || map[sym]) continue;
+    map[sym] = item;
   }
   return map;
 }
@@ -88,38 +145,51 @@ function standardizeItem(item, sourceKey) {
   const symbol = symbolOf(item);
   return {
     symbol,
-    name: item.Name || item.Symbol_Name || item.Symbol || labelOf(symbol, item),
-    bid: toNum(item.Bid ?? item.Buy),
-    ask: toNum(item.Ask ?? item.Sell),
-    high: toNum(item.High),
-    low: toNum(item.Low),
-    open: toNum(item.Open),
+    name:  item.Name || item.Symbol_Name || item.Symbol || labelOf(symbol, item),
+    bid:   toNum(item.Bid   ?? item.Buy),
+    ask:   toNum(item.Ask   ?? item.Sell),
+    high:  toNum(item.High),
+    low:   toNum(item.Low),
+    open:  toNum(item.Open),
     close: toNum(item.Close),
-    diff: toNum(item.Difference),
-    ltp: toNum(item.LTP),
-    time: item.Time || null,
+    diff:  toNum(item.Difference),
+    ltp:   toNum(item.LTP),
+    time:  item.Time || null,
     source: sourceKey,
   };
 }
 
 function visibleProducts(rows, sourceKey) {
   return rows
-    .filter((row) => String(row?.IsDisplay).toLowerCase() === 'true')
-    .map((row) => standardizeItem(row, sourceKey))
+    .filter(row => String(row?.IsDisplay).toLowerCase() === 'true')
+    .map(row    => applyAdjToItem(standardizeItem(row, sourceKey)))  /* adjustment applied here */
     .filter(Boolean);
 }
 
+/* Search full raw Rate array by Name field — ignores IsDisplay */
+function findRawByName(rows, name) {
+  if (!Array.isArray(rows)) return null;
+  const t = String(name).trim().toLowerCase();
+  return rows.find(r => String(r?.Name ?? '').trim().toLowerCase() === t) || null;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FEED HANDLER
+   ══════════════════════════════════════════════════════════════ */
 function handleFeed(sourceKey, data) {
   try {
     const items = normalizeFeed(data);
     if (!items.length) return;
 
-    state[sourceKey].live = items;
-    state[sourceKey].map = indexBySymbol(items);
+    state[sourceKey].live    = items;
+    state[sourceKey].map     = indexBySymbol(items);
     state[sourceKey].lastSeen = new Date().toISOString();
 
     if (data && Array.isArray(data.Rate)) {
+      state[sourceKey].rawRate  = data.Rate;
       state[sourceKey].products = visibleProducts(data.Rate, sourceKey);
+    } else if (Array.isArray(data)) {
+      state[sourceKey].rawRate = data;
     }
 
     publish();
@@ -128,8 +198,11 @@ function handleFeed(sourceKey, data) {
   }
 }
 
+/* ══════════════════════════════════════════════════════════════
+   FEED CONNECTION
+   ══════════════════════════════════════════════════════════════ */
 function connectFeed(sourceKey) {
-  const feed = FEEDS[sourceKey];
+  const feed   = FEEDS[sourceKey];
   const socket = createClient(feed.url, {
     transports: ['websocket', 'polling'],
     reconnection: true,
@@ -140,82 +213,144 @@ function connectFeed(sourceKey) {
 
   socket.on('connect', () => {
     state[sourceKey].connected = true;
-    socket.emit('room', feed.room);
+    socket.emit('room',   feed.room);
     socket.emit('Client', feed.room);
     publish();
   });
-
-  socket.on('disconnect', () => {
-    state[sourceKey].connected = false;
-    publish();
-  });
-
+  socket.on('disconnect',    ()    => { state[sourceKey].connected = false; publish(); });
   socket.on('connect_error', (err) => {
     state[sourceKey].connected = false;
     console.log(`[${sourceKey}] connect_error:`, err.message);
     publish();
   });
-
-  socket.on('ClientData', (data) => {
-    try {
-      const parsed = typeof data === 'string' ? JSON.parse(data) : data;
-      state[sourceKey].clientData = parsed;
-    } catch {
-      // ignore
-    }
+  socket.on('ClientData', data => {
+    try { state[sourceKey].clientData = typeof data === 'string' ? JSON.parse(data) : data; } catch {}
   });
-
-  socket.on('message', (data) => handleFeed(sourceKey, data));
-  socket.on('Liverate', (data) => handleFeed(sourceKey, data));
+  socket.on('message',  data => handleFeed(sourceKey, data));
+  socket.on('Liverate', data => handleFeed(sourceKey, data));
 
   return socket;
 }
 
+/* ══════════════════════════════════════════════════════════════
+   SYMBOL ROUTING
+   ══════════════════════════════════════════════════════════════ */
 function chooseRaw(symbol) {
-  const sym = String(symbol || '').toLowerCase();
-
-  if (sym === 'gold') {
-    return state.gopnath.map.gold || state.swayam.map.gold || null;
-  }
-
-  if (sym === 'silver') {
-    return state.swayam.map.silver || state.gopnath.map.silver || null;
-  }
-
-  return state.swayam.map[sym] || state.gopnath.map[sym] || null;
+  const s = String(symbol || '').toLowerCase();
+  if (s === 'gold')   return state.gopnath.map.gold   || state.swayam.map.gold   || null;
+  if (s === 'silver') return state.swayam.map.silver  || state.gopnath.map.silver || null;
+  return state.swayam.map[s] || state.gopnath.map[s] || null;
 }
 
 function sourceFor(symbol) {
-  const sym = String(symbol || '').toLowerCase();
-  if (sym === 'silver' || sym === 'silvernext') return 'swayam';
-  return state.gopnath.map[sym] ? 'gopnath' : 'swayam';
+  const s = String(symbol || '').toLowerCase();
+  if (s === 'silver' || s === 'silvernext') return 'swayam';
+  return state.gopnath.map[s] ? 'gopnath' : 'swayam';
 }
 
 function buildRows(symbols) {
   return symbols
-    .map((sym) => {
-      const raw = chooseRaw(sym);
-      if (!raw) return null;
-      return standardizeItem(raw, sourceFor(sym));
-    })
+    .map(sym => { const raw = chooseRaw(sym); return raw ? standardizeItem(raw, sourceFor(sym)) : null; })
     .filter(Boolean);
 }
 
+/* ══════════════════════════════════════════════════════════════
+   CONFIG-DRIVEN BASE RATE LOOKUP
+   Priority:
+     1. Visible products (standardized .ask = Sell)
+     2. Full rawRate array (original Name/Ask fields)
+     3. Fuzzy keyword fallback
+   ══════════════════════════════════════════════════════════════ */
+function getBaseAsk(sourceKey, rowName) {
+  const target = String(rowName).trim().toLowerCase();
+
+  /* 1 — visible products */
+  const p = state[sourceKey].products.find(
+    p => String(p?.name ?? '').trim().toLowerCase() === target
+  );
+  if (p?.ask != null) return toNum(p.ask);
+
+  /* 2 — raw Rate array (apply adjustment since products list may not include hidden rows) */
+  const r = findRawByName(state[sourceKey].rawRate, rowName)
+         || findRawByName(state[sourceKey].live,    rowName);
+  if (r) return applyAdj(rowName, toNum(r.Ask ?? r.Sell));
+
+  /* 3 — fuzzy: first word > 3 chars in row name */
+  const kw = target.split(' ').find(w => w.length > 3);
+  if (kw) {
+    const fuzzy = [...state[sourceKey].rawRate, ...state[sourceKey].live].find(
+      r => String(r?.Name ?? r?.name ?? '').toLowerCase().includes(kw)
+    );
+    if (fuzzy) return applyAdj(rowName, toNum(fuzzy.Ask ?? fuzzy.Sell ?? fuzzy.ask));
+  }
+
+  return null;
+}
+
+/* Get full row data (ask, high, low) for a named row */
+function getBaseRow(sourceKey, rowName) {
+  const target = String(rowName).trim().toLowerCase();
+  /* 1 — visible products */
+  const p = state[sourceKey].products.find(
+    p => String(p?.name ?? '').trim().toLowerCase() === target
+  );
+  if (p) return { ask: toNum(p.ask), high: toNum(p.high), low: toNum(p.low) };
+  /* 2 — raw array (apply adjustment) */
+  const r = findRawByName(state[sourceKey].rawRate, rowName)
+         || findRawByName(state[sourceKey].live,    rowName);
+  if (r) return {
+    ask:  applyAdj(rowName, toNum(r.Ask ?? r.Sell)),
+    high: applyAdj(rowName, toNum(r.High)),
+    low:  applyAdj(rowName, toNum(r.Low)),
+  };
+  return null;
+}
+
+/* APX W/O GST: remove GST % from ask/high/low of source row */
+function apxRow(rowData, gstPct) {
+  if (!rowData) return null;
+  const f = 1 + gstPct / 100;
+  return {
+    sell: rowData.ask  !== null ? Math.round(rowData.ask  / f) : null,
+    high: rowData.high !== null ? Math.round(rowData.high / f) : null,
+    low:  rowData.low  !== null ? Math.round(rowData.low  / f) : null,
+  };
+}
+
+function getGoldApxFull()   { return apxRow(getBaseRow('gopnath', APX_GOLD_SOURCE_ROW),   APX_GOLD_GST_PCT); }
+function getSilverApxFull() { return apxRow(getBaseRow('swayam',  APX_SILVER_SOURCE_ROW), APX_SILVER_GST_PCT); }
+
+function getGoldApx()    { return getGoldApxFull()?.sell  ?? null; }
+function getSilverApx()  { return getSilverApxFull()?.sell ?? null; }
+
+function getGoldCoinBase() {
+  if (GOLD_COIN_ROW === 'APX_GOLD') return getGoldApx();
+  return getBaseAsk('gopnath', GOLD_COIN_ROW);
+}
+function getSilverCoinBase() { return getBaseAsk('swayam', SILVER_COIN_ROW); }
+
+/* ══════════════════════════════════════════════════════════════
+   PAYLOAD BUILDER
+   ══════════════════════════════════════════════════════════════ */
 function buildPayload() {
+  const goldApxFull   = getGoldApxFull();
+  const silverApxFull = getSilverApxFull();
   return {
     updatedAt: state.swayam.lastSeen || state.gopnath.lastSeen || null,
-    connected: {
-      gopnath: state.gopnath.connected,
-      swayam: state.swayam.connected,
-    },
+    connected: { gopnath: state.gopnath.connected, swayam: state.swayam.connected },
     summary: {
-      gold: standardizeItem(chooseRaw('gold'), 'gopnath'),
+      gold:   standardizeItem(chooseRaw('gold'),   'gopnath'),
       silver: standardizeItem(chooseRaw('silver'), 'swayam'),
     },
-    goldProducts: state.gopnath.products,
+    goldProducts:   state.gopnath.products,
     silverProducts: state.swayam.products,
     futureRows: buildRows(['gold', 'silver', 'goldnext', 'silvernext']),
-    spotRows: buildRows(['xauusd', 'xagusd', 'inrspot']),
+    spotRows:   buildRows(['xauusd', 'xagusd', 'inrspot']),
+    /* Coin bases */
+    goldCoinBase:   getGoldCoinBase(),
+    silverCoinBase: getSilverCoinBase(),
+    goldApxRow:     goldApxFull,
+    silverApxRow:   silverApxFull,
   };
 }
 
@@ -223,19 +358,57 @@ function publish() {
   io.emit('rates:update', buildPayload());
 }
 
+/* ══════════════════════════════════════════════════════════════
+   START FEEDS
+   ══════════════════════════════════════════════════════════════ */
 connectFeed('gopnath');
 connectFeed('swayam');
 
+/* ══════════════════════════════════════════════════════════════
+   EXPRESS — static files + API
+   ══════════════════════════════════════════════════════════════ */
 app.use(express.static(__dirname));
 
+/* Config endpoint */
+app.get('/api/config', (req, res) => {
+  res.json({ site: siteConfig, admin: adminConfig });
+});
+
+/* Snapshot rates endpoint */
 app.get('/api/rates', (req, res) => {
   res.json(buildPayload());
 });
 
-io.on('connection', (socket) => {
+/* Debug endpoint */
+app.get('/api/debug', (req, res) => {
+  res.json({
+    goldCoinBase:   getGoldCoinBase(),
+    silverCoinBase: getSilverCoinBase(),
+    configuredRows: { APX_GOLD_SOURCE_ROW, APX_SILVER_SOURCE_ROW, SILVER_COIN_ROW, GOLD_COIN_ROW },
+    productAdjustments: PRODUCT_ADJ,
+    gopnathProducts: state.gopnath.rawRate.map(r => ({
+      name: r?.Name,
+      rawAsk: r?.Ask ?? r?.Sell,
+      adjustedAsk: applyAdj(r?.Name, toNum(r?.Ask ?? r?.Sell)),
+      display: r?.IsDisplay,
+    })),
+    swayamProducts: state.swayam.rawRate.map(r => ({
+      name: r?.Name,
+      rawAsk: r?.Ask ?? r?.Sell,
+      adjustedAsk: applyAdj(r?.Name, toNum(r?.Ask ?? r?.Sell)),
+      display: r?.IsDisplay,
+    })),
+  });
+});
+
+/* ══════════════════════════════════════════════════════════════
+   SOCKET — emit snapshot to every new client
+   ══════════════════════════════════════════════════════════════ */
+io.on('connection', socket => {
   socket.emit('rates:update', buildPayload());
 });
 
 httpServer.listen(PORT, () => {
-  console.log(`Dharamraj Silver Arts running on http://localhost:${PORT}`);
+  console.log(`\n  ${siteConfig?.business?.name || 'Dharamraj Silver Arts'} Live Rates`);
+  console.log(`  Running → http://localhost:${PORT}\n`);
 });

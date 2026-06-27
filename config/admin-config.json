@@ -1,0 +1,152 @@
+{
+  "pages": {
+    "gold": true,
+    "silver": true,
+    "coins": true
+  },
+  "sections": {
+    "goldProducts": true,
+    "silverProducts": true,
+    "futureRates": true,
+    "spotRates": true,
+    "coinRates": true
+  },
+  "features": {
+    "showMarquee": true,
+    "showLastUpdated": true,
+    "showConnectionStatus": true,
+    "enablePWA": true
+  },
+  "productAdjustments": {
+    "_comment": "Adjust any product's Bid/Ask/High/Low before display AND before it is used as a base for coins or APX. Keys = exact product Name from the feed (case-insensitive). unitGrams = grams this rate represents (10 for gold per-10g, 1000 for silver per-kg). Leave all values 0 for no change.",
+    "999 IMP RTGS": {
+      "_note": "Gold 999 Imported RTGS — rate is per 10 grams",
+      "unitGrams": 10,
+      "addPercent": 0,
+      "addPerGram": 0,
+      "addAmount": 100
+    },
+    "REFF ONLY L": {
+      "_note": "Gold Reference Only Local — rate is per 10 grams",
+      "unitGrams": 10,
+      "addPercent": 0,
+      "addPerGram": 0,
+      "addAmount": 0
+    },
+    "REFF ONLY IMP": {
+      "_note": "Gold Reference Only Imported — rate is per 10 grams",
+      "unitGrams": 10,
+      "addPercent": 0,
+      "addPerGram": 0,
+      "addAmount": 0
+    },
+    "SILVER PETI RTGS": {
+      "_note": "Silver Peti RTGS — rate is per 1 kg (1000 grams). Also base for Silver Coins.",
+      "unitGrams": 1000,
+      "addPercent": 0,
+      "addPerGram": 0,
+      "addAmount": 500
+    },
+    "98.S REF+GST": {
+      "_note": "Silver 98% Ref + GST — rate is per 1 kg",
+      "unitGrams": 1000,
+      "addPercent": 0,
+      "addPerGram": 0,
+      "addAmount": 0
+    },
+    "98.S RTGS": {
+      "_note": "Silver 98% RTGS — rate is per 1 kg",
+      "unitGrams": 1000,
+      "addPercent": 0,
+      "addPerGram": 0,
+      "addAmount": 0
+    },
+    "SILVER 999+GST": {
+      "_note": "Silver 999 + GST — rate is per 1 kg",
+      "unitGrams": 1000,
+      "addPercent": 0,
+      "addPerGram": 0,
+      "addAmount": 0
+    }
+  },
+  "goldCoins": {
+    "baseRow": "999 IMP RTGS",
+    "divisor": 10,
+    "premiumPerGram": 0,
+    "premiumPercent": 0,
+    "rows": [
+      {
+        "name": "GOLD COIN 999 1 GM",
+        "grams": 1
+      },
+      {
+        "name": "GOLD COIN 999 2 GM",
+        "grams": 2
+      },
+      {
+        "name": "GOLD COIN 999 5 GM",
+        "grams": 5
+      },
+      {
+        "name": "GOLD COIN 999 10 GM",
+        "grams": 10
+      },
+      {
+        "name": "GOLD COIN 999 20 GM",
+        "grams": 20
+      },
+      {
+        "name": "GOLD COIN 999 50 GM",
+        "grams": 50
+      },
+      {
+        "name": "GOLD COIN 999 100 GM",
+        "grams": 100
+      }
+    ]
+  },
+  "silverCoins": {
+    "baseRow": "SILVER PETI RTGS",
+    "divisor": 1000,
+    "premiumPerGram": 0,
+    "premiumPercent": 0,
+    "rows": [
+      {
+        "name": "SILVER COIN 999 5 GM",
+        "grams": 5
+      },
+      {
+        "name": "SILVER COIN 999 10 GM",
+        "grams": 10
+      },
+      {
+        "name": "SILVER COIN 999 20 GM",
+        "grams": 20
+      },
+      {
+        "name": "SILVER COIN 999 50 GM",
+        "grams": 50
+      },
+      {
+        "name": "SILVER COIN 999 100 GM",
+        "grams": 100
+      },
+      {
+        "name": "SILVER COIN 999 500 GM",
+        "grams": 500
+      },
+      {
+        "name": "SILVER COIN 999 1 KG",
+        "grams": 1000
+      }
+    ]
+  },
+  "goldRates": {
+    "apxSourceRow": "999 IMP RTGS",
+    "apxGstPercent": 3
+  },
+  "silverRates": {
+    "apxSourceRow": "SILVER PETI RTGS",
+    "apxGstPercent": 3
+  }
+}
