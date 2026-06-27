@@ -9,7 +9,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta id="meta-apple-title" name="apple-mobile-web-app-title" content="Dharamraj" />
-  <meta id="meta-description" name="description" content="Dharamraj Silver Arts – Live gold and silver bullion rates, updated instantly." />
+  <meta id="meta-description" name="description"
+    content="Dharamraj Silver Arts – Live gold and silver bullion rates, updated instantly." />
 
   <title>Dharamraj Silver Arts – Live Rates</title>
 
@@ -65,7 +66,9 @@
         <article class="rate-card" id="silverCard">
           <div class="card-header">
             <span class="metal-badge silver-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" /></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="10" />
+              </svg>
               Silver Products
             </span>
           </div>
@@ -78,7 +81,9 @@
         <article class="rate-card" id="goldCard">
           <div class="card-header">
             <span class="metal-badge gold-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" /></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="12" r="10" />
+              </svg>
               Gold Products
             </span>
           </div>
@@ -151,13 +156,11 @@
 
       <!-- Coin Tabs -->
       <div class="coin-tabs" role="tablist" aria-label="Coin types">
-        <button class="coin-tab active" id="tab-goldcoin" role="tab"
-          aria-selected="true" aria-controls="panel-goldcoin"
+        <button class="coin-tab active" id="tab-goldcoin" role="tab" aria-selected="true" aria-controls="panel-goldcoin"
           onclick="switchCoinTab('goldcoin')">
           <span class="coin-tab-icon">⚜</span> Gold Coin
         </button>
-        <button class="coin-tab" id="tab-silvercoin" role="tab"
-          aria-selected="false" aria-controls="panel-silvercoin"
+        <button class="coin-tab" id="tab-silvercoin" role="tab" aria-selected="false" aria-controls="panel-silvercoin"
           onclick="switchCoinTab('silvercoin')">
           <span class="coin-tab-icon">◈</span> Silver Coin
         </button>
@@ -170,7 +173,7 @@
             <p class="empty-msg">Connecting…</p>
           </div>
         </article>
-        <p class="coin-note">Rates are inclusive of making charges and exclusive of packing charges.*</p>
+        <p class="coin-note">Rates are exclusive of making charges and packing charges.*</p>
       </div>
 
       <!-- Silver Coin Panel -->
@@ -180,7 +183,7 @@
             <p class="empty-msg">Connecting…</p>
           </div>
         </article>
-        <p class="coin-note">Rates are inclusive of making charges and exclusive of packing charges.*</p>
+        <p class="coin-note">Rates are exclusive of making charges and packing charges.*</p>
       </div>
     </section>
 
@@ -196,16 +199,19 @@
   <!-- BOTTOM ACTION BAR -->
   <div class="bottom-action-bar" id="bottom-action-bar">
     <button class="action-btn action-btn-call" id="btn-call" onclick="showCallModal()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l.97-.97a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 17z"/>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path
+          d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l.97-.97a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 17z" />
       </svg>
       Call Us
     </button>
     <button class="action-btn action-btn-share" id="btn-share" onclick="shareRates()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-        <polyline points="16 6 12 2 8 6"/>
-        <line x1="12" y1="2" x2="12" y2="15"/>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+        <polyline points="16 6 12 2 8 6" />
+        <line x1="12" y1="2" x2="12" y2="15" />
       </svg>
       Share Live Rate
     </button>

@@ -8,16 +8,16 @@
 'use strict';
 
 /* ── Global config & socket ─────────────────────────────────── */
-let CFG    = null;   /* { site:{}, admin:{} } */
+let CFG = null;   /* { site:{}, admin:{} } */
 let socket = null;
 
 /* ── Previous-state maps ────────────────────────────────────── */
 const prev = {
-  future:         {},
-  spot:           {},
-  goldProducts:   {},
+  future: {},
+  spot: {},
+  goldProducts: {},
   silverProducts: {},
-  goldCoinBase:   null,
+  goldCoinBase: null,
   silverCoinBase: null,
 };
 
@@ -29,18 +29,18 @@ let lastRatesData = null;
 
 /* ── DOM refs ────────────────────────────────────────────────── */
 const dom = {
-  status:           document.getElementById('status'),
-  lastUpdated:      document.getElementById('lastUpdated'),
-  futureBox:        document.getElementById('futureBox'),
-  futureBoxMobile:  document.getElementById('futureBoxMobile'),
-  spotBox:          document.getElementById('spotBox'),
-  spotBoxMobile:    document.getElementById('spotBoxMobile'),
-  goldProductsBox:  document.getElementById('goldProductsBox'),
-  silverProductsBox:document.getElementById('silverProductsBox'),
-  goldCoinBox:      document.getElementById('goldCoinBox'),
-  silverCoinBox:    document.getElementById('silverCoinBox'),
-  slider:           document.getElementById('rateSlider'),
-  dots:             Array.from(document.querySelectorAll('.dot')),
+  status: document.getElementById('status'),
+  lastUpdated: document.getElementById('lastUpdated'),
+  futureBox: document.getElementById('futureBox'),
+  futureBoxMobile: document.getElementById('futureBoxMobile'),
+  spotBox: document.getElementById('spotBox'),
+  spotBoxMobile: document.getElementById('spotBoxMobile'),
+  goldProductsBox: document.getElementById('goldProductsBox'),
+  silverProductsBox: document.getElementById('silverProductsBox'),
+  goldCoinBox: document.getElementById('goldCoinBox'),
+  silverCoinBox: document.getElementById('silverCoinBox'),
+  slider: document.getElementById('rateSlider'),
+  dots: Array.from(document.querySelectorAll('.dot')),
 };
 
 /* ================================================================
@@ -75,8 +75,8 @@ function fmt(val) {
 
 function escape(s) {
   return String(s ?? '')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function itemKey(row) {
@@ -86,11 +86,11 @@ function itemKey(row) {
 function rowToPlain(row) {
   return {
     symbol: String(row?.symbol || '').toLowerCase(),
-    name:   row?.name || '',
-    bid:    toNum(row?.bid),
-    ask:    toNum(row?.ask),
-    high:   toNum(row?.high),
-    low:    toNum(row?.low),
+    name: row?.name || '',
+    bid: toNum(row?.bid),
+    ask: toNum(row?.ask),
+    high: toNum(row?.high),
+    low: toNum(row?.low),
   };
 }
 
@@ -111,7 +111,7 @@ function dirClass(cur, prv, key) {
   const c = toNum(cur), p = toNum(prv);
   const now = Date.now();
   if (c !== null && p !== null) {
-    if (c > p) highlights[key] = { dir: 'up',   expiresAt: now + 3000 };
+    if (c > p) highlights[key] = { dir: 'up', expiresAt: now + 3000 };
     else if (c < p) highlights[key] = { dir: 'down', expiresAt: now + 3000 };
   }
   const h = highlights[key];
@@ -135,11 +135,11 @@ function buildTableHTML(rows, prevMap, colLabel) {
   const trs = rows.map(row => {
     const cur = rowToPlain(row);
     const prv = prevMap[itemKey(cur)] || {};
-    const k   = itemKey(cur);
+    const k = itemKey(cur);
     return `<tr data-key="${k}">
       <td class="rowhead">${escape(symbolLabel(cur.symbol, cur.name))}</td>
-      <td class="cell-bid"><span class="chip-val ${dirClass(cur.bid, prv.bid, k+'-bid')}">${fmt(cur.bid)}</span></td>
-      <td class="cell-ask"><span class="chip-val ${dirClass(cur.ask, prv.ask, k+'-ask')}">${fmt(cur.ask)}</span></td>
+      <td class="cell-bid"><span class="chip-val ${dirClass(cur.bid, prv.bid, k + '-bid')}">${fmt(cur.bid)}</span></td>
+      <td class="cell-ask"><span class="chip-val ${dirClass(cur.ask, prv.ask, k + '-ask')}">${fmt(cur.ask)}</span></td>
       <td class="cell-high"><span class="chip-val always-green">${fmt(cur.high)}</span></td>
       <td class="cell-low"><span class="chip-val always-red">${fmt(cur.low)}</span></td>
     </tr>`;
@@ -160,10 +160,10 @@ function renderTable(container, rows, prevMap, type) {
     return;
   }
   const colLabel = type === 'mini' ? 'Product' : 'Symbol';
-  const table  = container.querySelector('table');
-  const tbody  = table?.querySelector('tbody');
-  const trs    = tbody ? Array.from(tbody.querySelectorAll('tr:not(.apx-tr)')) : [];
-  let rebuild  = !table || trs.length !== rows.length;
+  const table = container.querySelector('table');
+  const tbody = table?.querySelector('tbody');
+  const trs = tbody ? Array.from(tbody.querySelectorAll('tr:not(.apx-tr)')) : [];
+  let rebuild = !table || trs.length !== rows.length;
 
   if (!rebuild) {
     for (let i = 0; i < rows.length; i++) {
@@ -177,12 +177,12 @@ function renderTable(container, rows, prevMap, type) {
     rows.forEach((row, i) => {
       const cur = rowToPlain(row);
       const prv = prevMap[itemKey(cur)] || {};
-      const k   = itemKey(cur);
-      const tr  = trs[i];
-      updateCell(tr.querySelector('.cell-bid'),  cur.bid,  prv.bid,  k+'-bid');
-      updateCell(tr.querySelector('.cell-ask'),  cur.ask,  prv.ask,  k+'-ask');
+      const k = itemKey(cur);
+      const tr = trs[i];
+      updateCell(tr.querySelector('.cell-bid'), cur.bid, prv.bid, k + '-bid');
+      updateCell(tr.querySelector('.cell-ask'), cur.ask, prv.ask, k + '-ask');
       updateCell(tr.querySelector('.cell-high'), cur.high, null, null, 'always-green');
-      updateCell(tr.querySelector('.cell-low'),  cur.low,  null, null, 'always-red');
+      updateCell(tr.querySelector('.cell-low'), cur.low, null, null, 'always-red');
     });
   }
 }
@@ -204,13 +204,13 @@ function renderApxTableRow(containerId, label, apxData) {
   const tbody = table.querySelector('tbody');
   if (!tbody) return;
 
-  const sell    = apxData?.sell ?? null;
-  const high    = apxData?.high ?? null;
-  const low     = apxData?.low  ?? null;
+  const sell = apxData?.sell ?? null;
+  const high = apxData?.high ?? null;
+  const low = apxData?.low ?? null;
   const sellTxt = sell !== null ? String(sell) : '—';
   const highTxt = high !== null ? String(high) : '—';
-  const lowTxt  = low  !== null ? String(low)  : '—';
-  const rowId   = containerId + '-apx';
+  const lowTxt = low !== null ? String(low) : '—';
+  const rowId = containerId + '-apx';
 
   let tr = document.getElementById(rowId);
   if (!tr) {
@@ -228,10 +228,10 @@ function renderApxTableRow(containerId, label, apxData) {
   } else {
     const elSell = document.getElementById(rowId + '-sell');
     const elHigh = document.getElementById(rowId + '-high');
-    const elLow  = document.getElementById(rowId + '-low');
+    const elLow = document.getElementById(rowId + '-low');
     if (elSell && elSell.textContent !== sellTxt) elSell.textContent = sellTxt;
     if (elHigh && elHigh.textContent !== highTxt) elHigh.textContent = highTxt;
-    if (elLow  && elLow.textContent  !== lowTxt)  elLow.textContent  = lowTxt;
+    if (elLow && elLow.textContent !== lowTxt) elLow.textContent = lowTxt;
   }
 }
 
@@ -243,8 +243,8 @@ function renderCoinTable(containerId, configRows, baseVal, divisor, premiumPerGr
   const container = document.getElementById(containerId);
   if (!container || !configRows?.length) return;
 
-  const baseRaw   = toNum(baseVal);
-  const base1u    = baseRaw !== null ? baseRaw / divisor : null;
+  const baseRaw = toNum(baseVal);
+  const base1u = baseRaw !== null ? baseRaw / divisor : null;
   const pctFactor = 1 + (premiumPercent || 0) / 100;
 
   const table = container.querySelector('.coin-table');
@@ -272,12 +272,12 @@ function renderCoinTable(containerId, configRows, baseVal, divisor, premiumPerGr
       const el = document.getElementById(`${containerId}-r${i}`);
       if (!el) return;
 
-      const price    = base1u !== null
+      const price = base1u !== null
         ? Math.round((base1u * c.grams + premiumPerGram * c.grams) * pctFactor)
         : null;
       const prevBase = prev[prevKey];
-      const prevU    = prevBase !== null ? prevBase / divisor : null;
-      const prevP    = prevU !== null
+      const prevU = prevBase !== null ? prevBase / divisor : null;
+      const prevP = prevU !== null
         ? Math.round((prevU * c.grams + premiumPerGram * c.grams) * pctFactor)
         : null;
 
@@ -301,31 +301,31 @@ function renderAll(data) {
   const admin = CFG?.admin || {};
 
   /* Product tables (desktop + mobile share same data) */
-  renderTable(dom.goldProductsBox,   data?.goldProducts,   prev.goldProducts,   'mini');
+  renderTable(dom.goldProductsBox, data?.goldProducts, prev.goldProducts, 'mini');
   renderTable(dom.silverProductsBox, data?.silverProducts, prev.silverProducts, 'mini');
 
   /* Market rate tables — desktop cards + mobile slider */
-  renderTable(dom.futureBox,        data?.futureRows, prev.future, 'rate');
-  renderTable(dom.futureBoxMobile,  data?.futureRows, prev.future, 'rate');
-  renderTable(dom.spotBox,          data?.spotRows,   prev.spot,   'rate');
-  renderTable(dom.spotBoxMobile,    data?.spotRows,   prev.spot,   'rate');
+  renderTable(dom.futureBox, data?.futureRows, prev.future, 'rate');
+  renderTable(dom.futureBoxMobile, data?.futureRows, prev.future, 'rate');
+  renderTable(dom.spotBox, data?.spotRows, prev.spot, 'rate');
+  renderTable(dom.spotBoxMobile, data?.spotRows, prev.spot, 'rate');
 
   /* Coin tables */
-  const goldDiv             = admin.goldCoins?.divisor        || 10;
-  const silverDiv           = admin.silverCoins?.divisor      || 1000;
-  const goldPremiumPerGram  = admin.goldCoins?.premiumPerGram   ?? 0;
-  const silverPremiumPerGram= admin.silverCoins?.premiumPerGram ?? 12;
-  const goldPremiumPercent  = admin.goldCoins?.premiumPercent   ?? 1;
-  const silverPremiumPercent= admin.silverCoins?.premiumPercent ?? 0;
+  const goldDiv = admin.goldCoins?.divisor || 10;
+  const silverDiv = admin.silverCoins?.divisor || 1000;
+  const goldPremiumPerGram = admin.goldCoins?.premiumPerGram ?? 0;
+  const silverPremiumPerGram = admin.silverCoins?.premiumPerGram ?? 12;
+  const goldPremiumPercent = admin.goldCoins?.premiumPercent ?? 1;
+  const silverPremiumPercent = admin.silverCoins?.premiumPercent ?? 0;
 
-  renderCoinTable('goldCoinBox',   admin.goldCoins?.rows,   data?.goldCoinBase,   goldDiv,   goldPremiumPerGram,   goldPremiumPercent,   'goldCoinBase');
+  renderCoinTable('goldCoinBox', admin.goldCoins?.rows, data?.goldCoinBase, goldDiv, goldPremiumPerGram, goldPremiumPercent, 'goldCoinBase');
   renderCoinTable('silverCoinBox', admin.silverCoins?.rows, data?.silverCoinBase, silverDiv, silverPremiumPerGram, silverPremiumPercent, 'silverCoinBase');
 
   /* Advance prev maps */
-  prev.goldProducts   = updatePrevMap(data?.goldProducts);
+  prev.goldProducts = updatePrevMap(data?.goldProducts);
   prev.silverProducts = updatePrevMap(data?.silverProducts);
-  prev.future         = updatePrevMap(data?.futureRows);
-  prev.spot           = updatePrevMap(data?.spotRows);
+  prev.future = updatePrevMap(data?.futureRows);
+  prev.spot = updatePrevMap(data?.spotRows);
 
   /* Timestamp */
   const ts = data?.updatedAt ? new Date(data.updatedAt) : null;
@@ -344,7 +344,7 @@ function renderAll(data) {
 function setStatus(state) {
   if (!dom.status) return;
   dom.status.className = 'status-dot ' + state;
-  dom.status.title     = state === 'live' ? 'Connected – live' : 'Connecting…';
+  dom.status.title = state === 'live' ? 'Connected – live' : 'Connecting…';
 }
 
 /* ================================================================
@@ -352,10 +352,10 @@ function setStatus(state) {
    ================================================================ */
 function connectSocket() {
   socket = io({ transports: ['websocket', 'polling'] });
-  socket.on('connect',       () => setStatus('live'));
-  socket.on('disconnect',    () => setStatus('disconnected'));
+  socket.on('connect', () => setStatus('live'));
+  socket.on('disconnect', () => setStatus('disconnected'));
   socket.on('connect_error', () => setStatus('disconnected'));
-  socket.on('rates:update',  renderAll);
+  socket.on('rates:update', renderAll);
 }
 
 /* ================================================================
@@ -421,9 +421,9 @@ const ICON = {
 
 function showCallModal() {
   const biz = CFG?.site?.business || {};
-  const phone     = biz.phone    || '+91 99131 37069';
-  const phone2    = biz.phone2   || '';
-  const whatsapp  = biz.whatsapp || '';
+  const phone = biz.phone || '+91 99131 37069';
+  const phone2 = biz.phone2 || '';
+  const whatsapp = biz.whatsapp || '';
 
   /* If only one number and no whatsapp, dial directly */
   if (phone && !phone2 && !whatsapp) {
@@ -440,17 +440,17 @@ function showCallModal() {
       <p class="share-modal-sub">Choose an option to reach us:</p>
       <div class="share-opts">
         ${phone ? `
-          <a href="tel:${phone.replace(/\s/g,'')}" class="share-opt-btn" style="text-decoration:none;">
+          <a href="tel:${phone.replace(/\s/g, '')}" class="share-opt-btn" style="text-decoration:none;">
             <span class="share-opt-icon">${ICON.phone}</span>
             <span>${escape(phone)}</span>
           </a>` : ''}
         ${phone2 ? `
-          <a href="tel:${phone2.replace(/\s/g,'')}" class="share-opt-btn" style="text-decoration:none;">
+          <a href="tel:${phone2.replace(/\s/g, '')}" class="share-opt-btn" style="text-decoration:none;">
             <span class="share-opt-icon">${ICON.phone}</span>
             <span>${escape(phone2)}</span>
           </a>` : ''}
         ${whatsapp ? `
-          <a href="https://wa.me/${whatsapp.replace(/[^0-9]/g,'')}" class="share-opt-btn" style="text-decoration:none;" target="_blank">
+          <a href="https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}" class="share-opt-btn" style="text-decoration:none;" target="_blank">
             <span class="share-opt-icon">${ICON.whatsapp}</span>
             <span>WhatsApp</span>
           </a>` : ''}
@@ -469,9 +469,9 @@ function shareRates() {
   const admin = CFG?.admin || {};
 
   const opts = [];
-  if (admin.sections?.goldProducts   !== false) opts.push({ id: 'gold',   label: 'Gold Products',   icon: ICON.gold   });
+  if (admin.sections?.goldProducts !== false) opts.push({ id: 'gold', label: 'Gold Products', icon: ICON.gold });
   if (admin.sections?.silverProducts !== false) opts.push({ id: 'silver', label: 'Silver Products', icon: ICON.silver });
-  if (admin.sections?.coinRates      !== false) opts.push({ id: 'coins',  label: 'Coin Rates',      icon: ICON.coin   });
+  if (admin.sections?.coinRates !== false) opts.push({ id: 'coins', label: 'Coin Rates', icon: ICON.coin });
 
   const overlay = document.createElement('div');
   overlay.className = 'share-overlay';
@@ -505,20 +505,20 @@ async function doSharePage(pageId) {
     if (!blob) throw new Error('empty blob');
     document.querySelector('.share-overlay')?.remove();
 
-    const biz   = CFG?.site?.business || {};
-    const fname = `${(biz.name || 'dharamraj-rates').replace(/\s+/g, '-').toLowerCase()}-${pageId}-${new Date().toISOString().slice(0,10)}.png`;
-    const file  = new File([blob], fname, { type: 'image/png' });
+    const biz = CFG?.site?.business || {};
+    const fname = `${(biz.name || 'dharamraj-rates').replace(/\s+/g, '-').toLowerCase()}-${pageId}-${new Date().toISOString().slice(0, 10)}.png`;
+    const file = new File([blob], fname, { type: 'image/png' });
 
     if (navigator.canShare?.({ files: [file] })) {
       await navigator.share({ files: [file], title: `${biz.name || 'Live Rates'} – ${pageId}` });
     } else {
       const url = URL.createObjectURL(blob);
-      const a   = document.createElement('a');
+      const a = document.createElement('a');
       a.href = url; a.download = fname;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 8000);
     }
-  } catch(err) {
+  } catch (err) {
     if (err.name !== 'AbortError') {
       document.querySelector('.share-overlay')?.remove();
       console.error('[share]', err);
@@ -530,40 +530,40 @@ async function doSharePage(pageId) {
    GENERATE RATE IMAGE — Canvas-based PNG (no external libs)
    ================================================================ */
 async function generateRateImage(pageId) {
-  const site  = CFG?.site  || {};
+  const site = CFG?.site || {};
   const admin = CFG?.admin || {};
-  const biz   = site.business || {};
-  const theme = site.theme    || {};
-  const data  = lastRatesData || {};
+  const biz = site.business || {};
+  const theme = site.theme || {};
+  const data = lastRatesData || {};
 
   const BRAND = theme.primaryColor || '#003336';
-  const GOLD  = theme.accentColor  || '#d9b25f';
+  const GOLD = theme.accentColor || '#d9b25f';
 
-  const W     = 1080;
-  const PAD   = 52;
+  const W = 1080;
+  const PAD = 52;
   const RLINE = 48;
 
-  const isGold   = pageId === 'gold';
+  const isGold = pageId === 'gold';
   const isSilver = pageId === 'silver';
-  const isCoins  = pageId === 'coins';
+  const isCoins = pageId === 'coins';
 
-  const goldProds = isGold   ? (data.goldProducts  || []) : [];
+  const goldProds = isGold ? (data.goldProducts || []) : [];
   const silvProds = isSilver ? (data.silverProducts || []) : [];
 
-  const gcRows = isCoins ? (admin.goldCoins?.rows   || []) : [];
+  const gcRows = isCoins ? (admin.goldCoins?.rows || []) : [];
   const scRows = isCoins ? (admin.silverCoins?.rows || []) : [];
-  const gcBase = isCoins ? toNum(data.goldCoinBase)  : null;
+  const gcBase = isCoins ? toNum(data.goldCoinBase) : null;
   const scBase = isCoins ? toNum(data.silverCoinBase) : null;
-  const gcDiv  = admin.goldCoins?.divisor   || 10;
-  const scDiv  = admin.silverCoins?.divisor || 1000;
-  const gcPPG  = admin.goldCoins?.premiumPerGram   ?? 0;
-  const scPPG  = admin.silverCoins?.premiumPerGram ?? 12;
-  const gcPct  = admin.goldCoins?.premiumPercent   ?? 1;
-  const scPct  = admin.silverCoins?.premiumPercent ?? 0;
+  const gcDiv = admin.goldCoins?.divisor || 10;
+  const scDiv = admin.silverCoins?.divisor || 1000;
+  const gcPPG = admin.goldCoins?.premiumPerGram ?? 0;
+  const scPPG = admin.silverCoins?.premiumPerGram ?? 12;
+  const gcPct = admin.goldCoins?.premiumPercent ?? 1;
+  const scPct = admin.silverCoins?.premiumPercent ?? 0;
 
   /* ── Height calculation ── */
-  const HDR_H  = 180;
-  const SEC_H  = 40;
+  const HDR_H = 180;
+  const SEC_H = 40;
   const FOOT_H = 110;
   let H = HDR_H;
 
@@ -582,9 +582,9 @@ async function generateRateImage(pageId) {
 
   /* Background gradient */
   const bgGrd = ctx.createLinearGradient(0, 0, 0, H);
-  bgGrd.addColorStop(0,   BRAND);
+  bgGrd.addColorStop(0, BRAND);
   bgGrd.addColorStop(0.55, '#032a2e');
-  bgGrd.addColorStop(1,   '#01161a');
+  bgGrd.addColorStop(1, '#01161a');
   ctx.fillStyle = bgGrd;
   ctx.fillRect(0, 0, W, H);
 
@@ -605,13 +605,13 @@ async function generateRateImage(pageId) {
       new Promise((res, rej) => {
         const img = new Image();
         img.crossOrigin = 'anonymous';
-        img.onload  = () => res(img);
+        img.onload = () => res(img);
         img.onerror = rej;
-        img.src     = logoSrc;
+        img.src = logoSrc;
       }),
       new Promise((_, rej) => setTimeout(rej, 3000)),
     ]);
-  } catch {}
+  } catch { }
 
   if (logoImg) {
     const lh = 90;
@@ -641,11 +641,11 @@ async function generateRateImage(pageId) {
   ctx.fillStyle = divGrd; ctx.fillRect(PAD, y, W - PAD * 2, 1.5); y += 24;
 
   /* Column x-positions */
-  const NM_X       = PAD + 12;
-  const BUY_X      = 570;
-  const SELL_X     = 720;
-  const HIGH_X     = 870;
-  const LOW_X      = W - PAD - 4;
+  const NM_X = PAD + 12;
+  const BUY_X = 570;
+  const SELL_X = 720;
+  const HIGH_X = 870;
+  const LOW_X = W - PAD - 4;
   const NAME_MAX_W = BUY_X - NM_X - 20;
 
   /* ── Product table helper ── */
@@ -659,10 +659,10 @@ async function generateRateImage(pageId) {
     ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = 'bold 12px Inter,Arial,sans-serif';
     ctx.fillText('PRODUCT', NM_X, y + 30);
     ctx.textAlign = 'right';
-    ctx.fillText('BUY',  BUY_X,  y + 30);
+    ctx.fillText('BUY', BUY_X, y + 30);
     ctx.fillText('SELL', SELL_X, y + 30);
     ctx.fillText('HIGH', HIGH_X, y + 30);
-    ctx.fillText('LOW',  LOW_X,  y + 30);
+    ctx.fillText('LOW', LOW_X, y + 30);
     ctx.textAlign = 'left'; y += RLINE;
 
     rows.forEach((p, i) => {
@@ -676,10 +676,10 @@ async function generateRateImage(pageId) {
       ctx.restore();
 
       ctx.textAlign = 'right'; ctx.font = 'bold 18px Inter,Arial,sans-serif';
-      if (p.bid  != null) { ctx.fillStyle = '#86efac'; ctx.fillText(String(p.bid),  BUY_X,  y + 31); }
-      if (p.ask  != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(p.ask),  SELL_X, y + 31); }
+      if (p.bid != null) { ctx.fillStyle = '#86efac'; ctx.fillText(String(p.bid), BUY_X, y + 31); }
+      if (p.ask != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(p.ask), SELL_X, y + 31); }
       if (p.high != null) { ctx.fillStyle = '#86efac'; ctx.fillText(String(p.high), HIGH_X, y + 31); }
-      if (p.low  != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(p.low),  LOW_X,  y + 31); }
+      if (p.low != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(p.low), LOW_X, y + 31); }
       ctx.textAlign = 'left'; y += RLINE;
     });
 
@@ -689,8 +689,8 @@ async function generateRateImage(pageId) {
   /* ── Coin table helper ── */
   function drawCoinTable(title, titleCol, rows, baseVal, divisor, premiumPerGram, premiumPercent) {
     if (!rows.length || baseVal === null) return;
-    const base1u      = baseVal / divisor;
-    const pctFactor   = 1 + (premiumPercent || 0) / 100;
+    const base1u = baseVal / divisor;
+    const pctFactor = 1 + (premiumPercent || 0) / 100;
     const COIN_NAME_W = (W - PAD * 2) * 0.64;
 
     ctx.fillStyle = titleCol; ctx.font = 'bold 18px Inter,Arial,sans-serif';
@@ -721,15 +721,15 @@ async function generateRateImage(pageId) {
   }
 
   /* ── Draw content ── */
-  drawProdTable('GOLD PRODUCTS',   GOLD,     goldProds);
+  drawProdTable('GOLD PRODUCTS', GOLD, goldProds);
   drawProdTable('SILVER PRODUCTS', '#94a3b8', silvProds);
-  drawCoinTable('GOLD COINS',    GOLD,     gcRows, gcBase, gcDiv, gcPPG, gcPct);
-  drawCoinTable('SILVER COINS',  '#94a3b8', scRows, scBase, scDiv, scPPG, scPct);
+  drawCoinTable('GOLD COINS', GOLD, gcRows, gcBase, gcDiv, gcPPG, gcPct);
+  drawCoinTable('SILVER COINS', '#94a3b8', scRows, scBase, scDiv, scPPG, scPct);
 
   /* Coin disclaimer */
   if (isCoins && (gcRows.length || scRows.length)) {
     ctx.fillStyle = 'rgba(255,255,255,0.38)'; ctx.font = 'italic 13px Inter,Arial,sans-serif';
-    ctx.fillText('Rates are inclusive of making charges and exclusive of packing charges.*', PAD, y + 22);
+    ctx.fillText('Rates are exclusive of making charges and packing charges.*', PAD, y + 22);
     y += 46;
   }
 
