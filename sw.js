@@ -4,7 +4,7 @@
    Live socket data is never cached.
    ================================================================ */
 
-const CACHE_NAME = 'dharamraj-v2';
+const CACHE_NAME = 'dharamraj-v3';
 
 const SHELL_ASSETS = [
   '/',
@@ -46,25 +46,20 @@ self.addEventListener('fetch', event => {
   /* Never intercept Socket.IO or API routes */
   if (url.pathname.startsWith('/socket.io') || url.pathname.startsWith('/api')) return;
 
-  /* Network-first for HTML to always get fresh shell updates */
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match('/index.html'))
-    );
-    return;
-  }
-
-  /* Cache-first for all other assets */
+  /* Network-first for all assets to ensure fresh updates on normal refresh */
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (response && response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => cached);
+    fetch(event.request).then(response => {
+      if (response && response.status === 200) {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+      }
+      return response;
+    }).catch(() => {
+      // Fallback to cache if network fails (offline)
+      if (event.request.mode === 'navigate') {
+        return caches.match('/index.html');
+      }
+      return caches.match(event.request);
     })
   );
 });
