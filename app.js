@@ -300,12 +300,9 @@ function renderAll(data) {
   lastRatesData = data;
   const admin = CFG?.admin || {};
 
-  /* Product tables (desktop + mobile share same data, different containers) */
+  /* Product tables (desktop + mobile share same data) */
   renderTable(dom.goldProductsBox,   data?.goldProducts,   prev.goldProducts,   'mini');
-  renderApxTableRow('goldProductsBox', 'BEFORE GST', data?.goldApxRow);
-
   renderTable(dom.silverProductsBox, data?.silverProducts, prev.silverProducts, 'mini');
-  renderApxTableRow('silverProductsBox', 'BEFORE GST PETI', data?.silverApxRow);
 
   /* Market rate tables — desktop cards + mobile slider */
   renderTable(dom.futureBox,        data?.futureRows, prev.future, 'rate');
@@ -412,6 +409,16 @@ function initSlider() {
 /* ================================================================
    CALL MODAL
    ================================================================ */
+/* ── SVG icon helpers ── */
+const ICON = {
+  phone: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l.97-.97a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 17z"/></svg>`,
+  whatsapp: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 2C6.477 2 2 6.484 2 12.017c0 1.987.518 3.849 1.426 5.462L2 22l4.672-1.396A9.938 9.938 0 0 0 12 22c5.523 0 10-4.484 10-10.017C22 6.476 17.523 2 12 2zm0 18.033a8.014 8.014 0 0 1-4.073-1.112l-.292-.173-3.02.902.9-2.996-.19-.308A8.027 8.027 0 0 1 4 12.017C4 7.588 7.589 4 12 4c4.411 0 8 3.588 8 8.017 0 4.428-3.589 8.016-8 8.016z"/></svg>`,
+  gold: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>`,
+  silver: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  coin: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v2m0 8v2M9.17 9.17A4 4 0 1 0 14.83 14.83"/></svg>`,
+  image: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+};
+
 function showCallModal() {
   const biz = CFG?.site?.business || {};
   const phone     = biz.phone    || '+91 99131 37069';
@@ -434,17 +441,17 @@ function showCallModal() {
       <div class="share-opts">
         ${phone ? `
           <a href="tel:${phone.replace(/\s/g,'')}" class="share-opt-btn" style="text-decoration:none;">
-            <span class="share-opt-icon">📞</span>
+            <span class="share-opt-icon">${ICON.phone}</span>
             <span>${escape(phone)}</span>
           </a>` : ''}
         ${phone2 ? `
           <a href="tel:${phone2.replace(/\s/g,'')}" class="share-opt-btn" style="text-decoration:none;">
-            <span class="share-opt-icon">📞</span>
+            <span class="share-opt-icon">${ICON.phone}</span>
             <span>${escape(phone2)}</span>
           </a>` : ''}
         ${whatsapp ? `
           <a href="https://wa.me/${whatsapp.replace(/[^0-9]/g,'')}" class="share-opt-btn" style="text-decoration:none;" target="_blank">
-            <span class="share-opt-icon">💬</span>
+            <span class="share-opt-icon">${ICON.whatsapp}</span>
             <span>WhatsApp</span>
           </a>` : ''}
       </div>
@@ -462,9 +469,9 @@ function shareRates() {
   const admin = CFG?.admin || {};
 
   const opts = [];
-  if (admin.sections?.goldProducts   !== false) opts.push({ id: 'gold',   label: 'Gold Products',   icon: '🥇' });
-  if (admin.sections?.silverProducts !== false) opts.push({ id: 'silver', label: 'Silver Products', icon: '🥈' });
-  if (admin.sections?.coinRates      !== false) opts.push({ id: 'coins',  label: 'Coin Rates',      icon: '🪙' });
+  if (admin.sections?.goldProducts   !== false) opts.push({ id: 'gold',   label: 'Gold Products',   icon: ICON.gold   });
+  if (admin.sections?.silverProducts !== false) opts.push({ id: 'silver', label: 'Silver Products', icon: ICON.silver });
+  if (admin.sections?.coinRates      !== false) opts.push({ id: 'coins',  label: 'Coin Rates',      icon: ICON.coin   });
 
   const overlay = document.createElement('div');
   overlay.className = 'share-overlay';
@@ -560,8 +567,8 @@ async function generateRateImage(pageId) {
   const FOOT_H = 110;
   let H = HDR_H;
 
-  if (goldProds.length) H += SEC_H + RLINE + goldProds.length * RLINE + (data.goldApxRow ? RLINE : 0) + 28;
-  if (silvProds.length) H += SEC_H + RLINE + silvProds.length * RLINE + (data.silverApxRow ? RLINE : 0) + 28;
+  if (goldProds.length) H += SEC_H + RLINE + goldProds.length * RLINE + 28;
+  if (silvProds.length) H += SEC_H + RLINE + silvProds.length * RLINE + 28;
   if (gcRows.length && gcBase !== null) H += SEC_H + RLINE + gcRows.length * RLINE + 28;
   if (scRows.length && scBase !== null) H += SEC_H + RLINE + scRows.length * RLINE + 28;
   if (isCoins && (gcRows.length || scRows.length)) H += 50;
@@ -642,7 +649,7 @@ async function generateRateImage(pageId) {
   const NAME_MAX_W = BUY_X - NM_X - 20;
 
   /* ── Product table helper ── */
-  function drawProdTable(title, titleCol, rows, apxLabel, apxData) {
+  function drawProdTable(title, titleCol, rows) {
     if (!rows.length) return;
     ctx.fillStyle = titleCol; ctx.font = 'bold 18px Inter,Arial,sans-serif';
     ctx.fillText(title, PAD, y + 24); y += 38;
@@ -675,22 +682,6 @@ async function generateRateImage(pageId) {
       if (p.low  != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(p.low),  LOW_X,  y + 31); }
       ctx.textAlign = 'left'; y += RLINE;
     });
-
-    /* APX row */
-    if (apxData) {
-      const sell = apxData.sell ?? null;
-      const high = apxData.high ?? null;
-      const low  = apxData.low  ?? null;
-      ctx.fillStyle = 'rgba(217,178,95,0.12)'; ctx.fillRect(PAD, y, W - PAD * 2, RLINE);
-      ctx.fillStyle = GOLD; ctx.fillRect(PAD, y, 4, RLINE);
-      ctx.fillStyle = GOLD; ctx.font = 'italic bold 14px Inter,Arial,sans-serif';
-      ctx.fillText(apxLabel, NM_X + 6, y + 31);
-      ctx.textAlign = 'right'; ctx.font = 'bold 18px Inter,Arial,sans-serif';
-      if (sell != null) { ctx.fillStyle = GOLD;      ctx.fillText(String(sell), SELL_X, y + 31); }
-      if (high != null) { ctx.fillStyle = '#86efac'; ctx.fillText(String(high), HIGH_X, y + 31); }
-      if (low  != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(low),  LOW_X,  y + 31); }
-      ctx.textAlign = 'left'; y += RLINE;
-    }
 
     ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fillRect(PAD, y, W - PAD * 2, 1); y += 26;
   }
@@ -730,8 +721,8 @@ async function generateRateImage(pageId) {
   }
 
   /* ── Draw content ── */
-  drawProdTable('GOLD PRODUCTS',   GOLD,     goldProds, 'BEFORE GST',      data.goldApxRow);
-  drawProdTable('SILVER PRODUCTS', '#94a3b8', silvProds, 'BEFORE GST PETI', data.silverApxRow);
+  drawProdTable('GOLD PRODUCTS',   GOLD,     goldProds);
+  drawProdTable('SILVER PRODUCTS', '#94a3b8', silvProds);
   drawCoinTable('GOLD COINS',    GOLD,     gcRows, gcBase, gcDiv, gcPPG, gcPct);
   drawCoinTable('SILVER COINS',  '#94a3b8', scRows, scBase, scDiv, scPPG, scPct);
 
