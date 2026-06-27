@@ -367,6 +367,10 @@ connectFeed('swayam');
 /* ══════════════════════════════════════════════════════════════
    EXPRESS — static files + API
    ══════════════════════════════════════════════════════════════ */
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  next();
+});
 app.use(express.static(__dirname));
 
 /* Config endpoint */
