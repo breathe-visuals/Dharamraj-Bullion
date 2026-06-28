@@ -30,9 +30,9 @@ const adminConfig = loadConfig('admin-config.json');
 /* Config-driven APX source rows & GST % */
 const APX_GOLD_SOURCE_ROW   = adminConfig?.goldRates?.apxSourceRow   || '999 IMP RTGS';
 const APX_GOLD_GST_PCT      = adminConfig?.goldRates?.apxGstPercent  ?? 3;
-const APX_SILVER_SOURCE_ROW = adminConfig?.silverRates?.apxSourceRow || 'SILVER PETI RTGS';
+const APX_SILVER_SOURCE_ROW = adminConfig?.silverRates?.apxSourceRow || 'SILVER 999+GST';
 const APX_SILVER_GST_PCT    = adminConfig?.silverRates?.apxGstPercent ?? 3;
-const SILVER_COIN_ROW       = adminConfig?.silverCoins?.baseRow      || 'SILVER PETI RTGS';
+const SILVER_COIN_ROW       = adminConfig?.silverCoins?.baseRow      || 'SILVER 999+GST';
 const GOLD_COIN_ROW         = adminConfig?.goldCoins?.baseRow        || '999 IMP RTGS';
 
 /* ══════════════════════════════════════════════════════════════
