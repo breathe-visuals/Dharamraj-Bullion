@@ -335,7 +335,7 @@ function getSilverCoinBase() { return getBaseAsk('swayam', SILVER_COIN_ROW); }
    Per-gram karat rate = (base / 10) * (karat / 24)
    ══════════════════════════════════════════════════════════════ */
 const KARAT_SOURCE_ROW = adminConfig?.karatRates?.sourceRow || '98.S REF+GST';
-const KARAT_DIVISOR    = adminConfig?.karatRates?.divisor   || 10;
+const KARAT_DIVISOR    = adminConfig?.karatRates?.divisor   || 1;
 const KARAT_LIST       = [24, 22, 21, 20, 18, 14, 9];
 
 function buildKaratRates() {

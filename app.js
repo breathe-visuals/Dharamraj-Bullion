@@ -193,23 +193,26 @@ function renderTable(container, rows, prevMap, type) {
   let rebuild = !table || trs.length !== rows.length;
 
   if (!rebuild) {
-    for (let i = 0; i < rows.length; i++) {
-      if (trs[i].getAttribute('data-key') !== itemKey(rowToPlain(rows[i]))) { rebuild = true; break; }
+    const existingKeys = new Set(trs.map(t => t.getAttribute('data-key')));
+    for (const r of rows) {
+      if (!existingKeys.has(itemKey(rowToPlain(r)))) { rebuild = true; break; }
     }
   }
 
   if (rebuild) {
     container.innerHTML = buildTableHTML(rows, prevMap, colLabel);
   } else {
-    rows.forEach((row, i) => {
+    rows.forEach((row) => {
       const cur = rowToPlain(row);
-      const prv = prevMap[itemKey(cur)] || {};
       const k = itemKey(cur);
-      const tr = trs[i];
-      updateCell(tr.querySelector('.cell-bid'), cur.bid, prv.bid, k + '-bid');
-      updateCell(tr.querySelector('.cell-ask'), cur.ask, prv.ask, k + '-ask');
-      updateCell(tr.querySelector('.cell-high'), cur.high, null, null, 'always-green');
-      updateCell(tr.querySelector('.cell-low'), cur.low, null, null, 'always-red');
+      const tr = tbody.querySelector(`tr[data-key="${k}"]`);
+      if (tr) {
+        const prv = prevMap[k] || {};
+        updateCell(tr.querySelector('.cell-bid'), cur.bid, prv.bid, k + '-bid');
+        updateCell(tr.querySelector('.cell-ask'), cur.ask, prv.ask, k + '-ask');
+        updateCell(tr.querySelector('.cell-high'), cur.high, null, null, 'always-green');
+        updateCell(tr.querySelector('.cell-low'), cur.low, null, null, 'always-red');
+      }
     });
   }
 }
@@ -333,19 +336,24 @@ function renderKaratGrid(karatRates) {
 
   karatRates.forEach(k => {
     const el = document.getElementById(`kp-${k.karat}`);
-    if (!el) return;
+    const fillerEl = k.karat === 24 ? document.getElementById('kp-filler-24') : null;
+    
+    if (!el && !fillerEl) return;
 
     const prevPrice = prevKaratPrices[k.karat] ?? null;
     const text = k.ask !== null ? k.ask.toLocaleString('en-IN') : '—';
+    const cls = k.ask !== null && prevPrice !== null
+      ? (k.ask > prevPrice ? 'karat-price up' : k.ask < prevPrice ? 'karat-price down' : 'karat-price')
+      : 'karat-price';
 
-    if (el.textContent !== text) el.textContent = text;
-
-    if (k.ask !== null && prevPrice !== null) {
-      el.className = k.ask > prevPrice ? 'karat-price up'
-                   : k.ask < prevPrice ? 'karat-price down'
-                   : 'karat-price';
-    } else {
-      el.className = 'karat-price';
+    if (el) {
+      if (el.textContent !== text) el.textContent = text;
+      if (el.className !== cls) el.className = cls;
+    }
+    
+    if (fillerEl) {
+      if (fillerEl.textContent !== text) fillerEl.textContent = text;
+      if (fillerEl.className !== cls) fillerEl.className = cls;
     }
 
     prevKaratPrices[k.karat] = k.ask;

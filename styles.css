@@ -429,8 +429,24 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  justify-content: space-between;
+}
+
+.gold-filler-container {
+  margin-top: 15px;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .gold-filler-container { display: none; }
+}
+#karat-card-filler {
+  width: 100%;
+  max-width: 240px;
+  padding: 15px 10px;
 }
 
 .section-subtitle-small {
@@ -773,8 +789,8 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   #karat-card-24k .karat-label { font-size: 1.5rem; }
   #karat-card-24k .karat-price { font-size: 1.2rem; }
   .karat-card { padding: 14px 8px; }
-  /* Hide swipe affordances and disable scroll track on desktop */
-  .gold-swipe-dots, .swipe-hint { display: none !important; }
+  /* Hide swipe affordances and filler on desktop */
+  .gold-swipe-dots, .swipe-hint, .gold-filler-container { display: none !important; }
   .gold-slider-track { overflow: hidden !important; touch-action: none; }
 }
 
@@ -787,8 +803,8 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   tbody td { padding: 9px 7px; }
   .chip-val { font-size: 0.82rem; min-width: 40px; }
   .rowhead { font-size: 0.85rem; }
-  /* Hide swipe affordances and disable scroll track on desktop */
-  .gold-swipe-dots, .swipe-hint { display: none !important; }
+  /* Hide swipe affordances and filler on desktop */
+  .gold-swipe-dots, .swipe-hint, .gold-filler-container { display: none !important; }
   .gold-slider-track { overflow: hidden !important; touch-action: none; }
 }
 
