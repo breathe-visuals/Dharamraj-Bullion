@@ -87,26 +87,75 @@
               Gold Products
             </span>
             <div class="gold-swipe-dots" aria-hidden="true">
-              <span class="gold-dot active" data-gslide="0" title="Karat Rates"></span>
-              <span class="gold-dot" data-gslide="1" title="Products"></span>
+              <span class="gold-dot active" data-gslide="0" title="Products"></span>
+              <span class="gold-dot" data-gslide="1" title="Karat Rates"></span>
             </div>
           </div>
           <!-- Swipe track -->
           <div class="gold-slider-track" id="goldSliderTrack">
-            <!-- Slide 0: Karat Rates (FIRST) -->
-            <div class="gold-slide">
-              <div class="table-wrap" id="goldKaratBox">
-                <p class="empty-msg">Connecting to live feed…</p>
-              </div>
-            </div>
-            <!-- Slide 1: Product Rates -->
+            <!-- Slide 0: Product Rates -->
             <div class="gold-slide">
               <div class="table-wrap" id="goldProductsBox">
                 <p class="empty-msg">Connecting to live feed…</p>
               </div>
             </div>
+            <!-- Slide 1: Karat Rates (Mahakali-style card grid) -->
+            <div class="gold-slide">
+              <div class="gold-karat-slide-inner">
+                <div class="gold-karat-slide-header">
+                  <span class="section-title" style="font-size:0.95rem;">Karat Rates</span>
+                  <span class="section-subtitle-small">per gram · from 98.S REF+GST base</span>
+                  <span class="live-pill"><span class="live-dot"></span>Live</span>
+                </div>
+                <div class="karat-grid" id="goldKaratGrid">
+                  <div class="karat-card" id="karat-card-24k">
+                    <div class="karat-label">24K</div>
+                    <div class="karat-purity">99.9%</div>
+                    <div class="karat-price" id="kp-24">—</div>
+                    <div class="karat-unit">per gram</div>
+                  </div>
+                  <div class="karat-card" id="karat-card-22k">
+                    <div class="karat-label">22K</div>
+                    <div class="karat-purity">91.6%</div>
+                    <div class="karat-price" id="kp-22">—</div>
+                    <div class="karat-unit">per gram</div>
+                  </div>
+                  <div class="karat-card" id="karat-card-21k">
+                    <div class="karat-label">21K</div>
+                    <div class="karat-purity">87.5%</div>
+                    <div class="karat-price" id="kp-21">—</div>
+                    <div class="karat-unit">per gram</div>
+                  </div>
+                  <div class="karat-card" id="karat-card-20k">
+                    <div class="karat-label">20K</div>
+                    <div class="karat-purity">83.3%</div>
+                    <div class="karat-price" id="kp-20">—</div>
+                    <div class="karat-unit">per gram</div>
+                  </div>
+                  <div class="karat-card" id="karat-card-18k">
+                    <div class="karat-label">18K</div>
+                    <div class="karat-purity">75.0%</div>
+                    <div class="karat-price" id="kp-18">—</div>
+                    <div class="karat-unit">per gram</div>
+                  </div>
+                  <div class="karat-card" id="karat-card-14k">
+                    <div class="karat-label">14K</div>
+                    <div class="karat-purity">58.3%</div>
+                    <div class="karat-price" id="kp-14">—</div>
+                    <div class="karat-unit">per gram</div>
+                  </div>
+                  <div class="karat-card" id="karat-card-9k">
+                    <div class="karat-label">9K</div>
+                    <div class="karat-purity">37.5%</div>
+                    <div class="karat-price" id="kp-9">—</div>
+                    <div class="karat-unit">per gram</div>
+                  </div>
+                </div>
+                <p class="coin-note" style="margin-top:8px;">Rates are for reference only. Based on 24K (98.S REF+GST).*</p>
+              </div>
+            </div>
           </div>
-          <p class="swipe-hint">← Karat Rates | Products →</p>
+          <p class="swipe-hint">← Swipe for Karat Rates →</p>
         </article>
 
         <!-- Future Rates -->

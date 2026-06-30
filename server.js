@@ -331,60 +331,28 @@ function getSilverCoinBase() { return getBaseAsk('swayam', SILVER_COIN_ROW); }
 
 /* ══════════════════════════════════════════════════════════════
    KARAT RATES BUILDER
-   Base: "98.S REF+GST" (already a 24K rate, per 10g)
-   Searches BOTH feeds. Per-gram = base / divisor, then × (karat/24)
+   Base: "98.S REF+GST" from gopnath (already 24K rate, per 10g)
+   Per-gram karat rate = (base / 10) * (karat / 24)
    ══════════════════════════════════════════════════════════════ */
 const KARAT_SOURCE_ROW = adminConfig?.karatRates?.sourceRow || '98.S REF+GST';
 const KARAT_DIVISOR    = adminConfig?.karatRates?.divisor   || 10;
 const KARAT_LIST       = [24, 22, 21, 20, 18, 14, 9];
 
-function getKaratBaseRow() {
-  /* 1. Try gopnath visible products first */
-  let row = getBaseRow('gopnath', KARAT_SOURCE_ROW);
-  if (row && row.ask !== null) return row;
-
-  /* 2. Try swayam visible products */
-  row = getBaseRow('swayam', KARAT_SOURCE_ROW);
-  if (row && row.ask !== null) return row;
-
-  /* 3. Scan gopnath raw rates by name */
-  const gRaw = findRawByName(state.gopnath.rawRate, KARAT_SOURCE_ROW)
-             || findRawByName(state.gopnath.live,    KARAT_SOURCE_ROW);
-  if (gRaw) {
-    const ask  = applyAdj(KARAT_SOURCE_ROW, toNum(gRaw.Ask ?? gRaw.Sell));
-    const high = applyAdj(KARAT_SOURCE_ROW, toNum(gRaw.High));
-    const low  = applyAdj(KARAT_SOURCE_ROW, toNum(gRaw.Low));
-    if (ask !== null) return { ask, high, low };
-  }
-
-  /* 4. Scan swayam raw rates by name */
-  const sRaw = findRawByName(state.swayam.rawRate, KARAT_SOURCE_ROW)
-             || findRawByName(state.swayam.live,    KARAT_SOURCE_ROW);
-  if (sRaw) {
-    const ask  = applyAdj(KARAT_SOURCE_ROW, toNum(sRaw.Ask ?? sRaw.Sell));
-    const high = applyAdj(KARAT_SOURCE_ROW, toNum(sRaw.High));
-    const low  = applyAdj(KARAT_SOURCE_ROW, toNum(sRaw.Low));
-    if (ask !== null) return { ask, high, low };
-  }
-
-  return null;
-}
-
 function buildKaratRates() {
-  const baseRow = getKaratBaseRow();
+  const baseRow = getBaseRow('gopnath', KARAT_SOURCE_ROW);
   if (!baseRow || baseRow.ask === null) return null;
 
-  const base24Ask  = baseRow.ask  != null ? baseRow.ask  / KARAT_DIVISOR : null;
-  const base24High = baseRow.high != null ? baseRow.high / KARAT_DIVISOR : null;
-  const base24Low  = baseRow.low  != null ? baseRow.low  / KARAT_DIVISOR : null;
+  const base24Ask  = baseRow.ask  !== null ? baseRow.ask  / KARAT_DIVISOR : null;
+  const base24High = baseRow.high !== null ? baseRow.high / KARAT_DIVISOR : null;
+  const base24Low  = baseRow.low  !== null ? baseRow.low  / KARAT_DIVISOR : null;
 
   return KARAT_LIST.map(k => {
     const factor = k / 24;
     return {
       karat: k,
-      ask:  base24Ask  != null ? Math.round(base24Ask  * factor) : null,
-      high: base24High != null ? Math.round(base24High * factor) : null,
-      low:  base24Low  != null ? Math.round(base24Low  * factor) : null,
+      ask:  base24Ask  !== null ? Math.round(base24Ask  * factor) : null,
+      high: base24High !== null ? Math.round(base24High * factor) : null,
+      low:  base24Low  !== null ? Math.round(base24Low  * factor) : null,
     };
   });
 }
@@ -464,24 +432,6 @@ app.get('/api/debug', (req, res) => {
       adjustedAsk: applyAdj(r?.Name, toNum(r?.Ask ?? r?.Sell)),
       display: r?.IsDisplay,
     })),
-  });
-});
-
-/* Karat debug endpoint */
-app.get('/api/debug-karat', (req, res) => {
-  const gRaw = findRawByName(state.gopnath.rawRate, KARAT_SOURCE_ROW);
-  const sRaw = findRawByName(state.swayam.rawRate, KARAT_SOURCE_ROW);
-  const baseRow = getKaratBaseRow();
-  res.json({
-    lookingFor: KARAT_SOURCE_ROW,
-    divisor: KARAT_DIVISOR,
-    gopnathRawFound: gRaw ? { name: gRaw.Name, ask: gRaw.Ask ?? gRaw.Sell, high: gRaw.High, low: gRaw.Low } : null,
-    swayamRawFound: sRaw ? { name: sRaw.Name, ask: sRaw.Ask ?? sRaw.Sell, high: sRaw.High, low: sRaw.Low } : null,
-    resolvedBaseRow: baseRow,
-    karatRates: buildKaratRates(),
-    /* All gopnath names for reference */
-    gopnathAllNames: state.gopnath.rawRate.map(r => r?.Name),
-    swayamAllNames:  state.swayam.rawRate.map(r => r?.Name),
   });
 });
 

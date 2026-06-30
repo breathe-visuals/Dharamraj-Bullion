@@ -415,48 +415,114 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
 }
 
 /* ============================================================
-   KARAT TABLE
+   KARAT GRID (Mahakali-style card grid)
    ============================================================ */
-.karat-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
-  table-layout: fixed;
+.gold-karat-slide-inner {
+  padding: 2px 0 4px;
 }
-.karat-table th:nth-child(1) { width: 22%; }
-.karat-table th:nth-child(2) { width: 34%; }
-.karat-table th:nth-child(3) { width: 22%; }
-.karat-table th:nth-child(4) { width: 22%; }
 
-.karat-table thead th {
-  padding: 10px 7px;
-  text-align: left;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #fff;
-  background: var(--brand);
-  white-space: nowrap;
+.gold-karat-slide-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
-.karat-table td {
-  padding: 9px 7px;
-  border-bottom: 1px solid rgba(217,178,95,0.13);
-  vertical-align: middle;
-  white-space: nowrap;
-  font-weight: 700;
-  font-size: 0.92rem;
+
+.section-subtitle-small {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-style: italic;
+  flex: 1;
 }
-.karat-table tbody tr:last-child td { border-bottom: none; }
-.karat-table tbody tr:hover { background: rgba(0,51,54,0.03); }
+
+.karat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+}
+
+/* 24K card spans 2 columns to be the hero */
+#karat-card-24k {
+  grid-column: span 2;
+}
+
+.karat-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  padding: 10px 6px;
+  text-align: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gold top accent bar (Mahakali signature) */
+.karat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold), #f0cc7a);
+}
+
+.karat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
 
 .karat-label {
   font-family: 'Oswald', sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
-  color: var(--gold-dark);
-  letter-spacing: 0.02em;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--brand);
+  letter-spacing: 0.04em;
+  line-height: 1;
 }
+
+/* Larger 24K label */
+#karat-card-24k .karat-label {
+  font-size: 1.5rem;
+}
+
+.karat-purity {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+.karat-price {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+  font-variant-numeric: tabular-nums;
+  margin: 5px 0 2px;
+  min-height: 1.4em;
+  transition: color 0.3s;
+}
+
+#karat-card-24k .karat-price {
+  font-size: 1.2rem;
+}
+
+.karat-price.up   { color: var(--up-fg); }
+.karat-price.down { color: var(--down-fg); }
+
+.karat-unit {
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+
 
 /* ============================================================
    COIN RATES
@@ -695,6 +761,14 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   .section-title { font-size: 1.25rem; }
   .card-title { font-size: 1.2rem; }
   .marquee-bar { font-size: 0.95rem; }
+  /* Karat grid: 7 across on large desktop */
+  .karat-grid { grid-template-columns: repeat(7, 1fr); gap: 10px; }
+  #karat-card-24k { grid-column: span 1; }
+  .karat-label { font-size: 1.4rem; }
+  .karat-price { font-size: 1.1rem; }
+  #karat-card-24k .karat-label { font-size: 1.5rem; }
+  #karat-card-24k .karat-price { font-size: 1.2rem; }
+  .karat-card { padding: 14px 8px; }
 }
 
 /* ── Medium Desktop 992–1279px ── */
@@ -742,9 +816,10 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   tbody td { padding: 8px 6px; font-size: 0.92rem; }
   .rowhead { font-size: 0.85rem; white-space: normal; }
   .action-btn { font-size: 0.84rem; padding: 10px 12px; }
-  .karat-table th { font-size: 0.7rem; }
-  .karat-table td { font-size: 0.88rem; }
-  .karat-label { font-size: 0.96rem; }
+  .karat-card { padding: 9px 5px; }
+  .karat-label { font-size: 1.1rem; }
+  .karat-price { font-size: 0.95rem; }
+  .karat-purity { font-size: 0.58rem; }
 }
 
 /* ── Mobile ≤480px ── */
@@ -772,10 +847,15 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   .coin-table th { font-size: 0.68rem; padding: 9px 7px; }
   .coin-table td { font-size: 0.9rem; padding: 9px 7px; }
   .coin-price { font-size: 1rem; }
-  /* Karat table mobile */
-  .karat-table th { font-size: 0.65rem; padding: 8px 5px; }
-  .karat-table td { font-size: 0.86rem; padding: 8px 5px; }
-  .karat-label { font-size: 0.92rem; }
+  /* Karat grid mobile — compact but readable */
+  .karat-grid { gap: 5px; }
+  .karat-card { padding: 8px 4px; }
+  .karat-label { font-size: 1rem; }
+  .karat-price { font-size: 0.9rem; }
+  .karat-purity { font-size: 0.55rem; }
+  .karat-unit { font-size: 0.52rem; }
+  #karat-card-24k .karat-label { font-size: 1.15rem; }
+  #karat-card-24k .karat-price { font-size: 1rem; }
   /* Swipe hint smaller */
   .swipe-hint { font-size: 0.65rem; }
 }
@@ -787,7 +867,10 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   tbody td { font-size: 0.82rem; padding: 7px 4px; }
   .rowhead { font-size: 0.76rem; }
   .action-btn { font-size: 0.78rem; gap: 5px; }
-  .karat-table th { font-size: 0.6rem; }
-  .karat-table td { font-size: 0.8rem; }
-  .karat-label { font-size: 0.86rem; }
+  .karat-grid { gap: 4px; }
+  .karat-card { padding: 6px 3px; }
+  .karat-label { font-size: 0.88rem; }
+  .karat-price { font-size: 0.82rem; }
+  .karat-purity { font-size: 0.5rem; }
+  .karat-unit { font-size: 0.48rem; }
 }
