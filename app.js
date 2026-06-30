@@ -336,9 +336,7 @@ function renderKaratGrid(karatRates) {
 
   karatRates.forEach(k => {
     const el = document.getElementById(`kp-${k.karat}`);
-    const fillerEl = k.karat === 24 ? document.getElementById('kp-filler-24') : null;
-    
-    if (!el && !fillerEl) return;
+    if (!el) return;
 
     const prevPrice = prevKaratPrices[k.karat] ?? null;
     const text = k.ask !== null ? k.ask.toLocaleString('en-IN') : '—';
@@ -346,15 +344,8 @@ function renderKaratGrid(karatRates) {
       ? (k.ask > prevPrice ? 'karat-price up' : k.ask < prevPrice ? 'karat-price down' : 'karat-price')
       : 'karat-price';
 
-    if (el) {
-      if (el.textContent !== text) el.textContent = text;
-      if (el.className !== cls) el.className = cls;
-    }
-    
-    if (fillerEl) {
-      if (fillerEl.textContent !== text) fillerEl.textContent = text;
-      if (fillerEl.className !== cls) fillerEl.className = cls;
-    }
+    if (el.textContent !== text) el.textContent = text;
+    if (el.className !== cls) el.className = cls;
 
     prevKaratPrices[k.karat] = k.ask;
   });
@@ -448,42 +439,7 @@ function switchCoinTab(tabId) {
    GOLD CARD SLIDER (in-card swipe: Products ↔ Karat Rates)
    ================================================================ */
 function initGoldSlider() {
-  const track = document.getElementById('goldSliderTrack');
-  if (!track) return;
-
-  function updateGoldDots(index) {
-    dom.goldDots.forEach((d, i) => d.classList.toggle('active', i === index));
-  }
-
-  /* Dot click navigation */
-  dom.goldDots.forEach((dot, i) => {
-    dot.addEventListener('click', () => {
-      const slides = track.querySelectorAll('.gold-slide');
-      if (slides[i]) {
-        track.scrollTo({ left: slides[i].offsetLeft, behavior: 'smooth' });
-      }
-    });
-  });
-
-  /* Scroll → update dots */
-  let goldScrollTimer;
-  track.addEventListener('scroll', () => {
-    clearTimeout(goldScrollTimer);
-    goldScrollTimer = setTimeout(() => {
-      const slides = Array.from(track.querySelectorAll('.gold-slide'));
-      const scrollLeft = track.scrollLeft;
-      let closest = 0, minDist = Infinity;
-      slides.forEach((slide, i) => {
-        const dist = Math.abs(slide.offsetLeft - scrollLeft);
-        if (dist < minDist) { minDist = dist; closest = i; }
-      });
-      updateGoldDots(closest);
-
-      /* Toggle swipe hint visibility */
-      const hint = track.closest('.gold-swipe-card')?.querySelector('.swipe-hint');
-      if (hint) hint.style.display = closest === 0 ? '' : 'none';
-    }, 50);
-  }, { passive: true });
+  /* Swipe layout removed for Gold Products */
 }
 
 /* ================================================================
@@ -662,6 +618,7 @@ async function generateRateImage(pageId) {
   const isCoins = pageId === 'coins';
 
   const goldProds = isGold ? (data.goldProducts || []) : [];
+  const karatRates = isGold ? (data.karatRates || []) : [];
   const silvProds = isSilver ? (data.silverProducts || []) : [];
 
   const gcRows = isCoins ? (admin.goldCoins?.rows || []) : [];
@@ -682,6 +639,7 @@ async function generateRateImage(pageId) {
   let H = HDR_H;
 
   if (goldProds.length) H += SEC_H + RLINE + goldProds.length * RLINE + 28;
+  if (karatRates.length) H += SEC_H + RLINE + karatRates.length * RLINE + 28;
   if (silvProds.length) H += SEC_H + RLINE + silvProds.length * RLINE + 28;
   if (gcRows.length && gcBase !== null) H += SEC_H + RLINE + gcRows.length * RLINE + 28;
   if (scRows.length && scBase !== null) H += SEC_H + RLINE + scRows.length * RLINE + 28;
@@ -834,8 +792,37 @@ async function generateRateImage(pageId) {
     ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fillRect(PAD, y, W - PAD * 2, 1); y += 26;
   }
 
+  /* ── Karat table helper ── */
+  function drawKaratTable(title, titleCol, rows) {
+    if (!rows || !rows.length) return;
+    ctx.fillStyle = titleCol; ctx.font = 'bold 18px Inter,Arial,sans-serif';
+    ctx.fillText(title, PAD, y + 24); y += 38;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.14)'; ctx.fillRect(PAD, y, W - PAD * 2, RLINE);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = 'bold 12px Inter,Arial,sans-serif';
+    ctx.fillText('KARAT', PAD + 12, y + 30);
+    ctx.textAlign = 'right'; ctx.fillText('PRICE (per 10g)', W - PAD, y + 30);
+    ctx.textAlign = 'left'; y += RLINE;
+
+    rows.forEach((k, i) => {
+      if (i % 2 === 1) {
+        ctx.fillStyle = 'rgba(255,255,255,0.04)'; ctx.fillRect(PAD, y, W - PAD * 2, RLINE);
+      }
+      ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.font = 'bold 16px Inter,Arial,sans-serif';
+      ctx.fillText(k.karat + 'K', PAD + 12, y + 31);
+
+      ctx.textAlign = 'right'; ctx.fillStyle = GOLD; ctx.font = 'bold 22px Inter,Arial,sans-serif';
+      const txt = k.ask !== null ? '₹' + k.ask.toLocaleString('en-IN') : '—';
+      ctx.fillText(txt, W - PAD, y + 31);
+      ctx.textAlign = 'left'; y += RLINE;
+    });
+
+    ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fillRect(PAD, y, W - PAD * 2, 1); y += 26;
+  }
+
   /* ── Draw content ── */
   drawProdTable('GOLD PRODUCTS', GOLD, goldProds);
+  drawKaratTable('KARAT RATES', GOLD, karatRates);
   drawProdTable('SILVER PRODUCTS', '#94a3b8', silvProds);
   drawCoinTable('GOLD COINS', GOLD, gcRows, gcBase, gcDiv, gcPPG, gcPct);
   drawCoinTable('SILVER COINS', '#94a3b8', scRows, scBase, scDiv, scPPG, scPct);

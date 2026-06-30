@@ -80,8 +80,8 @@
           </div>
         </article>
 
-        <!-- Gold Products (with swipe to Karat Rates) -->
-        <article class="rate-card gold-swipe-card" id="goldCard">
+        <!-- Gold Products and Karat Rates -->
+        <article class="rate-card" id="goldCard">
           <div class="card-header">
             <span class="metal-badge gold-badge">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -89,84 +89,64 @@
               </svg>
               Gold Products
             </span>
-            <div class="gold-swipe-dots" aria-hidden="true">
-              <span class="gold-dot active" data-gslide="0" title="Products"></span>
-              <span class="gold-dot" data-gslide="1" title="Karat Rates"></span>
-            </div>
           </div>
-          <!-- Swipe track -->
-          <div class="gold-slider-track" id="goldSliderTrack">
-            <!-- Slide 0: Product Rates -->
-            <div class="gold-slide">
-              <div class="table-wrap" id="goldProductsBox">
-                <p class="empty-msg">Connecting to live feed…</p>
-              </div>
-              
-              <!-- Filler to balance height with Slide 1 -->
-              <div class="gold-filler-container" id="gold-filler-container">
-                <div class="karat-card" id="karat-card-filler">
-                  <div class="karat-label" style="font-size:1.6rem;">24K <span class="karat-purity" style="font-size:0.75rem;">(99.9%)</span></div>
-                  <div class="karat-price" id="kp-filler-24" style="font-size:1.3rem;">—</div>
-                  <div class="karat-unit">per 10g</div>
-                </div>
-              </div>
-            </div>
-            <!-- Slide 1: Karat Rates (Mahakali-style card grid) -->
-            <div class="gold-slide" id="mobile-karat-container">
-              <div class="gold-karat-slide-inner" id="karat-content-block">
-                <div class="gold-karat-slide-header">
-                  <span class="section-title" style="font-size:0.95rem;">Karat Rates</span>
-                  <span class="live-pill"><span class="live-dot"></span>Live</span>
-                </div>
-                <div class="karat-grid" id="goldKaratGrid">
-                  <div class="karat-card" id="karat-card-24k">
-                    <div class="karat-label">24K</div>
-                    <div class="karat-purity">99.9%</div>
-                    <div class="karat-price" id="kp-24">—</div>
-                    <div class="karat-unit">per 10g</div>
-                  </div>
-                  <div class="karat-card" id="karat-card-22k">
-                    <div class="karat-label">22K</div>
-                    <div class="karat-purity">91.6%</div>
-                    <div class="karat-price" id="kp-22">—</div>
-                    <div class="karat-unit">per 10g</div>
-                  </div>
-                  <div class="karat-card" id="karat-card-21k">
-                    <div class="karat-label">21K</div>
-                    <div class="karat-purity">87.5%</div>
-                    <div class="karat-price" id="kp-21">—</div>
-                    <div class="karat-unit">per 10g</div>
-                  </div>
-                  <div class="karat-card" id="karat-card-20k">
-                    <div class="karat-label">20K</div>
-                    <div class="karat-purity">83.3%</div>
-                    <div class="karat-price" id="kp-20">—</div>
-                    <div class="karat-unit">per 10g</div>
-                  </div>
-                  <div class="karat-card" id="karat-card-18k">
-                    <div class="karat-label">18K</div>
-                    <div class="karat-purity">75.0%</div>
-                    <div class="karat-price" id="kp-18">—</div>
-                    <div class="karat-unit">per 10g</div>
-                  </div>
-                  <div class="karat-card" id="karat-card-14k">
-                    <div class="karat-label">14K</div>
-                    <div class="karat-purity">58.3%</div>
-                    <div class="karat-price" id="kp-14">—</div>
-                    <div class="karat-unit">per 10g</div>
-                  </div>
-                  <div class="karat-card" id="karat-card-9k">
-                    <div class="karat-label">9K</div>
-                    <div class="karat-purity">37.5%</div>
-                    <div class="karat-price" id="kp-9">—</div>
-                    <div class="karat-unit">per 10g</div>
-                  </div>
-                </div>
-                <p class="coin-note" style="margin-top:8px;">Rates are for reference only. Based on 24K (98.S REF+GST).*</p>
-              </div>
-            </div>
+          
+          <div class="table-wrap" id="goldProductsBox">
+            <p class="empty-msg">Connecting to live feed…</p>
           </div>
-          <p class="swipe-hint">← Swipe for Karat Rates →</p>
+          
+          <!-- KARAT GRID ALWAYS VISIBLE -->
+          <div class="gold-karat-slide-inner" id="karat-content-block" style="border-top: 1px solid rgba(217,178,95,0.15); padding-top: 15px; margin-top: 5px;">
+            <div class="gold-karat-slide-header">
+              <span class="section-title" style="font-size:0.95rem;">Karat Rates</span>
+              <span class="live-pill"><span class="live-dot"></span>Live</span>
+            </div>
+            <div class="karat-grid" id="goldKaratGrid">
+              <div class="karat-card" id="karat-card-24k">
+                <div class="karat-label">24K</div>
+                <div class="karat-purity">99.9%</div>
+                <div class="karat-price" id="kp-24">—</div>
+                <div class="karat-unit">per 10g</div>
+              </div>
+              <div class="karat-card" id="karat-card-22k">
+                <div class="karat-label">22K</div>
+                <div class="karat-purity">91.6%</div>
+                <div class="karat-price" id="kp-22">—</div>
+                <div class="karat-unit">per 10g</div>
+              </div>
+              <div class="karat-card" id="karat-card-21k">
+                <div class="karat-label">21K</div>
+                <div class="karat-purity">87.5%</div>
+                <div class="karat-price" id="kp-21">—</div>
+                <div class="karat-unit">per 10g</div>
+              </div>
+              <div class="karat-card" id="karat-card-20k">
+                <div class="karat-label">20K</div>
+                <div class="karat-purity">83.3%</div>
+                <div class="karat-price" id="kp-20">—</div>
+                <div class="karat-unit">per 10g</div>
+              </div>
+              <div class="karat-card" id="karat-card-18k">
+                <div class="karat-label">18K</div>
+                <div class="karat-purity">75.0%</div>
+                <div class="karat-price" id="kp-18">—</div>
+                <div class="karat-unit">per 10g</div>
+              </div>
+              <div class="karat-card" id="karat-card-14k">
+                <div class="karat-label">14K</div>
+                <div class="karat-purity">58.3%</div>
+                <div class="karat-price" id="kp-14">—</div>
+                <div class="karat-unit">per 10g</div>
+              </div>
+              <div class="karat-card" id="karat-card-9k">
+                <div class="karat-label">9K</div>
+                <div class="karat-purity">37.5%</div>
+                <div class="karat-price" id="kp-9">—</div>
+                <div class="karat-unit">per 10g</div>
+              </div>
+            </div>
+            <p class="coin-note" style="margin-top:8px;">Rates are for reference only. Based on 24K (999 IMP RTGS).*</p>
+          </div>
         </article>
 
         <!-- Future Rates -->

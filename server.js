@@ -334,7 +334,7 @@ function getSilverCoinBase() { return getBaseAsk('swayam', SILVER_COIN_ROW); }
    Base: "98.S REF+GST" from gopnath (already 24K rate, per 10g)
    Per-gram karat rate = (base / 10) * (karat / 24)
    ══════════════════════════════════════════════════════════════ */
-const KARAT_SOURCE_ROW = adminConfig?.karatRates?.sourceRow || '98.S REF+GST';
+const KARAT_SOURCE_ROW = adminConfig?.karatRates?.sourceRow || '999 IMP RTGS';
 const KARAT_DIVISOR    = adminConfig?.karatRates?.divisor   || 1;
 const KARAT_LIST       = [24, 22, 21, 20, 18, 14, 9];
 
