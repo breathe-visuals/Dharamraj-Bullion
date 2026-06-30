@@ -339,7 +339,7 @@ const KARAT_DIVISOR    = adminConfig?.karatRates?.divisor   || 10;
 const KARAT_LIST       = [24, 22, 21, 20, 18, 14, 9];
 
 function buildKaratRates() {
-  const baseRow = getBaseRow('gopnath', KARAT_SOURCE_ROW);
+  const baseRow = getBaseRow('gopnath', KARAT_SOURCE_ROW) || getBaseRow('swayam', KARAT_SOURCE_ROW);
   if (!baseRow || baseRow.ask === null) return null;
 
   const base24Ask  = baseRow.ask  !== null ? baseRow.ask  / KARAT_DIVISOR : null;

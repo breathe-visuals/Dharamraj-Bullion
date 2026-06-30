@@ -417,8 +417,12 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
 /* ============================================================
    KARAT GRID (Mahakali-style card grid)
    ============================================================ */
+.desktop-karat-section {
+  margin-bottom: 24px;
+}
+
 .gold-karat-slide-inner {
-  padding: 2px 0 4px;
+  padding: 10px 4px;
 }
 
 .gold-karat-slide-header {
@@ -769,6 +773,9 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   #karat-card-24k .karat-label { font-size: 1.5rem; }
   #karat-card-24k .karat-price { font-size: 1.2rem; }
   .karat-card { padding: 14px 8px; }
+  /* Hide swipe affordances and disable scroll track on desktop */
+  .gold-swipe-dots, .swipe-hint { display: none !important; }
+  .gold-slider-track { overflow: hidden !important; touch-action: none; }
 }
 
 /* ── Medium Desktop 992–1279px ── */
@@ -780,6 +787,9 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   tbody td { padding: 9px 7px; }
   .chip-val { font-size: 0.82rem; min-width: 40px; }
   .rowhead { font-size: 0.85rem; }
+  /* Hide swipe affordances and disable scroll track on desktop */
+  .gold-swipe-dots, .swipe-hint { display: none !important; }
+  .gold-slider-track { overflow: hidden !important; touch-action: none; }
 }
 
 /* ── Tablet 768–991px ── switch to vertical + slider ── */

@@ -53,6 +53,9 @@
   </div>
 
   <main class="page" id="main-page">
+    
+    <!-- Desktop Karat Container (JS moves the karat grid here on large screens) -->
+    <div id="desktop-karat-container" class="desktop-karat-section hidden"></div>
 
     <!-- PRODUCT RATES SECTION -->
     <section class="section" aria-label="Product Rates">
@@ -100,8 +103,8 @@
               </div>
             </div>
             <!-- Slide 1: Karat Rates (Mahakali-style card grid) -->
-            <div class="gold-slide">
-              <div class="gold-karat-slide-inner">
+            <div class="gold-slide" id="mobile-karat-container">
+              <div class="gold-karat-slide-inner" id="karat-content-block">
                 <div class="gold-karat-slide-header">
                   <span class="section-title" style="font-size:0.95rem;">Karat Rates</span>
                   <span class="section-subtitle-small">per gram · from 98.S REF+GST base</span>

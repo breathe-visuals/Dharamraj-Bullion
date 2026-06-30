@@ -45,6 +45,30 @@ const dom = {
 };
 
 /* ================================================================
+   KARAT LAYOUT MANAGER (Desktop vs Mobile)
+   ================================================================ */
+function manageKaratLayout() {
+  const karatBlock = document.getElementById('karat-content-block');
+  const desktopContainer = document.getElementById('desktop-karat-container');
+  const mobileContainer = document.getElementById('mobile-karat-container');
+
+  if (!karatBlock || !desktopContainer || !mobileContainer) return;
+
+  if (window.innerWidth >= 992) {
+    if (karatBlock.parentNode !== desktopContainer) {
+      desktopContainer.appendChild(karatBlock);
+      desktopContainer.classList.remove('hidden');
+    }
+  } else {
+    if (karatBlock.parentNode !== mobileContainer) {
+      mobileContainer.appendChild(karatBlock);
+      desktopContainer.classList.add('hidden');
+    }
+  }
+}
+window.addEventListener('resize', manageKaratLayout);
+
+/* ================================================================
    BOOT SEQUENCE
    ================================================================ */
 (async function boot() {
@@ -56,6 +80,7 @@ const dom = {
     CFG = { site: {}, admin: {} };
   }
 
+  manageKaratLayout();
   connectSocket();
   initSlider();
   initGoldSlider();
