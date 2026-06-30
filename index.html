@@ -87,26 +87,26 @@
               Gold Products
             </span>
             <div class="gold-swipe-dots" aria-hidden="true">
-              <span class="gold-dot active" data-gslide="0" title="Products"></span>
-              <span class="gold-dot" data-gslide="1" title="Karat Rates"></span>
+              <span class="gold-dot active" data-gslide="0" title="Karat Rates"></span>
+              <span class="gold-dot" data-gslide="1" title="Products"></span>
             </div>
           </div>
           <!-- Swipe track -->
           <div class="gold-slider-track" id="goldSliderTrack">
-            <!-- Slide 0: Product Rates -->
-            <div class="gold-slide">
-              <div class="table-wrap" id="goldProductsBox">
-                <p class="empty-msg">Connecting to live feed…</p>
-              </div>
-            </div>
-            <!-- Slide 1: Karat Rates -->
+            <!-- Slide 0: Karat Rates (FIRST) -->
             <div class="gold-slide">
               <div class="table-wrap" id="goldKaratBox">
                 <p class="empty-msg">Connecting to live feed…</p>
               </div>
             </div>
+            <!-- Slide 1: Product Rates -->
+            <div class="gold-slide">
+              <div class="table-wrap" id="goldProductsBox">
+                <p class="empty-msg">Connecting to live feed…</p>
+              </div>
+            </div>
           </div>
-          <p class="swipe-hint">← Swipe for Karat Rates →</p>
+          <p class="swipe-hint">← Karat Rates | Products →</p>
         </article>
 
         <!-- Future Rates -->
@@ -131,20 +131,6 @@
           </div>
         </article>
       </div>
-    </section>
-
-    <!-- KARAT RATES SECTION (standalone, always visible) -->
-    <section class="section" aria-label="Karat Rates" id="karat-section">
-      <div class="section-label">
-        <span class="section-title">Karat Rates</span>
-        <span class="live-pill"><span class="live-dot"></span>Live</span>
-      </div>
-      <article class="rate-card">
-        <div class="table-wrap" id="karatRatesBox">
-          <p class="empty-msg">Connecting to live feed…</p>
-        </div>
-      </article>
-      <p class="coin-note">Per gram rates calculated from 24K (98.S REF+GST) base. For reference only.</p>
     </section>
 
     <!-- MOBILE MARKET RATES SLIDER (hidden on desktop) -->

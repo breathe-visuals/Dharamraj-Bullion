@@ -40,7 +40,6 @@ const dom = {
   goldCoinBox: document.getElementById('goldCoinBox'),
   silverCoinBox: document.getElementById('silverCoinBox'),
   goldKaratBox: document.getElementById('goldKaratBox'),
-  karatRatesBox: document.getElementById('karatRatesBox'),
   slider: document.getElementById('rateSlider'),
   dots: Array.from(document.querySelectorAll('.dot')),
   goldSlider: document.getElementById('goldSliderTrack'),
@@ -380,10 +379,9 @@ function renderAll(data) {
   renderTable(dom.spotBox, data?.spotRows, prev.spot, 'rate');
   renderTable(dom.spotBoxMobile, data?.spotRows, prev.spot, 'rate');
 
-  /* Karat rates — in-card swipe slide + standalone section */
+  /* Karat rates — in-card swipe slide (slide 0 of gold card) */
   if (data?.karatRates) {
     renderKaratTable('goldKaratBox', data.karatRates);
-    renderKaratTable('karatRatesBox', data.karatRates);
   }
 
   /* Coin tables */
