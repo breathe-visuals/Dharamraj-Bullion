@@ -336,7 +336,8 @@ function renderKaratGrid(karatRates) {
 
   karatRates.forEach(k => {
     const el = document.getElementById(`kp-${k.karat}`);
-    if (!el) return;
+    const fillerEl = k.karat === 24 ? document.getElementById('kp-filler-24') : null;
+    if (!el && !fillerEl) return;
 
     const prevPrice = prevKaratPrices[k.karat] ?? null;
     const text = k.ask !== null ? k.ask.toLocaleString('en-IN') : '—';
@@ -344,8 +345,14 @@ function renderKaratGrid(karatRates) {
       ? (k.ask > prevPrice ? 'karat-price up' : k.ask < prevPrice ? 'karat-price down' : 'karat-price')
       : 'karat-price';
 
-    if (el.textContent !== text) el.textContent = text;
-    if (el.className !== cls) el.className = cls;
+    if (el) {
+      if (el.textContent !== text) el.textContent = text;
+      if (el.className !== cls) el.className = cls;
+    }
+    if (fillerEl) {
+      if (fillerEl.textContent !== text) fillerEl.textContent = text;
+      if (fillerEl.className !== cls) fillerEl.className = cls;
+    }
 
     prevKaratPrices[k.karat] = k.ask;
   });
@@ -439,7 +446,42 @@ function switchCoinTab(tabId) {
    GOLD CARD SLIDER (in-card swipe: Products ↔ Karat Rates)
    ================================================================ */
 function initGoldSlider() {
-  /* Swipe layout removed for Gold Products */
+  const track = document.getElementById('goldSliderTrack');
+  if (!track) return;
+
+  function updateGoldDots(index) {
+    dom.goldDots.forEach((d, i) => d.classList.toggle('active', i === index));
+  }
+
+  /* Dot click navigation */
+  dom.goldDots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      const slides = track.querySelectorAll('.gold-slide');
+      if (slides[i]) {
+        track.scrollTo({ left: slides[i].offsetLeft, behavior: 'smooth' });
+      }
+    });
+  });
+
+  /* Scroll → update dots */
+  let goldScrollTimer;
+  track.addEventListener('scroll', () => {
+    clearTimeout(goldScrollTimer);
+    goldScrollTimer = setTimeout(() => {
+      const slides = Array.from(track.querySelectorAll('.gold-slide'));
+      const scrollLeft = track.scrollLeft;
+      let closest = 0, minDist = Infinity;
+      slides.forEach((slide, i) => {
+        const dist = Math.abs(slide.offsetLeft - scrollLeft);
+        if (dist < minDist) { minDist = dist; closest = i; }
+      });
+      updateGoldDots(closest);
+
+      /* Toggle swipe hint visibility */
+      const hint = track.closest('.gold-swipe-card')?.querySelector('.swipe-hint');
+      if (hint) hint.style.display = closest === 0 ? '' : 'none';
+    }, 50);
+  }, { passive: true });
 }
 
 /* ================================================================
