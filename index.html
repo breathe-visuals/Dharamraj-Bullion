@@ -27,7 +27,7 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&display=swap"
     rel="stylesheet" />
 
-  <link rel="stylesheet" href="styles.css?v=8" />
+  <link rel="stylesheet" href="styles.css?v=9" />
 </head>
 
 <body>
@@ -77,8 +77,8 @@
           </div>
         </article>
 
-        <!-- Gold Products -->
-        <article class="rate-card" id="goldCard">
+        <!-- Gold Products (with swipe to Karat Rates) -->
+        <article class="rate-card gold-swipe-card" id="goldCard">
           <div class="card-header">
             <span class="metal-badge gold-badge">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -86,10 +86,27 @@
               </svg>
               Gold Products
             </span>
+            <div class="gold-swipe-dots" aria-hidden="true">
+              <span class="gold-dot active" data-gslide="0" title="Products"></span>
+              <span class="gold-dot" data-gslide="1" title="Karat Rates"></span>
+            </div>
           </div>
-          <div class="table-wrap" id="goldProductsBox">
-            <p class="empty-msg">Connecting to live feed…</p>
+          <!-- Swipe track -->
+          <div class="gold-slider-track" id="goldSliderTrack">
+            <!-- Slide 0: Product Rates -->
+            <div class="gold-slide">
+              <div class="table-wrap" id="goldProductsBox">
+                <p class="empty-msg">Connecting to live feed…</p>
+              </div>
+            </div>
+            <!-- Slide 1: Karat Rates -->
+            <div class="gold-slide">
+              <div class="table-wrap" id="goldKaratBox">
+                <p class="empty-msg">Connecting to live feed…</p>
+              </div>
+            </div>
           </div>
+          <p class="swipe-hint">← Swipe for Karat Rates →</p>
         </article>
 
         <!-- Future Rates -->
@@ -114,6 +131,20 @@
           </div>
         </article>
       </div>
+    </section>
+
+    <!-- KARAT RATES SECTION (standalone, always visible) -->
+    <section class="section" aria-label="Karat Rates" id="karat-section">
+      <div class="section-label">
+        <span class="section-title">Karat Rates</span>
+        <span class="live-pill"><span class="live-dot"></span>Live</span>
+      </div>
+      <article class="rate-card">
+        <div class="table-wrap" id="karatRatesBox">
+          <p class="empty-msg">Connecting to live feed…</p>
+        </div>
+      </article>
+      <p class="coin-note">Per gram rates calculated from 24K (98.S REF+GST) base. For reference only.</p>
     </section>
 
     <!-- MOBILE MARKET RATES SLIDER (hidden on desktop) -->
@@ -218,7 +249,7 @@
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
-  <script src="app.js?v=8"></script>
+  <script src="app.js?v=9"></script>
   <script>
     // Service Worker registration
     if ('serviceWorker' in navigator) {

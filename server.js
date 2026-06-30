@@ -330,6 +330,34 @@ function getGoldCoinBase() {
 function getSilverCoinBase() { return getBaseAsk('swayam', SILVER_COIN_ROW); }
 
 /* ══════════════════════════════════════════════════════════════
+   KARAT RATES BUILDER
+   Base: "98.S REF+GST" from gopnath (already 24K rate, per 10g)
+   Per-gram karat rate = (base / 10) * (karat / 24)
+   ══════════════════════════════════════════════════════════════ */
+const KARAT_SOURCE_ROW = adminConfig?.karatRates?.sourceRow || '98.S REF+GST';
+const KARAT_DIVISOR    = adminConfig?.karatRates?.divisor   || 10;
+const KARAT_LIST       = [24, 22, 21, 20, 18, 14, 9];
+
+function buildKaratRates() {
+  const baseRow = getBaseRow('gopnath', KARAT_SOURCE_ROW);
+  if (!baseRow || baseRow.ask === null) return null;
+
+  const base24Ask  = baseRow.ask  !== null ? baseRow.ask  / KARAT_DIVISOR : null;
+  const base24High = baseRow.high !== null ? baseRow.high / KARAT_DIVISOR : null;
+  const base24Low  = baseRow.low  !== null ? baseRow.low  / KARAT_DIVISOR : null;
+
+  return KARAT_LIST.map(k => {
+    const factor = k / 24;
+    return {
+      karat: k,
+      ask:  base24Ask  !== null ? Math.round(base24Ask  * factor) : null,
+      high: base24High !== null ? Math.round(base24High * factor) : null,
+      low:  base24Low  !== null ? Math.round(base24Low  * factor) : null,
+    };
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
    PAYLOAD BUILDER
    ══════════════════════════════════════════════════════════════ */
 function buildPayload() {
@@ -351,6 +379,8 @@ function buildPayload() {
     silverCoinBase: getSilverCoinBase(),
     goldApxRow:     goldApxFull,
     silverApxRow:   silverApxFull,
+    /* Karat rates (per gram, based on 98.S REF+GST) */
+    karatRates: buildKaratRates(),
   };
 }
 

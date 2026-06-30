@@ -39,8 +39,12 @@ const dom = {
   silverProductsBox: document.getElementById('silverProductsBox'),
   goldCoinBox: document.getElementById('goldCoinBox'),
   silverCoinBox: document.getElementById('silverCoinBox'),
+  goldKaratBox: document.getElementById('goldKaratBox'),
+  karatRatesBox: document.getElementById('karatRatesBox'),
   slider: document.getElementById('rateSlider'),
   dots: Array.from(document.querySelectorAll('.dot')),
+  goldSlider: document.getElementById('goldSliderTrack'),
+  goldDots: Array.from(document.querySelectorAll('.gold-dot')),
 };
 
 /* ================================================================
@@ -57,6 +61,7 @@ const dom = {
 
   connectSocket();
   initSlider();
+  initGoldSlider();
 })();
 
 /* ================================================================
@@ -294,6 +299,71 @@ function renderCoinTable(containerId, configRows, baseVal, divisor, premiumPerGr
 }
 
 /* ================================================================
+   KARAT TABLE RENDERER
+   Renders a 3-column table: Karat | Rate/gram | High | Low
+   ================================================================ */
+const prevKarat = {};
+
+function renderKaratTable(containerId, karatRates) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  if (!karatRates || !karatRates.length) {
+    container.innerHTML = '<p class="empty-msg">No karat data yet.</p>';
+    return;
+  }
+
+  const table = container.querySelector('.karat-table');
+
+  if (!table) {
+    /* First render — full build */
+    const trs = karatRates.map(k => {
+      const askTxt  = k.ask  !== null ? k.ask.toLocaleString('en-IN')  : '—';
+      const highTxt = k.high !== null ? k.high.toLocaleString('en-IN') : '—';
+      const lowTxt  = k.low  !== null ? k.low.toLocaleString('en-IN')  : '—';
+      return `<tr data-karat="${k.karat}">
+        <td class="rowhead karat-label">${k.karat}K</td>
+        <td><span class="chip-val same" id="${containerId}-k${k.karat}-ask">${askTxt}</span></td>
+        <td><span class="chip-val always-green" id="${containerId}-k${k.karat}-high">${highTxt}</span></td>
+        <td><span class="chip-val always-red" id="${containerId}-k${k.karat}-low">${lowTxt}</span></td>
+      </tr>`;
+    }).join('');
+
+    container.innerHTML = `<table class="karat-table">
+      <thead><tr>
+        <th>Karat</th>
+        <th>Rate/g (₹)</th>
+        <th>High</th>
+        <th>Low</th>
+      </tr></thead>
+      <tbody>${trs}</tbody>
+    </table>`;
+  } else {
+    /* Incremental update */
+    karatRates.forEach(k => {
+      const askEl  = document.getElementById(`${containerId}-k${k.karat}-ask`);
+      const highEl = document.getElementById(`${containerId}-k${k.karat}-high`);
+      const lowEl  = document.getElementById(`${containerId}-k${k.karat}-low`);
+
+      const prevAsk = prevKarat[containerId + '-k' + k.karat] ?? null;
+      const askTxt  = k.ask  !== null ? k.ask.toLocaleString('en-IN')  : '—';
+      const highTxt = k.high !== null ? k.high.toLocaleString('en-IN') : '—';
+      const lowTxt  = k.low  !== null ? k.low.toLocaleString('en-IN')  : '—';
+
+      if (askEl) {
+        if (askEl.textContent !== askTxt) askEl.textContent = askTxt;
+        const dir = k.ask !== null && prevAsk !== null
+          ? (k.ask > prevAsk ? 'up' : k.ask < prevAsk ? 'down' : 'same') : 'same';
+        askEl.className = `chip-val ${dir}`;
+      }
+      if (highEl && highEl.textContent !== highTxt) highEl.textContent = highTxt;
+      if (lowEl  && lowEl.textContent  !== lowTxt)  lowEl.textContent  = lowTxt;
+
+      prevKarat[containerId + '-k' + k.karat] = k.ask;
+    });
+  }
+}
+
+/* ================================================================
    MASTER RENDER — called on every socket rates:update
    ================================================================ */
 function renderAll(data) {
@@ -309,6 +379,12 @@ function renderAll(data) {
   renderTable(dom.futureBoxMobile, data?.futureRows, prev.future, 'rate');
   renderTable(dom.spotBox, data?.spotRows, prev.spot, 'rate');
   renderTable(dom.spotBoxMobile, data?.spotRows, prev.spot, 'rate');
+
+  /* Karat rates — in-card swipe slide + standalone section */
+  if (data?.karatRates) {
+    renderKaratTable('goldKaratBox', data.karatRates);
+    renderKaratTable('karatRatesBox', data.karatRates);
+  }
 
   /* Coin tables */
   const goldDiv = admin.goldCoins?.divisor || 10;
@@ -370,6 +446,48 @@ function switchCoinTab(tabId) {
     btn.classList.toggle('active', on);
     btn.setAttribute('aria-selected', on);
   });
+}
+
+/* ================================================================
+   GOLD CARD SLIDER (in-card swipe: Products ↔ Karat Rates)
+   ================================================================ */
+function initGoldSlider() {
+  const track = dom.goldSlider;
+  if (!track) return;
+
+  function updateGoldDots(index) {
+    dom.goldDots.forEach((d, i) => d.classList.toggle('active', i === index));
+  }
+
+  /* Dot click navigation */
+  dom.goldDots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      const slides = track.querySelectorAll('.gold-slide');
+      if (slides[i]) {
+        track.scrollTo({ left: slides[i].offsetLeft, behavior: 'smooth' });
+      }
+    });
+  });
+
+  /* Scroll → update dots */
+  let goldScrollTimer;
+  track.addEventListener('scroll', () => {
+    clearTimeout(goldScrollTimer);
+    goldScrollTimer = setTimeout(() => {
+      const slides = Array.from(track.querySelectorAll('.gold-slide'));
+      const scrollLeft = track.scrollLeft;
+      let closest = 0, minDist = Infinity;
+      slides.forEach((slide, i) => {
+        const dist = Math.abs(slide.offsetLeft - scrollLeft);
+        if (dist < minDist) { minDist = dist; closest = i; }
+      });
+      updateGoldDots(closest);
+
+      /* Toggle swipe hint visibility */
+      const hint = track.closest('.gold-swipe-card')?.querySelector('.swipe-hint');
+      if (hint) hint.style.display = closest === 0 ? '' : 'none';
+    }, 50);
+  }, { passive: true });
 }
 
 /* ================================================================
