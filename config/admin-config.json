@@ -45,7 +45,7 @@
       "unitGrams": 1000,
       "addPercent": 0,
       "addPerGram": 0,
-      "addAmount": 500
+      "addAmount": 0
     },
     "98.S REF+GST": {
       "_note": "Silver 98% Ref + GST — rate is per 1 kg",
@@ -66,7 +66,7 @@
       "unitGrams": 1000,
       "addPercent": 0,
       "addPerGram": 0,
-      "addAmount": 500
+      "addAmount": 0
     }
   },
   "goldCoins": {
