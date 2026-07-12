@@ -441,13 +441,17 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   /* Taller rows */
   tbody td { padding: 16px 6px !important; line-height: 1 !important; }
 
-  /* Sell value — large, centered, !important beats all later overrides */
+  /* Sell value — target the span directly since .chip-val has explicit font-sizes in breakpoints */
   td:nth-child(3) {
     font-size: 1.4rem !important;
     font-weight: 800 !important;
     vertical-align: middle !important;
     text-align: left !important;
     white-space: nowrap !important;
+  }
+  td:nth-child(3) .chip-val {
+    font-size: 1.4rem !important;
+    font-weight: 800 !important;
   }
 
   /* Name column */
