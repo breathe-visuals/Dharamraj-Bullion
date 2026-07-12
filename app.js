@@ -169,12 +169,17 @@ function buildTableHTML(rows, prevMap, colLabel) {
       <td class="cell-ask"><span class="chip-val ${dirClass(cur.ask, prv.ask, k + '-ask')}">${fmt(cur.ask)}</span></td>
       <td class="cell-high"><span class="chip-val always-green">${fmt(cur.high)}</span></td>
       <td class="cell-low"><span class="chip-val always-red">${fmt(cur.low)}</span></td>
+      <td class="cell-hl">
+        <span class="chip-val always-green">${fmt(cur.high)}</span>
+        <span class="hl-sep"></span>
+        <span class="chip-val always-red">${fmt(cur.low)}</span>
+      </td>
     </tr>`;
   }).join('');
   return `<table>
     <thead><tr>
       <th>${escape(colLabel)}</th>
-      <th>Buy</th><th>Sell</th><th>High</th><th>Low</th>
+      <th class="col-bid">Buy</th><th>Sell</th><th class="col-high">High</th><th class="col-low">Low</th><th class="col-hl">H / L</th>
     </tr></thead>
     <tbody>${trs}</tbody>
   </table>`;
@@ -212,6 +217,14 @@ function renderTable(container, rows, prevMap, type) {
         updateCell(tr.querySelector('.cell-ask'), cur.ask, prv.ask, k + '-ask');
         updateCell(tr.querySelector('.cell-high'), cur.high, null, null, 'always-green');
         updateCell(tr.querySelector('.cell-low'), cur.low, null, null, 'always-red');
+        /* sync combined h/l cell */
+        const hlCell = tr.querySelector('.cell-hl');
+        if (hlCell) {
+          const spans = hlCell.querySelectorAll('.chip-val');
+          const hTxt = fmt(cur.high), lTxt = fmt(cur.low);
+          if (spans[0] && spans[0].textContent !== hTxt) spans[0].textContent = hTxt;
+          if (spans[1] && spans[1].textContent !== lTxt) spans[1].textContent = lTxt;
+        }
       }
     });
   }
@@ -253,15 +266,24 @@ function renderApxTableRow(containerId, label, apxData) {
       <td class="cell-ask"><span class="chip-val apx-chip" id="${rowId}-sell">${sellTxt}</span></td>
       <td class="cell-high"><span class="chip-val always-green" id="${rowId}-high">${highTxt}</span></td>
       <td class="cell-low"><span class="chip-val always-red" id="${rowId}-low">${lowTxt}</span></td>
+      <td class="cell-hl">
+        <span class="chip-val always-green" id="${rowId}-hl-high">${highTxt}</span>
+        <span class="hl-sep"></span>
+        <span class="chip-val always-red" id="${rowId}-hl-low">${lowTxt}</span>
+      </td>
     `;
     tbody.appendChild(tr);
   } else {
     const elSell = document.getElementById(rowId + '-sell');
     const elHigh = document.getElementById(rowId + '-high');
-    const elLow = document.getElementById(rowId + '-low');
+    const elLow  = document.getElementById(rowId + '-low');
+    const elHlH  = document.getElementById(rowId + '-hl-high');
+    const elHlL  = document.getElementById(rowId + '-hl-low');
     if (elSell && elSell.textContent !== sellTxt) elSell.textContent = sellTxt;
     if (elHigh && elHigh.textContent !== highTxt) elHigh.textContent = highTxt;
-    if (elLow && elLow.textContent !== lowTxt) elLow.textContent = lowTxt;
+    if (elLow  && elLow.textContent  !== lowTxt)  elLow.textContent  = lowTxt;
+    if (elHlH  && elHlH.textContent  !== highTxt) elHlH.textContent  = highTxt;
+    if (elHlL  && elHlL.textContent  !== lowTxt)  elHlL.textContent  = lowTxt;
   }
 }
 

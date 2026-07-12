@@ -351,9 +351,9 @@ th:nth-child(4), td:nth-child(4) { width: 16%; }
 th:nth-child(5), td:nth-child(5) { width: 16%; }
 
 thead th {
-  padding: 16px 8px;
+  padding: 14px 8px;
   text-align: left;
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -362,14 +362,15 @@ thead th {
   white-space: nowrap;
 }
 tbody td {
-  padding: 18px 8px;
+  padding: 14px 8px;
   border-bottom: 1px solid rgba(217,178,95,0.13);
   vertical-align: middle;
-  white-space: normal;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-weight: 700;
-  font-size: 1.02rem;
-  line-height: 1.35;
+  font-size: 1.1rem;
+  line-height: 1.3;
 }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: rgba(0,51,54,0.03); }
@@ -377,35 +378,82 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
 .rowhead {
   font-weight: 800;
   color: var(--text);
-  font-size: 1rem;
+  font-size: 1.08rem;
   font-family: 'Oswald', sans-serif;
   letter-spacing: 0.02em;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ============================================================
    PRICE CHIPS
    ============================================================ */
 .chip-val {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border-radius: 0;
+  display: inline;
   background: transparent !important;
-  font-size: 0.96rem;
+  font-size: inherit;
   font-family: 'Oswald', sans-serif;
   font-weight: 700;
-  min-width: 0;
   font-variant-numeric: tabular-nums;
   transition: color 0.3s;
+  white-space: nowrap;
 }
 .chip-val.up         { color: var(--up-fg); }
 .chip-val.down       { color: var(--down-fg); }
 .chip-val.same       { color: var(--neu-fg); }
 .chip-val.always-green { color: var(--up-fg); }
 .chip-val.always-red   { color: var(--down-fg); }
+
+/* ============================================================
+   COMBINED HIGH / LOW CELL  (mobile 3-col layout)
+   ============================================================ */
+/* Desktop default: show separate cols, hide combined */
+.cell-hl, th.col-hl { display: none; }
+
+.cell-hl {
+  vertical-align: middle;
+  text-align: center;
+  padding: 6px 4px;
+  line-height: 1;
+}
+
+.hl-sep {
+  display: block;
+  width: 80%;
+  height: 1px;
+  background: rgba(217,178,95,0.40);
+  margin: 4px auto;
+}
+
+/* Mobile ≤767px: switch to 3-col — hide Buy+High+Low, show combined */
+@media (max-width: 767px) {
+  .cell-bid, th.col-bid   { display: none; }
+  .cell-high, th.col-high { display: none; }
+  .cell-low, th.col-low   { display: none; }
+  .cell-hl, th.col-hl     { display: table-cell; }
+
+  /* 3-col widths: Name | Sell | H/L */
+  th:nth-child(1), td:nth-child(1) { width: 42%; }
+  th:nth-child(3), td:nth-child(3) { width: 28%; } /* Sell = 3rd th/td */
+  th.col-hl, td.cell-hl            { width: 30%; }
+
+  td.cell-hl {
+    padding: 8px 4px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  td.cell-hl .chip-val {
+    font-size: 0.82rem;
+    display: block;
+    text-align: center;
+    line-height: 1.25;
+  }
+  th.col-hl {
+    text-align: center;
+    letter-spacing: 0;
+  }
+}
 
 /* ============================================================
    EMPTY / LOADING
@@ -776,23 +824,23 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   .page { gap: 18px; padding-top: 18px; }
   .rates-desktop-grid { gap: 18px; }
   .rate-card { padding: 18px; }
-  table { font-size: 1.08rem; }
-  thead th { font-size: 0.88rem; padding: 14px 10px; }
-  tbody td { padding: 15px 10px; font-size: 1.08rem; }
-  .rowhead { font-size: 1.06rem; }
-  .chip-val { font-size: 1rem; }
-  .section-title { font-size: 1.3rem; }
-  .card-title { font-size: 1.25rem; }
+  table { font-size: 1.18rem; }
+  thead th { font-size: 0.96rem; padding: 15px 10px; }
+  tbody td { padding: 16px 10px; font-size: 1.18rem; }
+  .rowhead { font-size: 1.2rem; }
+  .chip-val { font-size: 1.18rem; }
+  .section-title { font-size: 1.35rem; }
+  .card-title { font-size: 1.3rem; }
   .marquee-bar { font-size: 1rem; }
   /* Karat grid: 7 across on large desktop */
   .karat-grid { grid-template-columns: repeat(7, 1fr); gap: 10px; }
   #karat-card-24k { grid-column: span 1; }
-  .karat-label { font-size: 1.5rem; }
-  .karat-price { font-size: 1.2rem; }
-  .karat-purity { font-size: 0.76rem; }
-  .karat-unit { font-size: 0.72rem; }
-  #karat-card-24k .karat-label { font-size: 1.7rem; }
-  #karat-card-24k .karat-price { font-size: 1.4rem; }
+  .karat-label { font-size: 1.55rem; }
+  .karat-price { font-size: 1.25rem; }
+  .karat-purity { font-size: 0.78rem; }
+  .karat-unit { font-size: 0.74rem; }
+  #karat-card-24k .karat-label { font-size: 1.75rem; }
+  #karat-card-24k .karat-price { font-size: 1.45rem; }
   .karat-card { padding: 14px 8px; }
   /* Hide swipe affordances and filler on desktop */
   .gold-swipe-dots, .swipe-hint, .gold-filler-container { display: none !important; }
@@ -803,11 +851,11 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
 @media (min-width: 992px) and (max-width: 1279px) {
   :root { --page-px: 32px; }
   .header-logo { height: 68px; }
-  table { font-size: 0.98rem; }
-  thead th { font-size: 0.80rem; padding: 12px 8px; }
-  tbody td { padding: 13px 8px; font-size: 0.98rem; }
-  .chip-val { font-size: 0.92rem; }
-  .rowhead { font-size: 0.95rem; }
+  table { font-size: 1.08rem; }
+  thead th { font-size: 0.9rem; padding: 13px 9px; }
+  tbody td { padding: 14px 9px; font-size: 1.08rem; }
+  .chip-val { font-size: 1.08rem; }
+  .rowhead { font-size: 1.08rem; }
   /* Hide swipe affordances and filler on desktop */
   .gold-swipe-dots, .swipe-hint, .gold-filler-container { display: none !important; }
   .gold-slider-track { overflow: hidden !important; touch-action: none; }
@@ -816,7 +864,6 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
 /* ── Tablet 768–991px ── switch to vertical + slider ── */
 @media (max-width: 991px) {
   :root { --page-px: 20px; }
-  /* 2-col grid becomes 1-col; hide desktop future/spot; show mobile slider */
   .rates-desktop-grid { grid-template-columns: 1fr; gap: 10px; }
   #futureCard, #spotCard { display: none; }
   .mobile-slider-section { display: flex; }
@@ -824,15 +871,15 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   .header-logo { height: 60px; }
   .page { gap: 12px; padding-top: 10px; }
   .rate-card { padding: 12px; }
-  table { font-size: 1rem; }
-  thead th { font-size: 0.78rem; padding: 11px 7px; }
-  tbody td { padding: 12px 7px; font-size: 1rem; }
-  .rowhead { font-size: 0.95rem; }
-  .chip-val { font-size: 0.92rem; }
-  .section-title { font-size: 1.12rem; }
-  .card-title { font-size: 1.08rem; }
-  .marquee-bar { font-size: 0.88rem; }
-  .coin-tab { padding: 7px 16px; font-size: 0.88rem; }
+  table { font-size: 1.05rem; }
+  thead th { font-size: 0.86rem; padding: 12px 7px; }
+  tbody td { padding: 13px 7px; font-size: 1.05rem; }
+  .rowhead { font-size: 1.05rem; }
+  .chip-val { font-size: 1.05rem; }
+  .section-title { font-size: 1.15rem; }
+  .card-title { font-size: 1.1rem; }
+  .marquee-bar { font-size: 0.9rem; }
+  .coin-tab { padding: 7px 16px; font-size: 0.9rem; }
 }
 
 /* ── Large Mobile 481–767px ── */
@@ -842,10 +889,10 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   .timer-box { justify-content: center; width: 100%; }
   .header-inner { padding: 10px 16px; }
   .slider-card { padding: 12px; }
-  .chip-val { font-size: 0.94rem; }
-  thead th { font-size: 0.78rem; padding: 11px 6px; letter-spacing: 0; }
-  tbody td { padding: 12px 6px; font-size: 1rem; }
-  .rowhead { font-size: 0.94rem; white-space: normal; }
+  .chip-val { font-size: 0.88rem; }
+  thead th { font-size: 0.72rem; padding: 10px 5px; letter-spacing: 0; white-space: nowrap; }
+  tbody td { padding: 11px 5px; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rowhead { font-size: 0.88rem; white-space: nowrap; }
   .action-btn { font-size: 0.86rem; padding: 10px 12px; }
   .karat-card { padding: 9px 5px; }
   .karat-label { font-size: 1.25rem; }
@@ -855,53 +902,67 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
 
 /* ── Mobile ≤480px ── */
 @media (max-width: 480px) {
-  :root { --page-px: 12px; }
-  .header-inner { padding: 8px 12px; }
+  :root { --page-px: 10px; }
+  .header-inner { padding: 8px 10px; }
   .header-logo { height: 52px; }
   .marquee-container { flex-direction: column; gap: 5px; }
-  .timer-box { justify-content: center; width: 100%; padding: 5px 12px; }
-  .marquee-bar { font-size: 0.78rem; padding: 5px 12px; }
-  .last-updated { font-size: 0.8rem; }
+  .timer-box { justify-content: center; width: 100%; padding: 5px 10px; }
+  .marquee-bar { font-size: 0.76rem; padding: 5px 10px; }
+  .last-updated { font-size: 0.78rem; }
   .page { padding-top: 8px; gap: 10px; }
-  .rate-card { padding: 10px; }
-  .slider-card { padding: 10px; }
-  .section-title { font-size: 1.05rem; }
-  .card-title { font-size: 1rem; }
-  .metal-badge { font-size: 0.82rem; padding: 4px 10px; }
-  /* Bigger text for readability — no overlap */
-  .chip-val { font-size: 0.9rem; }
-  thead th { font-size: 0.74rem; padding: 10px 5px; }
-  tbody td { padding: 11px 5px; font-size: 0.96rem; }
-  .rowhead { font-size: 0.9rem; white-space: normal; word-break: break-word; }
-  .action-btn { font-size: 0.84rem; padding: 10px 10px; gap: 6px; }
-  .coin-tab { padding: 6px 14px; font-size: 0.84rem; }
-  .coin-table th { font-size: 0.72rem; padding: 9px 7px; }
-  .coin-table td { font-size: 0.96rem; padding: 9px 7px; }
-  .coin-price { font-size: 1.05rem; }
-  /* Karat grid mobile — compact but readable */
+  .rate-card { padding: 8px; }
+  .slider-card { padding: 8px; }
+  .section-title { font-size: 1rem; }
+  .card-title { font-size: 0.95rem; }
+  .metal-badge { font-size: 0.76rem; padding: 3px 8px; }
+  /* Single-line enforcement on mobile */
+  table { font-size: 0.82rem; }
+  .chip-val { font-size: 0.82rem; }
+  thead th { font-size: 0.65rem; padding: 9px 4px; white-space: nowrap; letter-spacing: 0; }
+  tbody td { padding: 10px 4px; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+  .rowhead { font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  th:nth-child(1), td:nth-child(1) { width: 32%; }
+  th:nth-child(2), td:nth-child(2) { width: 17%; }
+  th:nth-child(3), td:nth-child(3) { width: 17%; }
+  th:nth-child(4), td:nth-child(4) { width: 17%; }
+  th:nth-child(5), td:nth-child(5) { width: 17%; }
+  .action-btn { font-size: 0.82rem; padding: 10px 8px; gap: 5px; }
+  .coin-tab { padding: 6px 12px; font-size: 0.8rem; }
+  .coin-table th { font-size: 0.65rem; padding: 8px 5px; }
+  .coin-table td { font-size: 0.88rem; padding: 8px 5px; }
+  .coin-price { font-size: 1rem; }
+  /* Karat grid mobile */
   .karat-grid { gap: 5px; }
   .karat-card { padding: 8px 4px; }
-  .karat-label { font-size: 1.15rem; }
-  .karat-price { font-size: 1rem; }
-  .karat-purity { font-size: 0.62rem; }
-  .karat-unit { font-size: 0.60rem; }
-  #karat-card-24k .karat-label { font-size: 1.3rem; }
-  #karat-card-24k .karat-price { font-size: 1.15rem; }
-  /* Swipe hint smaller */
+  .karat-label { font-size: 1.1rem; }
+  .karat-price { font-size: 0.95rem; }
+  .karat-purity { font-size: 0.6rem; }
+  .karat-unit { font-size: 0.58rem; }
+  #karat-card-24k .karat-label { font-size: 1.25rem; }
+  #karat-card-24k .karat-price { font-size: 1.1rem; }
   .swipe-hint { font-size: 0.65rem; }
 }
 
 /* ── Very small ≤360px ── */
 @media (max-width: 360px) {
-  .chip-val { font-size: 0.84rem; }
-  thead th { font-size: 0.68rem; padding: 9px 4px; }
-  tbody td { font-size: 0.9rem; padding: 11px 4px; }
-  .rowhead { font-size: 0.84rem; }
-  .action-btn { font-size: 0.80rem; gap: 5px; }
+  :root { --page-px: 8px; }
+  table { font-size: 0.74rem; }
+  .chip-val { font-size: 0.74rem; }
+  thead th { font-size: 0.58rem; padding: 8px 3px; white-space: nowrap; letter-spacing: 0; }
+  tbody td { font-size: 0.74rem; padding: 9px 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rowhead { font-size: 0.74rem; white-space: nowrap; }
+  th:nth-child(1), td:nth-child(1) { width: 30%; }
+  th:nth-child(2), td:nth-child(2) { width: 17.5%; }
+  th:nth-child(3), td:nth-child(3) { width: 17.5%; }
+  th:nth-child(4), td:nth-child(4) { width: 17.5%; }
+  th:nth-child(5), td:nth-child(5) { width: 17.5%; }
+  .rate-card { padding: 6px; }
+  .slider-card { padding: 6px; }
+  .action-btn { font-size: 0.76rem; gap: 4px; }
   .karat-grid { gap: 4px; }
-  .karat-card { padding: 7px 3px; }
-  .karat-label { font-size: 1rem; }
-  .karat-price { font-size: 0.92rem; }
-  .karat-purity { font-size: 0.58rem; }
-  .karat-unit { font-size: 0.55rem; }
+  .karat-card { padding: 6px 3px; }
+  .karat-label { font-size: 0.95rem; }
+  .karat-price { font-size: 0.88rem; }
+  .karat-purity { font-size: 0.55rem; }
+  .karat-unit { font-size: 0.52rem; }
 }
