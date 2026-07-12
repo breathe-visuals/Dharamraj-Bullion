@@ -433,29 +433,50 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   .cell-low, th.col-low   { display: none; }
   .cell-hl, th.col-hl     { display: table-cell; }
 
-  /* 3-col widths: Name 38% | Sell 38% | H/L 24% */
-  th:nth-child(1), td:nth-child(1) { width: 38%; }
-  th:nth-child(3), td:nth-child(3) { width: 38%; }
+  /* 3-col widths: Name 36% | Sell 40% | H/L 24% */
+  th:nth-child(1), td:nth-child(1) { width: 36%; }
+  th:nth-child(3), td:nth-child(3) { width: 40%; }
   th.col-hl, td.cell-hl            { width: 24%; }
 
-  /* Sell value larger — !important to beat all later breakpoint overrides */
-  td:nth-child(3) { font-size: 1.35rem !important; font-weight: 800 !important; }
+  /* Taller rows */
+  tbody td { padding: 16px 6px !important; line-height: 1 !important; }
+
+  /* Sell value — large, centered, !important beats all later overrides */
+  td:nth-child(3) {
+    font-size: 1.4rem !important;
+    font-weight: 800 !important;
+    vertical-align: middle !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+  }
+
+  /* Name column */
+  td:nth-child(1) {
+    vertical-align: middle !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
 
   td.cell-hl {
-    padding: 6px 3px;
-    text-align: center;
+    padding: 8px 4px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
     white-space: nowrap;
   }
   td.cell-hl .chip-val {
-    font-size: 0.70rem;
+    font-size: 0.72rem;
     display: block;
     text-align: center;
-    line-height: 1.3;
+    line-height: 1.5;
   }
   th.col-hl {
     text-align: center;
     letter-spacing: 0;
-    font-size: 0.60rem;
+    font-size: 0.62rem;
+  }
+  .hl-sep {
+    margin: 2px auto;
   }
 }
 
