@@ -435,8 +435,11 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
 
   /* 3-col widths: Name 38% | Sell 38% | H/L 24% */
   th:nth-child(1), td:nth-child(1) { width: 38%; }
-  th:nth-child(3), td:nth-child(3) { width: 38%; font-size: 1.08rem; }
+  th:nth-child(3), td:nth-child(3) { width: 38%; }
   th.col-hl, td.cell-hl            { width: 24%; }
+
+  /* Sell value larger, name stays normal */
+  td:nth-child(3) { font-size: 1.1rem; }
 
   td.cell-hl {
     padding: 6px 3px;
