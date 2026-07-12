@@ -351,7 +351,7 @@ th:nth-child(4), td:nth-child(4) { width: 16%; }
 th:nth-child(5), td:nth-child(5) { width: 16%; }
 
 thead th {
-  padding: 11px 8px;
+  padding: 16px 8px;
   text-align: left;
   font-size: 0.82rem;
   font-weight: 700;
@@ -362,12 +362,14 @@ thead th {
   white-space: nowrap;
 }
 tbody td {
-  padding: 10px 8px;
+  padding: 18px 8px;
   border-bottom: 1px solid rgba(217,178,95,0.13);
   vertical-align: middle;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
   font-weight: 700;
   font-size: 1.02rem;
+  line-height: 1.35;
 }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: rgba(0,51,54,0.03); }
@@ -389,20 +391,21 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 8px;
-  border-radius: 999px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent !important;
   font-size: 0.96rem;
   font-family: 'Oswald', sans-serif;
   font-weight: 700;
-  min-width: 46px;
+  min-width: 0;
   font-variant-numeric: tabular-nums;
-  transition: background 0.3s, color 0.3s;
+  transition: color 0.3s;
 }
-.chip-val.up         { background: var(--up-bg);   color: var(--up-fg); }
-.chip-val.down       { background: var(--down-bg);  color: var(--down-fg); }
-.chip-val.same       { background: var(--neu-bg);   color: var(--neu-fg); }
-.chip-val.always-green { background: var(--up-bg);  color: var(--up-fg); }
-.chip-val.always-red   { background: var(--down-bg); color: var(--down-fg); }
+.chip-val.up         { color: var(--up-fg); }
+.chip-val.down       { color: var(--down-fg); }
+.chip-val.same       { color: var(--neu-fg); }
+.chip-val.always-green { color: var(--up-fg); }
+.chip-val.always-red   { color: var(--down-fg); }
 
 /* ============================================================
    EMPTY / LOADING
@@ -774,10 +777,10 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   .rates-desktop-grid { gap: 18px; }
   .rate-card { padding: 18px; }
   table { font-size: 1.08rem; }
-  thead th { font-size: 0.88rem; padding: 13px 10px; }
-  tbody td { padding: 12px 10px; font-size: 1.08rem; }
+  thead th { font-size: 0.88rem; padding: 14px 10px; }
+  tbody td { padding: 15px 10px; font-size: 1.08rem; }
   .rowhead { font-size: 1.06rem; }
-  .chip-val { font-size: 1rem; min-width: 54px; padding: 4px 10px; }
+  .chip-val { font-size: 1rem; }
   .section-title { font-size: 1.3rem; }
   .card-title { font-size: 1.25rem; }
   .marquee-bar { font-size: 1rem; }
@@ -801,9 +804,9 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   :root { --page-px: 32px; }
   .header-logo { height: 68px; }
   table { font-size: 0.98rem; }
-  thead th { font-size: 0.80rem; padding: 11px 8px; }
-  tbody td { padding: 10px 8px; font-size: 0.98rem; }
-  .chip-val { font-size: 0.92rem; min-width: 46px; }
+  thead th { font-size: 0.80rem; padding: 12px 8px; }
+  tbody td { padding: 13px 8px; font-size: 0.98rem; }
+  .chip-val { font-size: 0.92rem; }
   .rowhead { font-size: 0.95rem; }
   /* Hide swipe affordances and filler on desktop */
   .gold-swipe-dots, .swipe-hint, .gold-filler-container { display: none !important; }
@@ -822,10 +825,10 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   .page { gap: 12px; padding-top: 10px; }
   .rate-card { padding: 12px; }
   table { font-size: 1rem; }
-  thead th { font-size: 0.78rem; padding: 10px 7px; }
-  tbody td { padding: 9px 7px; font-size: 1rem; }
+  thead th { font-size: 0.78rem; padding: 11px 7px; }
+  tbody td { padding: 12px 7px; font-size: 1rem; }
   .rowhead { font-size: 0.95rem; }
-  .chip-val { min-width: 0; padding: 3px 6px; font-size: 0.92rem; }
+  .chip-val { font-size: 0.92rem; }
   .section-title { font-size: 1.12rem; }
   .card-title { font-size: 1.08rem; }
   .marquee-bar { font-size: 0.88rem; }
@@ -839,9 +842,9 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   .timer-box { justify-content: center; width: 100%; }
   .header-inner { padding: 10px 16px; }
   .slider-card { padding: 12px; }
-  .chip-val { font-size: 0.94rem; padding: 3px 7px; }
-  thead th { font-size: 0.78rem; padding: 10px 6px; letter-spacing: 0; }
-  tbody td { padding: 9px 6px; font-size: 1rem; }
+  .chip-val { font-size: 0.94rem; }
+  thead th { font-size: 0.78rem; padding: 11px 6px; letter-spacing: 0; }
+  tbody td { padding: 12px 6px; font-size: 1rem; }
   .rowhead { font-size: 0.94rem; white-space: normal; }
   .action-btn { font-size: 0.86rem; padding: 10px 12px; }
   .karat-card { padding: 9px 5px; }
@@ -866,9 +869,9 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   .card-title { font-size: 1rem; }
   .metal-badge { font-size: 0.82rem; padding: 4px 10px; }
   /* Bigger text for readability — no overlap */
-  .chip-val { padding: 3px 6px; font-size: 0.9rem; min-width: 0; }
-  thead th { font-size: 0.74rem; padding: 9px 5px; }
-  tbody td { padding: 9px 5px; font-size: 0.96rem; }
+  .chip-val { font-size: 0.9rem; }
+  thead th { font-size: 0.74rem; padding: 10px 5px; }
+  tbody td { padding: 11px 5px; font-size: 0.96rem; }
   .rowhead { font-size: 0.9rem; white-space: normal; word-break: break-word; }
   .action-btn { font-size: 0.84rem; padding: 10px 10px; gap: 6px; }
   .coin-tab { padding: 6px 14px; font-size: 0.84rem; }
@@ -890,9 +893,9 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
 
 /* ── Very small ≤360px ── */
 @media (max-width: 360px) {
-  .chip-val { padding: 2px 5px; font-size: 0.84rem; }
-  thead th { font-size: 0.68rem; padding: 8px 4px; }
-  tbody td { font-size: 0.9rem; padding: 8px 4px; }
+  .chip-val { font-size: 0.84rem; }
+  thead th { font-size: 0.68rem; padding: 9px 4px; }
+  tbody td { font-size: 0.9rem; padding: 11px 4px; }
   .rowhead { font-size: 0.84rem; }
   .action-btn { font-size: 0.80rem; gap: 5px; }
   .karat-grid { gap: 4px; }
