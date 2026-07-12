@@ -438,8 +438,8 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   th:nth-child(3), td:nth-child(3) { width: 38%; }
   th.col-hl, td.cell-hl            { width: 24%; }
 
-  /* Sell value larger, name stays normal */
-  td:nth-child(3) { font-size: 1.35rem; font-weight: 800; }
+  /* Sell value larger — !important to beat all later breakpoint overrides */
+  td:nth-child(3) { font-size: 1.35rem !important; font-weight: 800 !important; }
 
   td.cell-hl {
     padding: 6px 3px;
@@ -925,13 +925,11 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
   .chip-val { font-size: 0.88rem; }
   thead th { font-size: 0.65rem; padding: 9px 4px; white-space: nowrap; letter-spacing: 0; }
   tbody td { padding: 11px 4px; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
-  td:nth-child(3) { font-size: 1.35rem; font-weight: 800; }
   .rowhead { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  th:nth-child(1), td:nth-child(1) { width: 32%; }
-  th:nth-child(2), td:nth-child(2) { width: 17%; }
-  th:nth-child(3), td:nth-child(3) { width: 17%; }
-  th:nth-child(4), td:nth-child(4) { width: 17%; }
-  th:nth-child(5), td:nth-child(5) { width: 17%; }
+  /* 3-col widths on small phone — keep same proportions */
+  th:nth-child(1), td:nth-child(1) { width: 36%; }
+  th:nth-child(3), td:nth-child(3) { width: 38%; }
+  th.col-hl, td.cell-hl            { width: 26%; }
   .action-btn { font-size: 0.82rem; padding: 10px 8px; gap: 5px; }
   .coin-tab { padding: 6px 12px; font-size: 0.8rem; }
   .coin-table th { font-size: 0.65rem; padding: 8px 5px; }
@@ -952,16 +950,15 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
 /* ── Very small ≤360px ── */
 @media (max-width: 360px) {
   :root { --page-px: 8px; }
-  table { font-size: 0.74rem; }
-  .chip-val { font-size: 0.74rem; }
+  table { font-size: 0.8rem; }
+  .chip-val { font-size: 0.8rem; }
   thead th { font-size: 0.58rem; padding: 8px 3px; white-space: nowrap; letter-spacing: 0; }
-  tbody td { font-size: 0.74rem; padding: 9px 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  tbody td { font-size: 0.9rem; padding: 9px 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .rowhead { font-size: 0.74rem; white-space: nowrap; }
-  th:nth-child(1), td:nth-child(1) { width: 30%; }
-  th:nth-child(2), td:nth-child(2) { width: 17.5%; }
-  th:nth-child(3), td:nth-child(3) { width: 17.5%; }
-  th:nth-child(4), td:nth-child(4) { width: 17.5%; }
-  th:nth-child(5), td:nth-child(5) { width: 17.5%; }
+  /* 3-col widths for very small screens */
+  th:nth-child(1), td:nth-child(1) { width: 34%; }
+  th:nth-child(3), td:nth-child(3) { width: 38%; }
+  th.col-hl, td.cell-hl            { width: 28%; }
   .rate-card { padding: 6px; }
   .slider-card { padding: 6px; }
   .action-btn { font-size: 0.76rem; gap: 4px; }
