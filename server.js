@@ -28,12 +28,14 @@ const siteConfig  = loadConfig('site-config.json');
 const adminConfig = loadConfig('admin-config.json');
 
 /* Config-driven APX source rows & GST % */
-const APX_GOLD_SOURCE_ROW   = adminConfig?.goldRates?.apxSourceRow   || '999 IMP RTGS';
-const APX_GOLD_GST_PCT      = adminConfig?.goldRates?.apxGstPercent  ?? 3;
-const APX_SILVER_SOURCE_ROW = adminConfig?.silverRates?.apxSourceRow || 'SILVER 999+GST';
-const APX_SILVER_GST_PCT    = adminConfig?.silverRates?.apxGstPercent ?? 3;
-const SILVER_COIN_ROW       = adminConfig?.silverCoins?.baseRow      || 'SILVER 999+GST';
-const GOLD_COIN_ROW         = adminConfig?.goldCoins?.baseRow        || '999 IMP RTGS';
+const APX_GOLD_SOURCE_ROW       = adminConfig?.goldRates?.apxSourceRow        || '999 IMP RTGS';
+const APX_GOLD_GST_PCT          = adminConfig?.goldRates?.apxGstPercent       ?? 3;
+const APX_SILVER_SOURCE_ROW     = adminConfig?.silverRates?.apxSourceRow      || 'SILVER 999+GST';
+const APX_SILVER_GST_PCT        = adminConfig?.silverRates?.apxGstPercent     ?? 3;
+const SILVER_BEFORE_GST_ROW     = adminConfig?.silverRates?.beforeGstSourceRow || 'SILVER PETI RTGS';
+const SILVER_BEFORE_GST_PCT     = adminConfig?.silverRates?.beforeGstPercent   ?? 3;
+const SILVER_COIN_ROW           = adminConfig?.silverCoins?.baseRow           || 'SILVER 999+GST';
+const GOLD_COIN_ROW             = adminConfig?.goldCoins?.baseRow             || '999 IMP RTGS';
 
 /* ══════════════════════════════════════════════════════════════
    PRODUCT ADJUSTMENTS
@@ -317,8 +319,9 @@ function apxRow(rowData, gstPct) {
   };
 }
 
-function getGoldApxFull()   { return apxRow(getBaseRow('gopnath', APX_GOLD_SOURCE_ROW),   APX_GOLD_GST_PCT); }
-function getSilverApxFull() { return apxRow(getBaseRow('swayam',  APX_SILVER_SOURCE_ROW), APX_SILVER_GST_PCT); }
+function getGoldApxFull()          { return apxRow(getBaseRow('gopnath', APX_GOLD_SOURCE_ROW),   APX_GOLD_GST_PCT); }
+function getSilverApxFull()        { return apxRow(getBaseRow('swayam',  APX_SILVER_SOURCE_ROW), APX_SILVER_GST_PCT); }
+function getSilverBeforeGstFull()  { return apxRow(getBaseRow('swayam',  SILVER_BEFORE_GST_ROW), SILVER_BEFORE_GST_PCT); }
 
 function getGoldApx()    { return getGoldApxFull()?.sell  ?? null; }
 function getSilverApx()  { return getSilverApxFull()?.sell ?? null; }
@@ -361,8 +364,9 @@ function buildKaratRates() {
    PAYLOAD BUILDER
    ══════════════════════════════════════════════════════════════ */
 function buildPayload() {
-  const goldApxFull   = getGoldApxFull();
-  const silverApxFull = getSilverApxFull();
+  const goldApxFull          = getGoldApxFull();
+  const silverApxFull        = getSilverApxFull();
+  const silverBeforeGstFull  = getSilverBeforeGstFull();
   return {
     updatedAt: state.swayam.lastSeen || state.gopnath.lastSeen || null,
     connected: { gopnath: state.gopnath.connected, swayam: state.swayam.connected },
@@ -377,8 +381,9 @@ function buildPayload() {
     /* Coin bases */
     goldCoinBase:   getGoldCoinBase(),
     silverCoinBase: getSilverCoinBase(),
-    goldApxRow:     goldApxFull,
-    silverApxRow:   silverApxFull,
+    goldApxRow:         goldApxFull,
+    silverApxRow:       silverApxFull,
+    silverBeforeGstRow: silverBeforeGstFull,
     /* Karat rates (per gram, based on 98.S REF+GST) */
     karatRates: buildKaratRates(),
   };

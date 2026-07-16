@@ -175,8 +175,8 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
-/* Mobile slider hidden by default (desktop shows all 4 in grid) */
-.mobile-slider-section { display: none; }
+/* Mobile slider wrap hidden by default (desktop shows grid cards) */
+.mobile-slider-wrap { display: none; }
 
 /* ============================================================
    SLIDER — mobile only
@@ -688,6 +688,29 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
 .coin-table tbody tr:hover { background: rgba(0,51,54,0.03); }
 .coin-table td:last-child { text-align: right; }
 
+/* ============================================================
+   APX / BEFORE GST ROW — injected at end of product tables
+   ============================================================ */
+.apx-tr {
+  border-top: 2px solid rgba(217,178,95,0.45) !important;
+}
+.apx-tr td {
+  background: rgba(217,178,95,0.07);
+  border-bottom: none !important;
+}
+.apx-tr-name {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: var(--gold-dark) !important;
+  text-transform: uppercase;
+}
+.apx-chip {
+  color: var(--gold-dark) !important;
+  font-weight: 800;
+}
+
 .coin-price {
   display: inline-block;
   font-family: 'Oswald', sans-serif;
@@ -894,8 +917,9 @@ tbody tr:hover { background: rgba(0,51,54,0.03); }
 @media (max-width: 991px) {
   :root { --page-px: 20px; }
   .rates-desktop-grid { grid-template-columns: 1fr; gap: 10px; }
-  #futureCard, #spotCard { display: none; }
-  .mobile-slider-section { display: flex; }
+  /* Desktop market rate cards hidden; mobile slider shown */
+  .rates-market-grid { display: none; }
+  .mobile-slider-wrap { display: block; }
 
   .header-logo { height: 60px; }
   .page { gap: 12px; padding-top: 10px; }

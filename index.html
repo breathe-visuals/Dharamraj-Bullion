@@ -171,59 +171,6 @@
             </div>
           </div>
         </article>
-
-        <!-- Future Rates -->
-        <article class="rate-card" id="futureCard">
-          <div class="card-header">
-            <h2 class="card-title">Future Rates</h2>
-            <span class="live-pill"><span class="live-dot"></span>Live</span>
-          </div>
-          <div class="table-wrap" id="futureBox">
-            <p class="empty-msg">Connecting…</p>
-          </div>
-        </article>
-
-        <!-- Spot Rates -->
-        <article class="rate-card" id="spotCard">
-          <div class="card-header">
-            <h2 class="card-title">Spot Rates</h2>
-            <span class="live-pill"><span class="live-dot"></span>Live</span>
-          </div>
-          <div class="table-wrap" id="spotBox">
-            <p class="empty-msg">Connecting…</p>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- MOBILE MARKET RATES SLIDER (hidden on desktop) -->
-    <section class="section mobile-slider-section" aria-label="Market Rates">
-      <div class="section-label">
-        <span class="section-title">Market Rates</span>
-        <div class="slider-dots" aria-hidden="true">
-          <span class="dot active" data-index="0"></span>
-          <span class="dot" data-index="1"></span>
-        </div>
-      </div>
-      <div class="slider-track" id="rateSlider">
-        <section class="slider-card" aria-label="Future Rates Mobile">
-          <div class="card-header">
-            <h2 class="card-title">Future Rates</h2>
-            <span class="live-pill"><span class="live-dot"></span>Live</span>
-          </div>
-          <div class="table-wrap" id="futureBoxMobile">
-            <p class="empty-msg">Connecting…</p>
-          </div>
-        </section>
-        <section class="slider-card" aria-label="Spot Rates Mobile">
-          <div class="card-header">
-            <h2 class="card-title">Spot Rates</h2>
-            <span class="live-pill"><span class="live-dot"></span>Live</span>
-          </div>
-          <div class="table-wrap" id="spotBoxMobile">
-            <p class="empty-msg">Connecting…</p>
-          </div>
-        </section>
       </div>
     </section>
 
@@ -264,6 +211,67 @@
           </div>
         </article>
         <p class="coin-note">Rates are exclusive of making charges and packing charges.*</p>
+      </div>
+    </section>
+
+    <!-- MARKET RATES SECTION (desktop cards + mobile slider) -->
+    <section class="section" aria-label="Market Rates" id="market-rates-section">
+      <div class="section-label">
+        <span class="section-title">Market Rates</span>
+        <span class="live-pill"><span class="live-dot"></span>Live</span>
+      </div>
+
+      <!-- Desktop grid -->
+      <div class="rates-desktop-grid rates-market-grid" id="rates-market-desktop-grid">
+        <!-- Future Rates -->
+        <article class="rate-card" id="futureCard">
+          <div class="card-header">
+            <h2 class="card-title">Future Rates</h2>
+            <span class="live-pill"><span class="live-dot"></span>Live</span>
+          </div>
+          <div class="table-wrap" id="futureBox">
+            <p class="empty-msg">Connecting…</p>
+          </div>
+        </article>
+
+        <!-- Spot Rates -->
+        <article class="rate-card" id="spotCard">
+          <div class="card-header">
+            <h2 class="card-title">Spot Rates</h2>
+            <span class="live-pill"><span class="live-dot"></span>Live</span>
+          </div>
+          <div class="table-wrap" id="spotBox">
+            <p class="empty-msg">Connecting…</p>
+          </div>
+        </article>
+      </div>
+
+      <!-- Mobile slider -->
+      <div class="mobile-slider-wrap">
+        <div class="slider-dots" aria-hidden="true" style="margin-bottom:8px;">
+          <span class="dot active" data-index="0"></span>
+          <span class="dot" data-index="1"></span>
+        </div>
+        <div class="slider-track" id="rateSlider">
+          <section class="slider-card" aria-label="Future Rates Mobile">
+            <div class="card-header">
+              <h2 class="card-title">Future Rates</h2>
+              <span class="live-pill"><span class="live-dot"></span>Live</span>
+            </div>
+            <div class="table-wrap" id="futureBoxMobile">
+              <p class="empty-msg">Connecting…</p>
+            </div>
+          </section>
+          <section class="slider-card" aria-label="Spot Rates Mobile">
+            <div class="card-header">
+              <h2 class="card-title">Spot Rates</h2>
+              <span class="live-pill"><span class="live-dot"></span>Live</span>
+            </div>
+            <div class="table-wrap" id="spotBoxMobile">
+              <p class="empty-msg">Connecting…</p>
+            </div>
+          </section>
+        </div>
       </div>
     </section>
 

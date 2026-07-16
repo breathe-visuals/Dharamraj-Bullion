@@ -391,6 +391,10 @@ function renderAll(data) {
   renderTable(dom.goldProductsBox, data?.goldProducts, prev.goldProducts, 'mini');
   renderTable(dom.silverProductsBox, data?.silverProducts, prev.silverProducts, 'mini');
 
+  /* Inject "Before GST" row into product tables */
+  renderApxTableRow('goldProductsBox',   'BEFORE GST', data?.goldApxRow);
+  renderApxTableRow('silverProductsBox', 'BEFORE GST', data?.silverBeforeGstRow);
+
   /* Market rate tables — desktop cards + mobile slider */
   renderTable(dom.futureBox, data?.futureRows, prev.future, 'rate');
   renderTable(dom.futureBoxMobile, data?.futureRows, prev.future, 'rate');
