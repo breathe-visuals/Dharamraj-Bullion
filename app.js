@@ -392,8 +392,8 @@ function renderAll(data) {
   renderTable(dom.silverProductsBox, data?.silverProducts, prev.silverProducts, 'mini');
 
   /* Inject "Before GST" row into product tables */
-  renderApxTableRow('goldProductsBox',   'BEFORE GST', data?.goldApxRow);
-  renderApxTableRow('silverProductsBox', 'BEFORE GST', data?.silverBeforeGstRow);
+  renderApxTableRow('goldProductsBox',   'BEFORE GST IMP',  data?.goldApxRow);
+  renderApxTableRow('silverProductsBox', 'BEFORE GST PETI', data?.silverBeforeGstRow);
 
   /* Market rate tables — desktop cards + mobile slider */
   renderTable(dom.futureBox, data?.futureRows, prev.future, 'rate');
@@ -685,20 +685,22 @@ async function generateRateImage(pageId) {
   const isSilver = pageId === 'silver';
   const isCoins = pageId === 'coins';
 
-  const goldProds = isGold ? (data.goldProducts || []) : [];
-  const karatRates = isGold ? (data.karatRates || []) : [];
-  const silvProds = isSilver ? (data.silverProducts || []) : [];
+  const goldProds    = isGold   ? (data.goldProducts   || []) : [];
+  const karatRates   = isGold   ? (data.karatRates     || []) : [];
+  const goldApxRow   = isGold   ? (data.goldApxRow     || null) : null;
+  const silvProds    = isSilver ? (data.silverProducts  || []) : [];
+  const silvApxRow   = isSilver ? (data.silverBeforeGstRow || null) : null;
 
   const gcRows = isCoins ? (admin.goldCoins?.rows || []) : [];
   const scRows = isCoins ? (admin.silverCoins?.rows || []) : [];
   const gcBase = isCoins ? toNum(data.goldCoinBase) : null;
   const scBase = isCoins ? toNum(data.silverCoinBase) : null;
-  const gcDiv = admin.goldCoins?.divisor || 10;
-  const scDiv = admin.silverCoins?.divisor || 1000;
-  const gcPPG = admin.goldCoins?.premiumPerGram ?? 0;
-  const scPPG = admin.silverCoins?.premiumPerGram ?? 12;
-  const gcPct = admin.goldCoins?.premiumPercent ?? 1;
-  const scPct = admin.silverCoins?.premiumPercent ?? 0;
+  const gcDiv  = admin.goldCoins?.divisor || 10;
+  const scDiv  = admin.silverCoins?.divisor || 1000;
+  const gcPPG  = admin.goldCoins?.premiumPerGram ?? 0;
+  const scPPG  = admin.silverCoins?.premiumPerGram ?? 12;
+  const gcPct  = admin.goldCoins?.premiumPercent ?? 1;
+  const scPct  = admin.silverCoins?.premiumPercent ?? 0;
 
   /* ── Height calculation ── */
   const HDR_H = 180;
@@ -706,9 +708,9 @@ async function generateRateImage(pageId) {
   const FOOT_H = 110;
   let H = HDR_H;
 
-  if (goldProds.length) H += SEC_H + RLINE + goldProds.length * RLINE + 28;
+  if (goldProds.length) H += SEC_H + RLINE + goldProds.length * RLINE + 28 + (goldApxRow ? RLINE : 0);
   if (karatRates.length) H += SEC_H + RLINE + karatRates.length * RLINE + 28;
-  if (silvProds.length) H += SEC_H + RLINE + silvProds.length * RLINE + 28;
+  if (silvProds.length) H += SEC_H + RLINE + silvProds.length * RLINE + 28 + (silvApxRow ? RLINE : 0);
   if (gcRows.length && gcBase !== null) H += SEC_H + RLINE + gcRows.length * RLINE + 28;
   if (scRows.length && scBase !== null) H += SEC_H + RLINE + scRows.length * RLINE + 28;
   if (isCoins && (gcRows.length || scRows.length)) H += 50;
@@ -788,8 +790,8 @@ async function generateRateImage(pageId) {
   const LOW_X = W - PAD - 4;
   const NAME_MAX_W = BUY_X - NM_X - 20;
 
-  /* ── Product table helper ── */
-  function drawProdTable(title, titleCol, rows) {
+  /* ── Product table helper (apxRow = optional Before GST row) ── */
+  function drawProdTable(title, titleCol, rows, apxRow) {
     if (!rows.length) return;
     ctx.fillStyle = titleCol; ctx.font = 'bold 18px Inter,Arial,sans-serif';
     ctx.fillText(title, PAD, y + 24); y += 38;
@@ -814,14 +816,30 @@ async function generateRateImage(pageId) {
       ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.font = '15px Inter,Arial,sans-serif';
       ctx.fillText(String(p.name || p.symbol || ''), NM_X, y + 31);
       ctx.restore();
-
       ctx.textAlign = 'right'; ctx.font = 'bold 18px Inter,Arial,sans-serif';
-      if (p.bid != null) { ctx.fillStyle = '#86efac'; ctx.fillText(String(p.bid), BUY_X, y + 31); }
-      if (p.ask != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(p.ask), SELL_X, y + 31); }
+      if (p.bid  != null) { ctx.fillStyle = '#86efac'; ctx.fillText(String(p.bid),  BUY_X,  y + 31); }
+      if (p.ask  != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(p.ask),  SELL_X, y + 31); }
       if (p.high != null) { ctx.fillStyle = '#86efac'; ctx.fillText(String(p.high), HIGH_X, y + 31); }
-      if (p.low != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(p.low), LOW_X, y + 31); }
+      if (p.low  != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(p.low),  LOW_X,  y + 31); }
       ctx.textAlign = 'left'; y += RLINE;
     });
+
+    /* Before GST row */
+    if (apxRow) {
+      ctx.fillStyle = 'rgba(217,178,95,0.12)'; ctx.fillRect(PAD, y, W - PAD * 2, RLINE);
+      /* top accent line */
+      ctx.fillStyle = 'rgba(217,178,95,0.55)'; ctx.fillRect(PAD, y, W - PAD * 2, 1.5);
+      ctx.save();
+      ctx.beginPath(); ctx.rect(NM_X, y, NAME_MAX_W, RLINE); ctx.clip();
+      ctx.fillStyle = GOLD; ctx.font = 'bold 14px Inter,Arial,sans-serif';
+      ctx.fillText(apxRow.label, NM_X, y + 31);
+      ctx.restore();
+      ctx.textAlign = 'right'; ctx.font = 'bold 18px Inter,Arial,sans-serif';
+      if (apxRow.sell != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(apxRow.sell), SELL_X, y + 31); }
+      if (apxRow.high != null) { ctx.fillStyle = '#86efac'; ctx.fillText(String(apxRow.high), HIGH_X, y + 31); }
+      if (apxRow.low  != null) { ctx.fillStyle = '#fca5a5'; ctx.fillText(String(apxRow.low),  LOW_X,  y + 31); }
+      ctx.textAlign = 'left'; y += RLINE;
+    }
 
     ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fillRect(PAD, y, W - PAD * 2, 1); y += 26;
   }
@@ -889,10 +907,12 @@ async function generateRateImage(pageId) {
   }
 
   /* ── Draw content ── */
-  drawProdTable('GOLD PRODUCTS', GOLD, goldProds);
-  drawKaratTable('KARAT RATES', GOLD, karatRates);
-  drawProdTable('SILVER PRODUCTS', '#94a3b8', silvProds);
-  drawCoinTable('GOLD COINS', GOLD, gcRows, gcBase, gcDiv, gcPPG, gcPct);
+  const goldApxImg  = goldApxRow  ? { ...goldApxRow,  label: 'BEFORE GST IMP'  } : null;
+  const silvApxImg  = silvApxRow  ? { ...silvApxRow,  label: 'BEFORE GST PETI' } : null;
+  drawProdTable('GOLD PRODUCTS',   GOLD,      goldProds, goldApxImg);
+  drawKaratTable('KARAT RATES',    GOLD,      karatRates);
+  drawProdTable('SILVER PRODUCTS', '#94a3b8', silvProds, silvApxImg);
+  drawCoinTable('GOLD COINS',   GOLD,      gcRows, gcBase, gcDiv, gcPPG, gcPct);
   drawCoinTable('SILVER COINS', '#94a3b8', scRows, scBase, scDiv, scPPG, scPct);
 
   /* Coin disclaimer */
