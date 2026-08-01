@@ -12,48 +12,61 @@ const io         = new Server(httpServer, { cors: { origin: '*' } });
 const PORT = process.env.PORT || 3000;
 
 /* ══════════════════════════════════════════════════════════════
-   CONFIG — loaded once at startup from /config/*.json
+   CONFIG — hot-reloaded from disk on every publish cycle.
+   Changes to admin-config.json take effect immediately with
+   NO server restart required.
    ══════════════════════════════════════════════════════════════ */
-function loadConfig(filename) {
-  const p = path.join(__dirname, 'config', filename);
+const SITE_CONFIG_PATH  = path.join(__dirname, 'config', 'site-config.json');
+const ADMIN_CONFIG_PATH = path.join(__dirname, 'config', 'admin-config.json');
+
+let siteConfig  = {};
+let adminConfig = {};
+
+function reloadConfig() {
   try {
-    return JSON.parse(fs.readFileSync(p, 'utf8'));
+    siteConfig  = JSON.parse(fs.readFileSync(SITE_CONFIG_PATH,  'utf8'));
+    adminConfig = JSON.parse(fs.readFileSync(ADMIN_CONFIG_PATH, 'utf8'));
   } catch (err) {
-    console.error(`[config] Cannot load ${filename}: ${err.message}`);
-    process.exit(1);
+    console.error('[config] reload error:', err.message);
   }
 }
 
-const siteConfig  = loadConfig('site-config.json');
-const adminConfig = loadConfig('admin-config.json');
+/* Initial load — exit on failure */
+try {
+  siteConfig  = JSON.parse(fs.readFileSync(SITE_CONFIG_PATH,  'utf8'));
+  adminConfig = JSON.parse(fs.readFileSync(ADMIN_CONFIG_PATH, 'utf8'));
+} catch (err) {
+  console.error('[config] Cannot load config:', err.message);
+  process.exit(1);
+}
 
-/* Config-driven APX source rows & GST % */
-const APX_GOLD_SOURCE_ROW       = adminConfig?.goldRates?.apxSourceRow        || '999 IMP RTGS';
-const APX_GOLD_GST_PCT          = adminConfig?.goldRates?.apxGstPercent       ?? 3;
-const APX_SILVER_SOURCE_ROW     = adminConfig?.silverRates?.apxSourceRow      || 'SILVER 999+GST';
-const APX_SILVER_GST_PCT        = adminConfig?.silverRates?.apxGstPercent     ?? 3;
-const SILVER_BEFORE_GST_ROW     = adminConfig?.silverRates?.beforeGstSourceRow || 'SILVER PETI RTGS';
-const SILVER_BEFORE_GST_PCT     = adminConfig?.silverRates?.beforeGstPercent   ?? 3;
-const SILVER_COIN_ROW           = adminConfig?.silverCoins?.baseRow           || 'SILVER 999+GST';
-const GOLD_COIN_ROW             = adminConfig?.goldCoins?.baseRow             || 'REFF ONLY IMP';
-const GOLD_COIN_OVERALL_ADD     = Number(adminConfig?.goldCoins?.overallAddAmount)   || 0;
-const SILVER_COIN_OVERALL_ADD   = Number(adminConfig?.silverCoins?.overallAddAmount) || 0;
+/* ── Dynamic config accessors (always read current adminConfig) ── */
+function getCfg()               { return adminConfig; }
+function getProductAdj()        { return adminConfig?.productAdjustments || {}; }
+function getGoldCoinRow()       { return adminConfig?.goldCoins?.baseRow           || 'REFF ONLY IMP'; }
+function getSilverCoinRow()     { return adminConfig?.silverCoins?.baseRow         || 'SILVER 999+GST'; }
+function getGoldCoinAdd()       { return Number(adminConfig?.goldCoins?.overallAddAmount)   || 0; }
+function getSilverCoinAdd()     { return Number(adminConfig?.silverCoins?.overallAddAmount) || 0; }
+function getApxGoldSrcRow()     { return adminConfig?.goldRates?.apxSourceRow       || '999 IMP RTGS'; }
+function getApxGoldGst()        { return adminConfig?.goldRates?.apxGstPercent      ?? 3; }
+function getApxSilverSrcRow()   { return adminConfig?.silverRates?.apxSourceRow     || 'SILVER 999+GST'; }
+function getApxSilverGst()      { return adminConfig?.silverRates?.apxGstPercent    ?? 3; }
+function getSilverBGstRow()     { return adminConfig?.silverRates?.beforeGstSourceRow || 'SILVER PETI RTGS'; }
+function getSilverBGstPct()     { return adminConfig?.silverRates?.beforeGstPercent  ?? 3; }
+function getKaratSrcRow()       { return adminConfig?.karatRates?.sourceRow         || '999 IMP RTGS'; }
+function getKaratDivisor()      { return adminConfig?.karatRates?.divisor           || 1; }
 
 /* ══════════════════════════════════════════════════════════════
-   PRODUCT ADJUSTMENTS
-   Reads adminConfig.productAdjustments — keyed by exact product Name.
+   PRODUCT ADJUSTMENTS — always read from live adminConfig
    Formula applied to every numeric field (bid/ask/high/low):
      adjusted = round( raw * (1 + addPercent/100) + addAmount + addPerGram * unitGrams )
-   This runs for DISPLAY (product tables) AND for base-rate lookups
-   (coins, APX), so any adjustment automatically cascades.
    ══════════════════════════════════════════════════════════════ */
-const PRODUCT_ADJ = adminConfig?.productAdjustments || {};
 
 /* Look up adjustment config by product name (case-insensitive) */
 function adjFor(name) {
   if (!name) return null;
   const key = String(name).trim().toLowerCase();
-  const entry = Object.entries(PRODUCT_ADJ).find(
+  const entry = Object.entries(getProductAdj()).find(
     ([k]) => String(k).trim().toLowerCase() === key
   );
   return entry ? entry[1] : null;
@@ -333,35 +346,36 @@ function apxRow(rowData, gstPct) {
   };
 }
 
-function getGoldApxFull()          { return apxRow(getBaseRow('gopnath', APX_GOLD_SOURCE_ROW),   APX_GOLD_GST_PCT); }
-function getSilverApxFull()        { return apxRow(getBaseRow('swayam',  APX_SILVER_SOURCE_ROW), APX_SILVER_GST_PCT); }
-function getSilverBeforeGstFull()  { return apxRow(getBaseRow('swayam',  SILVER_BEFORE_GST_ROW), SILVER_BEFORE_GST_PCT); }
+function getGoldApxFull()          { return apxRow(getBaseRow('gopnath', getApxGoldSrcRow()),   getApxGoldGst()); }
+function getSilverApxFull()        { return apxRow(getBaseRow('swayam',  getApxSilverSrcRow()), getApxSilverGst()); }
+function getSilverBeforeGstFull()  { return apxRow(getBaseRow('swayam',  getSilverBGstRow()),   getSilverBGstPct()); }
 
 function getGoldApx()    { return getGoldApxFull()?.sell  ?? null; }
 function getSilverApx()  { return getSilverApxFull()?.sell ?? null; }
 
 function getGoldCoinBase() {
-  if (GOLD_COIN_ROW === 'APX_GOLD') return getGoldApx();
-  return getBaseAsk('gopnath', GOLD_COIN_ROW);
+  const row = getGoldCoinRow();
+  if (row === 'APX_GOLD') return getGoldApx();
+  return getBaseAsk('gopnath', row);
 }
-function getSilverCoinBase() { return getBaseAsk('swayam', SILVER_COIN_ROW); }
+function getSilverCoinBase() { return getBaseAsk('swayam', getSilverCoinRow()); }
 
 /* ══════════════════════════════════════════════════════════════
    KARAT RATES BUILDER
    Base: "98.S REF+GST" from gopnath (already 24K rate, per 10g)
    Per-gram karat rate = (base / 10) * (karat / 24)
    ══════════════════════════════════════════════════════════════ */
-const KARAT_SOURCE_ROW = adminConfig?.karatRates?.sourceRow || '999 IMP RTGS';
-const KARAT_DIVISOR    = adminConfig?.karatRates?.divisor   || 1;
-const KARAT_LIST       = [24, 22, 21, 20, 18, 14, 9];
+const KARAT_LIST = [24, 22, 21, 20, 18, 14, 9];
 
 function buildKaratRates() {
-  const baseRow = getBaseRow('gopnath', KARAT_SOURCE_ROW) || getBaseRow('swayam', KARAT_SOURCE_ROW);
+  const srcRow  = getKaratSrcRow();
+  const divisor = getKaratDivisor();
+  const baseRow = getBaseRow('gopnath', srcRow) || getBaseRow('swayam', srcRow);
   if (!baseRow || baseRow.ask === null) return null;
 
-  const base24Ask  = baseRow.ask  !== null ? baseRow.ask  / KARAT_DIVISOR : null;
-  const base24High = baseRow.high !== null ? baseRow.high / KARAT_DIVISOR : null;
-  const base24Low  = baseRow.low  !== null ? baseRow.low  / KARAT_DIVISOR : null;
+  const base24Ask  = baseRow.ask  !== null ? baseRow.ask  / divisor : null;
+  const base24High = baseRow.high !== null ? baseRow.high / divisor : null;
+  const base24Low  = baseRow.low  !== null ? baseRow.low  / divisor : null;
 
   return KARAT_LIST.map(k => {
     const factor = k / 24;
@@ -378,6 +392,10 @@ function buildKaratRates() {
    PAYLOAD BUILDER
    ══════════════════════════════════════════════════════════════ */
 function buildPayload() {
+  /* Reload config from disk on every cycle — changes to admin-config.json
+     are picked up immediately without restarting the server. */
+  reloadConfig();
+
   const goldApxFull          = getGoldApxFull();
   const silverApxFull        = getSilverApxFull();
   const silverBeforeGstFull  = getSilverBeforeGstFull();
@@ -392,16 +410,18 @@ function buildPayload() {
     silverProducts: state.swayam.products,
     futureRows: buildRows(['gold', 'silver', 'goldnext', 'silvernext']),
     spotRows:   buildRows(['xauusd', 'xagusd', 'inrspot']),
-    /* Coin bases */
+    /* Coin bases — row names read fresh from config each time */
     goldCoinBase:   getGoldCoinBase(),
     silverCoinBase: getSilverCoinBase(),
-    goldCoinOverallAdd:   GOLD_COIN_OVERALL_ADD,
-    silverCoinOverallAdd: SILVER_COIN_OVERALL_ADD,
+    goldCoinOverallAdd:   getGoldCoinAdd(),
+    silverCoinOverallAdd: getSilverCoinAdd(),
     goldApxRow:         goldApxFull,
     silverApxRow:       silverApxFull,
     silverBeforeGstRow: silverBeforeGstFull,
-    /* Karat rates (per gram, based on 98.S REF+GST) */
+    /* Karat rates */
     karatRates: buildKaratRates(),
+    /* Send full adminConfig so client always has latest settings */
+    adminConfig: adminConfig,
   };
 }
 

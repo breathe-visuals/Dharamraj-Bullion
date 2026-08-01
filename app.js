@@ -386,7 +386,12 @@ function renderKaratGrid(karatRates) {
    ================================================================ */
 function renderAll(data) {
   lastRatesData = data;
-  const admin = CFG?.admin || {};
+  /* Use adminConfig from live payload if server sends it (hot-reload),
+     otherwise fall back to the initial CFG fetched at boot. */
+  const admin = data?.adminConfig || CFG?.admin || {};
+
+  /* Keep CFG.admin in sync so PNG generator also gets fresh config */
+  if (data?.adminConfig && CFG) CFG.admin = data.adminConfig;
 
   /* Product tables (desktop + mobile share same data) */
   renderTable(dom.goldProductsBox, data?.goldProducts, prev.goldProducts, 'mini');
@@ -407,17 +412,17 @@ function renderAll(data) {
     renderKaratGrid(data.karatRates);
   }
 
-  /* Coin tables */
-  const goldDiv = admin.goldCoins?.divisor || 10;
-  const silverDiv = admin.silverCoins?.divisor || 1000;
-  const goldPremiumPerGram = admin.goldCoins?.premiumPerGram ?? 0;
-  const silverPremiumPerGram = admin.silverCoins?.premiumPerGram ?? 12;
-  const goldPremiumPercent = admin.goldCoins?.premiumPercent ?? 1;
-  const silverPremiumPercent = admin.silverCoins?.premiumPercent ?? 0;
-  const goldOverallAdd = data?.goldCoinOverallAdd ?? admin.goldCoins?.overallAddAmount ?? 0;
-  const silverOverallAdd = data?.silverCoinOverallAdd ?? admin.silverCoins?.overallAddAmount ?? 0;
+  /* Coin tables — all values from live admin config in payload */
+  const goldDiv              = admin.goldCoins?.divisor          || 10;
+  const silverDiv            = admin.silverCoins?.divisor         || 1000;
+  const goldPremiumPerGram   = admin.goldCoins?.premiumPerGram    ?? 0;
+  const silverPremiumPerGram = admin.silverCoins?.premiumPerGram  ?? 0;
+  const goldPremiumPercent   = admin.goldCoins?.premiumPercent    ?? 0;
+  const silverPremiumPercent = admin.silverCoins?.premiumPercent  ?? 0;
+  const goldOverallAdd       = data?.goldCoinOverallAdd   ?? admin.goldCoins?.overallAddAmount   ?? 0;
+  const silverOverallAdd     = data?.silverCoinOverallAdd ?? admin.silverCoins?.overallAddAmount ?? 0;
 
-  renderCoinTable('goldCoinBox', admin.goldCoins?.rows, data?.goldCoinBase, goldDiv, goldPremiumPerGram, goldPremiumPercent, goldOverallAdd, 'goldCoinBase');
+  renderCoinTable('goldCoinBox',   admin.goldCoins?.rows,   data?.goldCoinBase,   goldDiv,   goldPremiumPerGram,   goldPremiumPercent,   goldOverallAdd,   'goldCoinBase');
   renderCoinTable('silverCoinBox', admin.silverCoins?.rows, data?.silverCoinBase, silverDiv, silverPremiumPerGram, silverPremiumPercent, silverOverallAdd, 'silverCoinBase');
 
   /* Advance prev maps */
