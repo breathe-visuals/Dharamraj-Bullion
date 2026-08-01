@@ -291,13 +291,14 @@ function renderApxTableRow(containerId, label, apxData) {
    COIN TABLE RENDERER
    Formula: price = round((baseVal/divisor * grams + premiumPerGram * grams) * (1 + premiumPercent/100))
    ================================================================ */
-function renderCoinTable(containerId, configRows, baseVal, divisor, premiumPerGram, premiumPercent, prevKey) {
+function renderCoinTable(containerId, configRows, baseVal, divisor, premiumPerGram, premiumPercent, overallAdd, prevKey) {
   const container = document.getElementById(containerId);
   if (!container || !configRows?.length) return;
 
   const baseRaw = toNum(baseVal);
   const base1u = baseRaw !== null ? baseRaw / divisor : null;
   const pctFactor = 1 + (premiumPercent || 0) / 100;
+  const flatAdd = overallAdd || 0;
 
   const table = container.querySelector('.coin-table');
   const tbody = table?.querySelector('tbody');
@@ -306,7 +307,7 @@ function renderCoinTable(containerId, configRows, baseVal, divisor, premiumPerGr
     /* First render — build full table */
     const rows = configRows.map((c, i) => {
       const price = base1u !== null
-        ? Math.round((base1u * c.grams + premiumPerGram * c.grams) * pctFactor)
+        ? Math.round((base1u * c.grams + premiumPerGram * c.grams) * pctFactor) + flatAdd
         : null;
       return `<tr data-coin="${escape(c.name)}">
         <td class="rowhead">${escape(c.name)}</td>
@@ -325,12 +326,12 @@ function renderCoinTable(containerId, configRows, baseVal, divisor, premiumPerGr
       if (!el) return;
 
       const price = base1u !== null
-        ? Math.round((base1u * c.grams + premiumPerGram * c.grams) * pctFactor)
+        ? Math.round((base1u * c.grams + premiumPerGram * c.grams) * pctFactor) + flatAdd
         : null;
       const prevBase = prev[prevKey];
       const prevU = prevBase !== null ? prevBase / divisor : null;
       const prevP = prevU !== null
-        ? Math.round((prevU * c.grams + premiumPerGram * c.grams) * pctFactor)
+        ? Math.round((prevU * c.grams + premiumPerGram * c.grams) * pctFactor) + flatAdd
         : null;
 
       const text = price !== null ? price.toLocaleString('en-IN') : '—';
@@ -413,9 +414,11 @@ function renderAll(data) {
   const silverPremiumPerGram = admin.silverCoins?.premiumPerGram ?? 12;
   const goldPremiumPercent = admin.goldCoins?.premiumPercent ?? 1;
   const silverPremiumPercent = admin.silverCoins?.premiumPercent ?? 0;
+  const goldOverallAdd = data?.goldCoinOverallAdd ?? admin.goldCoins?.overallAddAmount ?? 0;
+  const silverOverallAdd = data?.silverCoinOverallAdd ?? admin.silverCoins?.overallAddAmount ?? 0;
 
-  renderCoinTable('goldCoinBox', admin.goldCoins?.rows, data?.goldCoinBase, goldDiv, goldPremiumPerGram, goldPremiumPercent, 'goldCoinBase');
-  renderCoinTable('silverCoinBox', admin.silverCoins?.rows, data?.silverCoinBase, silverDiv, silverPremiumPerGram, silverPremiumPercent, 'silverCoinBase');
+  renderCoinTable('goldCoinBox', admin.goldCoins?.rows, data?.goldCoinBase, goldDiv, goldPremiumPerGram, goldPremiumPercent, goldOverallAdd, 'goldCoinBase');
+  renderCoinTable('silverCoinBox', admin.silverCoins?.rows, data?.silverCoinBase, silverDiv, silverPremiumPerGram, silverPremiumPercent, silverOverallAdd, 'silverCoinBase');
 
   /* Advance prev maps */
   prev.goldProducts = updatePrevMap(data?.goldProducts);
@@ -701,6 +704,8 @@ async function generateRateImage(pageId) {
   const scPPG  = admin.silverCoins?.premiumPerGram ?? 12;
   const gcPct  = admin.goldCoins?.premiumPercent ?? 1;
   const scPct  = admin.silverCoins?.premiumPercent ?? 0;
+  const gcAdd  = isCoins ? (data.goldCoinOverallAdd   ?? admin.goldCoins?.overallAddAmount   ?? 0) : 0;
+  const scAdd  = isCoins ? (data.silverCoinOverallAdd ?? admin.silverCoins?.overallAddAmount ?? 0) : 0;
 
   /* ── Height calculation ── */
   const HDR_H = 180;
@@ -845,10 +850,11 @@ async function generateRateImage(pageId) {
   }
 
   /* ── Coin table helper ── */
-  function drawCoinTable(title, titleCol, rows, baseVal, divisor, premiumPerGram, premiumPercent) {
+  function drawCoinTable(title, titleCol, rows, baseVal, divisor, premiumPerGram, premiumPercent, overallAdd) {
     if (!rows.length || baseVal === null) return;
     const base1u = baseVal / divisor;
     const pctFactor = 1 + (premiumPercent || 0) / 100;
+    const flatAdd = overallAdd || 0;
     const COIN_NAME_W = (W - PAD * 2) * 0.64;
 
     ctx.fillStyle = titleCol; ctx.font = 'bold 18px Inter,Arial,sans-serif';
@@ -864,7 +870,7 @@ async function generateRateImage(pageId) {
       if (i % 2 === 1) {
         ctx.fillStyle = 'rgba(255,255,255,0.04)'; ctx.fillRect(PAD, y, W - PAD * 2, RLINE);
       }
-      const price = Math.round((base1u * c.grams + premiumPerGram * c.grams) * pctFactor);
+      const price = Math.round((base1u * c.grams + premiumPerGram * c.grams) * pctFactor) + flatAdd;
       ctx.save();
       ctx.beginPath(); ctx.rect(PAD + 12, y, COIN_NAME_W, RLINE); ctx.clip();
       ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.font = '15px Inter,Arial,sans-serif';
@@ -912,8 +918,8 @@ async function generateRateImage(pageId) {
   drawProdTable('GOLD PRODUCTS',   GOLD,      goldProds, goldApxImg);
   drawKaratTable('KARAT RATES',    GOLD,      karatRates);
   drawProdTable('SILVER PRODUCTS', '#94a3b8', silvProds, silvApxImg);
-  drawCoinTable('GOLD COINS',   GOLD,      gcRows, gcBase, gcDiv, gcPPG, gcPct);
-  drawCoinTable('SILVER COINS', '#94a3b8', scRows, scBase, scDiv, scPPG, scPct);
+  drawCoinTable('GOLD COINS',   GOLD,      gcRows, gcBase, gcDiv, gcPPG, gcPct, gcAdd);
+  drawCoinTable('SILVER COINS', '#94a3b8', scRows, scBase, scDiv, scPPG, scPct, scAdd);
 
   /* Coin disclaimer */
   if (isCoins && (gcRows.length || scRows.length)) {

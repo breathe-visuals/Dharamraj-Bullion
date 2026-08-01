@@ -35,7 +35,9 @@ const APX_SILVER_GST_PCT        = adminConfig?.silverRates?.apxGstPercent     ??
 const SILVER_BEFORE_GST_ROW     = adminConfig?.silverRates?.beforeGstSourceRow || 'SILVER PETI RTGS';
 const SILVER_BEFORE_GST_PCT     = adminConfig?.silverRates?.beforeGstPercent   ?? 3;
 const SILVER_COIN_ROW           = adminConfig?.silverCoins?.baseRow           || 'SILVER 999+GST';
-const GOLD_COIN_ROW             = adminConfig?.goldCoins?.baseRow             || '999 IMP RTGS';
+const GOLD_COIN_ROW             = adminConfig?.goldCoins?.baseRow             || 'REFF ONLY IMP';
+const GOLD_COIN_OVERALL_ADD     = Number(adminConfig?.goldCoins?.overallAddAmount)   || 0;
+const SILVER_COIN_OVERALL_ADD   = Number(adminConfig?.silverCoins?.overallAddAmount) || 0;
 
 /* ══════════════════════════════════════════════════════════════
    PRODUCT ADJUSTMENTS
@@ -73,12 +75,16 @@ function applyAdj(name, value) {
 function applyAdjToItem(item) {
   if (!item) return item;
   const name = item.name || item.symbol || '';
+  /* For High/Low: treat 0 as null — feeds often send 0 as "no data",
+     and applying addAmount to 0 would produce a wrong value. */
+  const rawHigh = (item.high === 0) ? null : item.high;
+  const rawLow  = (item.low  === 0) ? null : item.low;
   return {
     ...item,
     bid:  applyAdj(name, item.bid),
     ask:  applyAdj(name, item.ask),
-    high: applyAdj(name, item.high),
-    low:  applyAdj(name, item.low),
+    high: applyAdj(name, rawHigh),
+    low:  applyAdj(name, rawLow),
   };
 }
 
@@ -296,15 +302,23 @@ function getBaseRow(sourceKey, rowName) {
   const p = state[sourceKey].products.find(
     p => String(p?.name ?? '').trim().toLowerCase() === target
   );
-  if (p) return { ask: toNum(p.ask), high: toNum(p.high), low: toNum(p.low) };
+  if (p) return {
+    ask:  toNum(p.ask),
+    high: p.high === 0 ? null : toNum(p.high),
+    low:  p.low  === 0 ? null : toNum(p.low),
+  };
   /* 2 — raw array (apply adjustment) */
   const r = findRawByName(state[sourceKey].rawRate, rowName)
          || findRawByName(state[sourceKey].live,    rowName);
-  if (r) return {
-    ask:  applyAdj(rowName, toNum(r.Ask ?? r.Sell)),
-    high: applyAdj(rowName, toNum(r.High)),
-    low:  applyAdj(rowName, toNum(r.Low)),
-  };
+  if (r) {
+    const rawH = toNum(r.High);
+    const rawL = toNum(r.Low);
+    return {
+      ask:  applyAdj(rowName, toNum(r.Ask ?? r.Sell)),
+      high: (rawH === 0 || rawH === null) ? null : applyAdj(rowName, rawH),
+      low:  (rawL === 0 || rawL === null) ? null : applyAdj(rowName, rawL),
+    };
+  }
   return null;
 }
 
@@ -381,6 +395,8 @@ function buildPayload() {
     /* Coin bases */
     goldCoinBase:   getGoldCoinBase(),
     silverCoinBase: getSilverCoinBase(),
+    goldCoinOverallAdd:   GOLD_COIN_OVERALL_ADD,
+    silverCoinOverallAdd: SILVER_COIN_OVERALL_ADD,
     goldApxRow:         goldApxFull,
     silverApxRow:       silverApxFull,
     silverBeforeGstRow: silverBeforeGstFull,

@@ -70,10 +70,11 @@
     }
   },
   "goldCoins": {
-    "baseRow": "999 IMP RTGS",
+    "baseRow": "REFF ONLY IMP",
     "divisor": 10,
     "premiumPerGram": 0,
     "premiumPercent": 0,
+    "overallAddAmount": 0,
     "rows": [
       {
         "name": "GOLD COIN 999 1 GM",
@@ -110,6 +111,7 @@
     "divisor": 1000,
     "premiumPerGram": 0,
     "premiumPercent": 0,
+    "overallAddAmount": 0,
     "rows": [
       {
         "name": "SILVER COIN 999 5 GM",
