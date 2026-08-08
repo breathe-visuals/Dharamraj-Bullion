@@ -52,14 +52,14 @@
       "unitGrams": 1000,
       "addPercent": 0,
       "addPerGram": 0,
-      "addAmount": 500
+      "addAmount": 0
     },
     "98.S RTGS": {
       "_note": "Silver 98% RTGS — rate is per 1 kg",
       "unitGrams": 1000,
       "addPercent": 0,
       "addPerGram": 0,
-      "addAmount": 500
+      "addAmount": 0
     },
     "SILVER 999+GST": {
       "_note": "Silver 999 + GST — rate is per 1 kg",
